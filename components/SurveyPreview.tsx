@@ -1,3 +1,4 @@
+
 import { SurveyData, SurveyType } from '../types';
 import { PreviewResult } from './SharedUI';
 import { formatDateROC } from './ROCDatePicker';
@@ -163,6 +164,21 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
         return data?.land_q7_build || '';
     };
 
+    const getLandUserSummary = () => {
+        if (!data?.land_q7_user || data?.land_q7_user === '無') return '';
+        if (data.land_q7_user === '非所有權人使用') {
+            const detail = data.land_q7_user_detail || '';
+            let detailStr = detail;
+            if (detail === '其他') {
+                detailStr = `其他：${data.land_q7_user_desc || ''}`;
+            } else if (data.land_q7_user_desc) {
+                detailStr = `${detail} (${data.land_q7_user_desc})`;
+            }
+            return `非所有權人使用(${detailStr})`;
+        }
+        return data.land_q7_user;
+    };
+
     const getParkingCarUsageLabel = () => {
         let labels = (data?.q10_carUsage || []).map(u => u === "須固定抽籤" ? `須固定抽籤(每${data.q10_carLotteryMonth}月)` : u);
         if (data?.q10_hasCarUsageOther && data.q10_carUsageOther) labels.push(`其他: ${data.q10_carUsageOther}`);
@@ -242,8 +258,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q1_elec === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">是否電力供應？：</span>
-                                            {data?.land_q1_elec !== '否' && <span className="ml-2 font-medium">{getLandElecSummary()}</span>}
+                                            <span className="font-black mr-2">是否電力供應？：</span>
+                                            <PreviewResult checked={data?.land_q1_elec !== '否' && !!data?.land_q1_elec} label={getLandElecSummary()} />
                                         </div>
                                     </td>
                                 </tr>
@@ -251,8 +267,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q1_water === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">是否水源供應？：</span>
-                                            {data?.land_q1_water !== '否' && <span className="ml-2 font-medium">{getLandWaterSummary()}</span>}
+                                            <span className="font-black mr-2">是否水源供應？：</span>
+                                            <PreviewResult checked={data?.land_q1_water !== '否' && !!data?.land_q1_water} label={getLandWaterSummary()} />
                                         </div>
                                     </td>
                                 </tr>
@@ -260,8 +276,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q1_other_new === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">是否其他設施？：</span>
-                                            {data?.land_q1_other_new === '是' && <span className="ml-2 font-medium">{data.land_q1_other_desc}</span>}
+                                            <span className="font-black mr-2">是否其他設施？：</span>
+                                            <PreviewResult checked={data?.land_q1_other_new === '是'} label={data.land_q1_other_desc} />
                                         </div>
                                     </td>
                                 </tr>
@@ -271,9 +287,9 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q2_access === '否，無異常' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">土地進出通行是否有異常？：</span>
-                                            {data?.land_q2_access === '是，有阻礙' && <span className="ml-2 font-medium">是，有阻礙 ({data.land_q2_access_desc})</span>}
-                                            {data?.land_q2_access === '袋地' && <span className="ml-2 font-medium">袋地</span>}
+                                            <span className="font-black mr-2">土地進出通行是否有異常？：</span>
+                                            <PreviewResult checked={data?.land_q2_access === '是，有阻礙'} label={`是，有阻礙 (${data.land_q2_access_desc})`} />
+                                            <PreviewResult checked={data?.land_q2_access === '袋地'} label="袋地" />
                                         </div>
                                     </td>
                                 </tr>
@@ -297,8 +313,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q2_ditch === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">周圍是否有排水溝？：</span>
-                                            {data?.land_q2_ditch !== '否' && data?.land_q2_ditch && <span className="ml-2 font-medium">{data?.land_q2_ditch === '其他' ? `其他 (${data.land_q2_ditch_other})` : data?.land_q2_ditch}</span>}
+                                            <span className="font-black mr-2">周圍是否有排水溝？：</span>
+                                            <PreviewResult checked={data?.land_q2_ditch !== '否' && !!data?.land_q2_ditch} label={data?.land_q2_ditch === '其他' ? `其他 (${data.land_q2_ditch_other})` : data?.land_q2_ditch} />
                                         </div>
                                     </td>
                                 </tr>
@@ -308,9 +324,9 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q3_survey === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">曾在兩年內進行土地鑑界？：</span>
-                                            {data?.land_q3_survey === '是' && <span className="ml-2 font-medium">是 ({data.land_q3_survey_detail})</span>}
-                                            {data?.land_q3_survey === '其他' && <span className="ml-2 font-medium">其他 ({data.land_q3_survey_other})</span>}
+                                            <span className="font-black mr-2">曾在兩年內進行土地鑑界？：</span>
+                                            <PreviewResult checked={data?.land_q3_survey === '是'} label={`是 (${data.land_q3_survey_detail})`} />
+                                            <PreviewResult checked={data?.land_q3_survey === '其他'} label={`其他 (${data.land_q3_survey_other})`} />
                                         </div>
                                     </td>
                                 </tr>
@@ -318,9 +334,9 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q3_dispute === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">目前是否有糾紛？：</span>
-                                            {data?.land_q3_dispute === '是' && <span className="ml-2 font-medium">是 ({data.land_q3_dispute_desc})</span>}
-                                            {data?.land_q3_dispute === '其他' && <span className="ml-2 font-medium">其他 ({data.land_q3_dispute_other})</span>}
+                                            <span className="font-black mr-2">目前是否有糾紛？：</span>
+                                            <PreviewResult checked={data?.land_q3_dispute === '是'} label={`是 (${data.land_q3_dispute_desc})`} />
+                                            <PreviewResult checked={data?.land_q3_dispute === '其他'} label={`其他 (${data.land_q3_dispute_other})`} />
                                         </div>
                                     </td>
                                 </tr>
@@ -330,8 +346,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q4_expro === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">位於政府徵收地預定地？：</span>
-                                            {(data?.land_q4_expro === '是' || data?.land_q4_expro === '其他') && <span className="ml-2 font-medium">{data?.land_q4_expro} ({data.land_q4_expro_other})</span>}
+                                            <span className="font-black mr-2">位於政府徵收地預定地？：</span>
+                                            <PreviewResult checked={data?.land_q4_expro === '是' || data?.land_q4_expro === '其他'} label={`${data?.land_q4_expro} (${data.land_q4_expro_other})`} />
                                         </div>
                                     </td>
                                 </tr>
@@ -339,8 +355,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                     <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q4_resurvey === '否' ? 'V' : ''}</td>
                                     <td colSpan={9} className="py-1 text-left">
                                         <div className="pl-4">
-                                            <span className="font-black">位於重測區域範圍內？：</span>
-                                            {(data?.land_q4_resurvey === '是' || data?.land_q4_resurvey === '其他') && <span className="ml-2 font-medium">{data?.land_q4_resurvey} ({data.land_q4_resurvey_other})</span>}
+                                            <span className="font-black mr-2">位於重測區域範圍內？：</span>
+                                            <PreviewResult checked={data?.land_q4_resurvey === '是' || data?.land_q4_resurvey === '其他'} label={`${data?.land_q4_resurvey} (${data.land_q4_resurvey_other})`} />
                                         </div>
                                     </td>
                                 </tr>
@@ -400,8 +416,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q5_encroached === '否' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">是否有被越界佔用？：</span>
-                                                {data?.land_q5_encroached !== '否' && data?.land_q5_encroached && <span className="ml-2 font-medium">{renderYesValue(data.land_q5_encroached, data.land_q5_encroached_desc)}</span>}
+                                                <span className="font-black mr-2">是否有被越界佔用？：</span>
+                                                <PreviewResult checked={data?.land_q5_encroached !== '否' && !!data?.land_q5_encroached} label={renderYesValue(data.land_q5_encroached, data.land_q5_encroached_desc)} />
                                             </div>
                                         </td>
                                     </tr>
@@ -409,8 +425,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q5_encroaching === '否' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">是否有佔用鄰地情況？：</span>
-                                                {data?.land_q5_encroaching !== '否' && data?.land_q5_encroaching && <span className="ml-2 font-medium">{renderYesValue(data.land_q5_encroaching, data.land_q5_encroaching_desc)}</span>}
+                                                <span className="font-black mr-2">是否有佔用鄰地情況？：</span>
+                                                <PreviewResult checked={data?.land_q5_encroaching !== '否' && !!data?.land_q5_encroaching} label={renderYesValue(data.land_q5_encroaching, data.land_q5_encroaching_desc)} />
                                             </div>
                                         </td>
                                     </tr>
@@ -420,8 +436,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q6_limit === '否' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">目前是否有禁建、限建的情況？：</span>
-                                                {data?.land_q6_limit !== '否' && data?.land_q6_limit && <span className="ml-2 font-medium">{renderYesValue(data.land_q6_limit, data.land_q6_limit_desc)}</span>}
+                                                <span className="font-black mr-2">目前是否有禁建、限建的情況？：</span>
+                                                <PreviewResult checked={data?.land_q6_limit !== '否' && !!data?.land_q6_limit} label={renderYesValue(data.land_q6_limit, data.land_q6_limit_desc)} />
                                             </div>
                                         </td>
                                     </tr>
@@ -431,23 +447,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q7_user === '無' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">現況使用人？：</span>
-                                                {data?.land_q7_user !== '無' && data?.land_q7_user && (
-                                                    <span className="ml-2 font-medium">
-                                                        {data.land_q7_user === '非所有權人使用' 
-                                                            ? (() => {
-                                                                const detail = data.land_q7_user_detail || '';
-                                                                let detailStr = detail;
-                                                                if (detail === '其他') {
-                                                                    detailStr = `其他：${data.land_q7_user_desc || ''}`;
-                                                                } else if (data.land_q7_user_desc) {
-                                                                    detailStr = `${detail} (${data.land_q7_user_desc})`;
-                                                                }
-                                                                return `非所有權人使用(${detailStr})`;
-                                                              })()
-                                                            : data.land_q7_user}
-                                                    </span>
-                                                )}
+                                                <span className="font-black mr-2">現況使用人？：</span>
+                                                <PreviewResult checked={data?.land_q7_user !== '無' && !!data?.land_q7_user} label={getLandUserSummary()} />
                                             </div>
                                         </td>
                                     </tr>
@@ -455,8 +456,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q7_crops === '無' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">地上定著物-農作物：</span>
-                                                {data?.land_q7_crops !== '無' && data?.land_q7_crops && <span className="ml-2 font-medium">{getLandCropsSummary()}</span>}
+                                                <span className="font-black mr-2">地上定著物-農作物：</span>
+                                                <PreviewResult checked={data?.land_q7_crops !== '無' && !!data?.land_q7_crops} label={getLandCropsSummary()} />
                                             </div>
                                         </td>
                                     </tr>
@@ -464,8 +465,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q7_build === '無' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">地上定著物-建物：</span>
-                                                {data?.land_q7_build !== '無' && data?.land_q7_build && <span className="ml-2 font-medium">{getLandBuildSummary()}</span>}
+                                                <span className="font-black mr-2">地上定著物-建物：</span>
+                                                <PreviewResult checked={data?.land_q7_build !== '無' && !!data?.land_q7_build} label={getLandBuildSummary()} />
                                             </div>
                                         </td>
                                     </tr>
@@ -490,8 +491,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                         <td className="w-10 text-center bg-gray-50 font-black">{data?.land_q8_special === '否' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 text-left">
                                             <div className="pl-4">
-                                                <span className="font-black">本案或周圍是否有須注意的事項？：</span>
-                                                {data?.land_q8_special !== '否' && data?.land_q8_special && <span className="ml-2 font-medium">{renderYesValue(data.land_q8_special, data.land_q8_special_desc)}</span>}
+                                                <span className="font-black mr-2">本案或周圍是否有須注意的事項？：</span>
+                                                <PreviewResult checked={data?.land_q8_special !== '否' && !!data?.land_q8_special} label={renderYesValue(data.land_q8_special, data.land_q8_special_desc)} />
                                             </div>
                                         </td>
                                     </tr>
