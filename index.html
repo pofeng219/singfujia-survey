@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>幸福家不動產 - 物件現況調查系統</title>
+    <!-- Tailwind CSS CDN (Keeping CDN for simplicity as requested, though build tool is active) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        /* Changed background-color to #fdfbf7 (Warm White) for eye comfort */
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdfbf7; overscroll-behavior-y: none; width: 100%; }
+        #root { height: 100%; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* A4 Page Styling */
+        .a4-page {
+            width: 210mm; min-width: 210mm; min-height: 297mm; height: auto;
+            padding: 10mm 10mm; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative; box-sizing: border-box; color: #000;
+            -webkit-font-smoothing: antialiased; overflow: visible; flex-shrink: 0;
+            margin: 0 auto; display: flex; flex-direction: column; justify-content: flex-start;
+            transform-origin: top center; transition: transform 0.3s ease;
+        }
+
+        /* Excel-like Table Styling - Increased font size for elderly */
+        .excel-table { border: 2px solid #000; width: 100%; border-collapse: collapse; font-size: 18px; line-height: 1.5; position: relative; z-index: 10; font-weight: 700; flex-shrink: 0; }
+        .excel-table td, .excel-table th { border: 1px solid #000; padding: 6px 8px; vertical-align: middle; word-break: break-word; white-space: normal; }
+        .align-top-cell { vertical-align: top !important; padding-top: 8px !important; text-align: left !important; }
+        .bg-gray-label { background-color: #e5e7eb; font-weight: 900; text-align: center; vertical-align: middle !important; font-size: 18px; width: 1%; white-space: nowrap;}
+        
+        /* Preview Utilities */
+        .a4-page .warning-box { display: none !important; }
+        .warning-box { color: #dc2626; font-size: 18px; font-weight: 700; margin: 6px 0; display: inline-block; line-height: 1.4; text-align: center; width: 100%; }
+        
+        .no-print { display: block; }
+        @media print { .no-print { display: none; } .a4-page { box-shadow: none; margin: 0; page-break-after: always; transform: none !important; } }
+
+        /* Scrollbar & Safe Area */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        
+        /* Custom Inputs & Cards - Larger text and touch targets */
+        .full-width-input {
+            width: 100%; border: 2px solid #cbd5e1; border-radius: 0.75rem; padding: 1rem;
+            font-size: 1.6rem; outline: none; transition: all 0.2s; margin-top: 0.5rem;
+            color: #0f172a; background: #fff; font-weight: 700;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .full-width-input:focus { border-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
+        .full-width-input::placeholder { color: #94a3b8; font-weight: 500; }
+        
+        .warm-card { background-color: #fff; border: 2px solid #e2e8f0; }
+        
+        /* Preview Checkbox Styling - Fixed Vertical Alignment (Image 0) */
+        .preview-checkbox-wrapper { display: inline-flex; align-items: center; vertical-align: middle; margin-right: 16px; line-height: 1; margin-bottom: 8px; }
+        .preview-checkbox-box { width: 28px; height: 28px; border: 3px solid #000; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-right: 8px; flex-shrink: 0; background-color: white; font-weight: 900; color: #000; }
+        .preview-checkbox-box.checked { background-color: #000; color: #fff; }
+        .preview-label { display: inline-block; font-weight: 700; font-size: 19px; line-height: 1; }
+        
+        .preview-scroll-container { width: 100%; height: 100%; overflow: auto; -webkit-overflow-scrolling: touch; display: flex; justify-content: flex-start; padding: 20px; flex-direction: column; align-items: center; position: relative; }
+        @media (min-width: 1024px) { .preview-scroll-container { justify-content: center; padding-top: 40px; } }
+        .disabled-section { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "jspdf": "https://esm.sh/jspdf@^4.0.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "html2canvas": "https://esm.sh/html2canvas@^1.4.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
