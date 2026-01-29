@@ -723,7 +723,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack }) => {
                         {activeStep === 2 && (
                             <div className="space-y-10 animate-in fade-in slide-in-from-right duration-300">
                                 <h3 className={`text-3xl font-black ${themeText} border-l-8 ${type === 'parking' ? 'border-rose-400' : (type === 'land' ? 'border-emerald-400' : 'border-sky-400')} pl-6 text-left`}>
-                                    {type === 'land' ? '第一步 使用現況' : (type === 'parking' ? '第二步：車位資訊與現況' : '第二步：內部情況')}
+                                    {type === 'land' ? '第二步 使用現況' : (type === 'parking' ? '第二步：車位資訊與現況' : '第二步：內部情況')}
                                 </h3>
                                 {type === 'house' && <WarningBox>※請先至全國土地使用分區資訊查詢系統確認本案分區與周邊，再判斷是否須調閱土地使用分區</WarningBox>}
                                 {type === 'land' && <WarningBox>※請先至全國土地使用分區資訊查詢系統確認本案分區與周邊，並判斷是否須調閱土地使用分區</WarningBox>}
@@ -828,7 +828,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack }) => {
                         {activeStep === 3 && (
                             <div className="space-y-10 animate-in fade-in slide-in-from-right duration-300">
                                 <h3 className={`text-3xl font-black ${themeText} border-l-8 ${type === 'parking' ? 'border-rose-400' : (type === 'land' ? 'border-emerald-400' : 'border-sky-400')} pl-6 text-left`}>
-                                    {type === 'land' ? '第二步 使用權利與地上物' : (type === 'parking' ? '第三步：環境與注意事項' : '第三步：公共設施(瑕疵)與車位')}
+                                    {type === 'land' ? '第三步 使用權利與地上物' : (type === 'parking' ? '第三步：環境與注意事項' : '第三步：公共設施(瑕疵)與車位')}
                                 </h3>
                                 
                                 {type === 'house' && (
