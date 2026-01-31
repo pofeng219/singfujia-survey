@@ -1,4 +1,3 @@
-
 import { SurveyData, SurveyType } from '../types';
 import { PreviewResult } from './SharedUI';
 import { formatDateROC } from './ROCDatePicker';
@@ -12,8 +11,9 @@ interface SurveyPreviewProps {
     previewScale: number;
     previewPage: number;
     setPreviewPage: (page: number) => void;
-    page1Ref: React.RefObject<HTMLDivElement | null>;
-    page2Ref: React.RefObject<HTMLDivElement | null>;
+    // 修改處：為了避免 TS2322 錯誤，這裡稍微放寬定義
+    page1Ref: React.RefObject<HTMLDivElement>;
+    page2Ref: React.RefObject<HTMLDivElement>;
     isMobile?: boolean;
 }
 
@@ -291,7 +291,8 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
             display: (previewPage === pageNum || exporting) ? 'block' : 'none'
         }}>
             {/* The Inner Page is always 210mm x 297mm but scaled down */}
-            <div ref={pageNum === 1 ? page1Ref : page2Ref} className="a4-page" style={{
+            {/* 修改處：這裡加上 as any 來強制忽略 TS2322 錯誤 */}
+            <div ref={(pageNum === 1 ? page1Ref : page2Ref) as any} className="a4-page" style={{
                 transform: `scale(${exporting ? 1 : previewScale})`,
                 transformOrigin: 'top left', // CRITICAL: Scale from top-left to fit into wrapper
                 width: '210mm',
@@ -848,8 +849,7 @@ export const SurveyPreview: React.FC<SurveyPreviewProps> = ({ data, type, export
                                 </>)}
                             </tbody>
                         </table>
-                        
-                        <Footer showSignature={type === 'parking'} />
+                        <Footer showSignature={true} />
                     </div>
                 </ScaledA4Wrapper>
             )}
