@@ -185,16 +185,16 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
     const ditch = data?.land_q2_ditch;
     const ditchOther = data?.land_q2_ditch_other;
 
-    const isNormal = access === '正常' || access?.includes('正常');
-    const isAbnormal = access === '異常' || access?.includes('異常');
+    const isNormal = access === '通行順暢' || access?.includes('順暢');
+    const isAbnormal = access === '通行受限' || access?.includes('受限');
     const isLandlocked = access === '袋地' || access?.includes('袋地');
 
     return (
         <>
             <SectionHeader title={title} />
             <CheckRow checked={isNormal}>
-                <PreviewResult checked={isNormal} label={`正常 [${ownership || ''}${protection ? `/${protection}` : ''}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`} />
-                <PreviewResult checked={isAbnormal} label={`異常 (${abnormalDesc})`} />
+                <PreviewResult checked={isNormal} label={`通行順暢 [${ownership || ''}${protection ? `/${protection}` : ''}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`} />
+                <PreviewResult checked={isAbnormal} label={`通行受限 (${abnormalDesc})`} />
                 <PreviewResult checked={isLandlocked} label="袋地" />
             </CheckRow>
             {(isNormal || isAbnormal) && (
@@ -371,13 +371,13 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         {type === 'house' && (
             <>
                 <SectionHeader title={`${startIdx}. 進出通行與臨路現況`} />
-                <CheckRow checked={data?.q14_access === '正常'}>
+                <CheckRow checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')}>
                     <span className="font-black mr-2">進出現況</span>
-                    <PreviewResult checked={data?.q14_access === '正常'} label={`正常 [${data.q14_ownership || ''}${data.q14_protection ? `/${data.q14_protection}` : ''}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`} />
-                    <PreviewResult checked={data?.q14_access === '異常'} label={`異常 (${data.q14_abnormalDesc})`} />
-                    <PreviewResult checked={data?.q14_access === '袋地'} label="袋地" />
+                    <PreviewResult checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')} label={`通行順暢 [${data.q14_ownership || ''}${data.q14_protection ? `/${data.q14_protection}` : ''}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`} />
+                    <PreviewResult checked={data?.q14_access === '通行受限' || data?.q14_access?.includes('受限')} label={`通行受限 (${data.q14_abnormalDesc})`} />
+                    <PreviewResult checked={data?.q14_access === '袋地' || data?.q14_access?.includes('袋地')} label="袋地" />
                 </CheckRow>
-                {(data.q14_access === '正常' || data.q14_access === '異常') && (
+                {(data.q14_access === '通行順暢' || data.q14_access?.includes('順暢') || data.q14_access === '通行受限' || data.q14_access?.includes('受限')) && (
                     <CheckRow checked={false}>
                         <PreviewResult checked={!!data.q14_roadMaterial} label="路面材質" suffix={(data.q14_roadMaterial === '其他' || data.q14_roadMaterial === '其他未列項目') ? `: ${data.q14_roadMaterialOther}` : `: ${data.q14_roadMaterial}`} />
                         {data.q14_roadWidth && <span className="mx-2">/</span>}
@@ -939,10 +939,10 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
             </CheckRow>
 
             <SectionHeader title={`${++idx}. 廠房進出通行與臨路的現況`} />
-            <CheckRow checked={data.land_q2_access?.includes('正常')}>
+            <CheckRow checked={data.land_q2_access?.includes('順暢')}>
                 {(() => {
                     const acc = data.land_q2_access;
-                    if (acc?.includes('正常')) {
+                    if (acc?.includes('順暢')) {
                         const mat = (data.land_q2_material === '其他' || data.land_q2_material === '其他未列項目') ? data.land_q2_material_other : data.land_q2_material;
                         const ditch = (data.land_q2_ditch === '其他' || data.land_q2_ditch === '其他未列項目') ? data.land_q2_ditch_other : data.land_q2_ditch;
                         const ditchStr = ditch === '有' ? '有水溝' : (ditch === '無' ? '無水溝' : ditch);
@@ -951,7 +951,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
                         
                         return (
                             <div>
-                                正常 
+                                通行順暢 
                                 {data.land_q2_owner ? ` (${data.land_q2_owner}${data.land_q2_protection ? '/' + data.land_q2_protection : ''})` : ''} 
                                 {mat || ditchStr ? ` [${mat || '-'}/${ditchStr || '-'}]` : ''}
                                 {roadWidth ? ` [${roadWidth}]` : ''}

@@ -236,11 +236,12 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         const hideDitch = ['大樓華廈', '公寓'].includes(d.propertyType);
 
         v.require(d.q14_access, "section-q14", "11. 進出通行與臨路未填寫", s4);
-        if (d.q14_access === '正常') {
+        if (d.q14_access === '通行順暢' || d.q14_access?.includes('順暢')) {
              v.require(d.q14_ownership, "section-q14", "11. 請選擇通行權屬 (公有／私人)", s4);
              v.require(d.q14_protection, "section-q14", "11. 請選擇保障類型", s4);
              v.require(d.q14_roadMaterial, "section-q14", "11. 請選擇路面材質", s4);
              v.requireIf(d.q14_roadMaterial === '其他未列項目', d.q14_roadMaterialOther, "section-q14", "11. 請填寫路面材質說明", s4);
+             v.require(d.q14_roadWidth, "section-q14", "11. 現況路寬未填寫", s4);
              // Skip if hidden
              if (!hideDitch) {
                  v.require(d.q14_ditch, "section-q14", "11. 周圍排水溝現況未填寫", s4);
@@ -250,8 +251,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
              if (!hideBuildingLine) {
                  v.require(d.q14_buildingLine, "section-q14", "11. 建築線指定狀況未填寫", s4);
              }
-        } else if (d.q14_access === '異常') {
-             v.require(d.q14_abnormalDesc, "section-q14", "11. 請填寫異常描述", s4);
+        } else if (d.q14_access === '通行受限' || d.q14_access?.includes('受限')) {
+             v.require(d.q14_abnormalDesc, "section-q14", "11. 請填寫受限說明", s4);
         }
         
         const noEnv = d.q16_noFacilities === false && (d.q16_items?.length || 0) === 0 && !d.q16_hasOther;
@@ -332,13 +333,16 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         const s4 = 4;
         // Access becomes Q8
         v.require(d.land_q2_access, "section-land-q2", "8. 進出通行與臨路現況未填寫", s4);
-        if (d.land_q2_access === '正常 (可自由通行)') {
+        if (d.land_q2_access === '通行順暢' || d.land_q2_access?.includes('順暢')) {
              v.require(d.land_q2_owner, "section-land-q2", "8. 請選擇臨路歸屬權", s4);
              v.require(d.land_q2_protection, "section-land-q2", "8. 請選擇保障類型", s4); // Added Protection Validation
              v.require(d.land_q2_material, "section-land-q2", "8. 請選擇路面材質", s4);
              v.requireIf(d.land_q2_owner === '私人', d.land_q2_owner_desc, "section-land-q2", "8. 請填寫私人歸屬說明", s4);
-        } else if (d.land_q2_access === '異常 (有阻礙)') {
-             v.require(d.land_q2_access_desc, "section-land-q2", "8. 請填寫異常說明", s4);
+             v.require(d.land_q2_roadWidth, "section-land-q2", "8. 現況路寬未填寫", s4);
+             v.require(d.land_q2_buildingLine, "section-land-q2", "8. 建築線指定狀況未填寫", s4);
+             v.require(d.land_q2_ditch, "section-land-q2", "8. 臨路排水溝現況未填寫", s4);
+        } else if (d.land_q2_access === '通行受限' || d.land_q2_access?.includes('受限')) {
+             v.require(d.land_q2_access_desc, "section-land-q2", "8. 請填寫受限說明", s4);
         }
 
         // Soil becomes Q9
@@ -477,10 +481,12 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
         // Always validate Land Access (User Request: Do not hide access)
         v.require(d.land_q2_access, "section-land-q2", `${accessNum}. 進出通行現況未填寫`, s4);
-        if (d.land_q2_access?.includes('正常')) {
+        if (d.land_q2_access === '通行順暢' || d.land_q2_access?.includes('順暢')) {
              v.require(d.land_q2_owner, "section-land-q2", `${accessNum}. 請選擇臨路歸屬權`, s4);
              v.require(d.land_q2_protection, "section-land-q2", `${accessNum}. 請選擇保障類型`, s4); // Added
              v.require(d.land_q2_material, "section-land-q2", `${accessNum}. 請選擇路面材質`, s4);
+             v.requireIf(d.land_q2_owner === '私人', d.land_q2_owner_desc, "section-land-q2", `${accessNum}. 請填寫私人歸屬說明`, s4);
+             v.require(d.land_q2_roadWidth, "section-land-q2", `${accessNum}. 現況路寬未填寫`, s4);
              // Skip if hidden
              if (!hideDitch) {
                  v.require(d.land_q2_ditch, "section-land-q2", `${accessNum}. 周圍排水溝現況未填寫`, s4);

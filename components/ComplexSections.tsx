@@ -7,7 +7,8 @@ import {
     PROTECTION_OPTS_PUBLIC, PROTECTION_OPTS_PRIVATE,
     GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A, WATER_BOOSTER_ITEMS_B,
     FACILITIES_GROUP_A, FACILITY_OPTIONS, FACILITIES_LAND_BASE, FACILITIES_LAND_FARM_EXTRA, FACILITIES_LAND_BUILD_IND_EXTRA,
-    LAND_WATER_BOOSTER_ITEMS
+    LAND_WATER_BOOSTER_ITEMS,
+    ACCESS_STATUS_OPTIONS, BUILDING_LINE_OPTIONS, DRAINAGE_OPTIONS
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
@@ -638,16 +639,16 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                 <QuestionBlock>
                     <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">{isHouse ? '進出現況' : '進出通行現況'}</p>
                     <RadioGroup 
-                        options={['正常 (可自由通行)', '異常 (有阻礙)', '袋地']} 
-                        value={data[accessKey]?.includes('正常') ? '正常 (可自由通行)' : (data[accessKey]?.includes('異常') ? '異常 (有阻礙)' : (data[accessKey] || ''))} 
+                        options={ACCESS_STATUS_OPTIONS} 
+                        value={data[accessKey]?.includes('順暢') ? '通行順暢' : (data[accessKey]?.includes('受限') ? '通行受限（如狹窄、有障礙物）' : (data[accessKey]?.includes('袋地') ? '袋地（無合法出入口）' : ''))} 
                         onChange={v => {
-                            const val = v.includes('正常') ? '正常' : (v.includes('異常') ? '異常' : v);
+                            const val = v.includes('順暢') ? '通行順暢' : (v.includes('受限') ? '通行受限' : (v.includes('袋地') ? '袋地' : v));
                             setData((prev: any) => ({...prev, [accessKey]: val}));
                         }} 
-                        cols={2} layout="grid" 
+                        cols={1} layout="grid" 
                     />
                     
-                    {data[accessKey]?.includes('正常') && (
+                    {data[accessKey]?.includes('順暢') && (
                         <SubItemHighlight>
                             <div className="space-y-8">
                                 <div>
@@ -705,7 +706,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                     {!hideBuildingLine && (
                                         <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                              <p className="font-bold text-lg mb-2 text-slate-600">建築線指定狀況</p>
-                                             <RadioGroup options={['有', '無']} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
+                                             <RadioGroup options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
                                         </div>
                                     )}
                                 </div>
@@ -713,7 +714,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                 {!hideDitch && (
                                     <div className="pt-6 border-t-2 border-slate-200">
                                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路排水溝現況</p>
-                                        <RadioGroup options={['有', '無', '其他未列項目']} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} layout="grid" cols={2} />
+                                        <RadioGroup options={DRAINAGE_OPTIONS} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} layout="grid" cols={1} />
                                         {data[ditchKey] === '其他未列項目' && <div className="mt-4"><DetailInput value={data[ditchOtherKey] || ''} onChange={v => update(ditchOtherKey, v)} placeholder="說明現況" /></div>}
                                     </div>
                                 )}
@@ -721,9 +722,9 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                         </SubItemHighlight>
                     )}
 
-                    {data[accessKey]?.includes('異常') && (
+                    {data[accessKey]?.includes('受限') && (
                         <SubItemHighlight>
-                            <DetailInput value={data.abnormalDescKey} onChange={v => update(abnormalDescKey, v)} placeholder="如：遭他人阻擋、路寬不足" />
+                            <DetailInput value={data[abnormalDescKey] || ''} onChange={v => update(abnormalDescKey, v)} placeholder="如：遭他人阻擋、路寬不足" />
                         </SubItemHighlight>
                     )}
                 </QuestionBlock>

@@ -8,7 +8,8 @@ import {
     PROPERTY_TYPE_OPTIONS, FACTORY_FLOOR_OPTS, FACTORY_FIRE_OPTS, FACTORY_WASTE_OPTS, FACTORY_DOCK_OPTS, FACTORY_TRUCK_OPTS,
     STAIR_ISSUES, HOUSE_PROPERTY_TYPE_OPTIONS, LAND_PROPERTY_TYPE_OPTIONS, FACTORY_PROPERTY_TYPE_OPTIONS,
     WATER_BOOSTER_ITEMS_B, FACILITIES_GROUP_A, FACILITIES_LAND_BASE, FACILITIES_LAND_FARM_EXTRA, FACILITIES_LAND_BUILD_IND_EXTRA,
-    LAND_WATER_BOOSTER_ITEMS, GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A
+    LAND_WATER_BOOSTER_ITEMS, GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A,
+    GAS_SUPPLY_OPTIONS
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
@@ -340,10 +341,10 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                      <QuestionBlock>
                                          <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">瓦斯供應類型</p>
                                          <RadioGroup 
-                                             options={['天然瓦斯', '桶裝瓦斯', '無']} 
+                                             options={GAS_SUPPLY_OPTIONS} 
                                              value={data.q7_gasType || ''} 
                                              onChange={v => update('q7_gasType', v)} 
-                                             layout="grid" cols={3} 
+                                             layout="grid" cols={1} 
                                          />
                                      </QuestionBlock>
 

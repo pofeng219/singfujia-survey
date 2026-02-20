@@ -175,9 +175,14 @@ export const WATER_BOOSTER_ITEMS_B = [
     "屋頂水塔"
 ];
 
+export const ACCESS_STATUS_OPTIONS = ['通行順暢', '通行受限（如狹窄、有障礙物）', '袋地（無合法出入口）'];
+export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
+export const BUILDING_LINE_OPTIONS = ['已核定', '未核定', '申請中', '須申請'];
+export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '灌溉渠道（嚴禁搭排）', '無排水系統'];
+
 // Protection Options (Access)
 export const PROTECTION_OPTS_PUBLIC = ['現狀通行', '已向政府承租', '計畫道路'];
-export const PROTECTION_OPTS_PRIVATE = ['現狀通行／既成道路', '設定不動產役權', '取得地主同意書', '分管協議約定', '法院判決通行'];
+export const PROTECTION_OPTS_PRIVATE = ['現狀通行／既成道路', '設定不動產役權', '取得地主同意書', '分管協議約定', '法院判決通行', '現況未明／無保障'];
 
 // Factory Specific Option Lists
 export const FACTORY_FLOOR_OPTS = ["一般水泥", "環氧樹脂(Epoxy)", "硬化地坪", "磨石子", "其他未列項目"];
