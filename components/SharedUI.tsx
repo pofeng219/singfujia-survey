@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Info, Save, FileInput, Trash2, AlertCircle, ChevronRight, AlertTriangle, ChevronDown, CheckCircle2, X, Eraser, Check, HelpCircle } from 'lucide-react';
 import { ValidationError } from '../types';
@@ -11,11 +12,51 @@ const getButtonColorClass = (checked: boolean, label: string, disabled: boolean)
 
     // Checked States
     // Safe keywords (Green)
-    if (label.includes('否') || label.includes('正常') || label.includes('相符') || label === '可進入' || label === '無' || label === '無糾紛') {
+    if (
+        label.includes('否') || 
+        label.includes('正常') || 
+        label.includes('相符') || 
+        label === '可進入' || 
+        label === '無' || 
+        label === '無設置' ||
+        label === '無機車車位' ||
+        label === '無車位' ||
+        label === '無異常' ||
+        label === '無重要環境設施' ||
+        label === '實測相符' ||
+        label === '界標完整' ||
+        label === '已鑑界 (標完好)' ||
+        label === '非範圍內' ||
+        label.startsWith('無 (') || 
+        label === '無糾紛' || 
+        label === '無修繕紀錄' || 
+        label.includes('確認無誤') || 
+        label === '確認無異常' ||
+        label === '依車位資訊告示牌' // Added new safe keyword
+    ) {
         return 'bg-emerald-600 border-emerald-700 border-b-emerald-800 text-white shadow-xl shadow-emerald-100 dark:bg-emerald-600 dark:border-emerald-500 dark:border-b-emerald-700 dark:shadow-none';
     }
     // Danger keywords (Red/Rose)
-    if (label.includes('是') || label.includes('異常') || label.includes('不符') || label === '不可進入' || label === '有' || label === '有糾紛' || label === '疑似') {
+    if (
+        label.includes('是') || 
+        label.includes('有') || 
+        label.includes('異常') || 
+        label.includes('不符') || 
+        label === '不可進入' || 
+        label === '有纠纷' || 
+        label.includes('疑似') || 
+        label.includes('疑慮') ||
+        label === '全屋天花板包覆' || 
+        label.includes('需說明') ||
+        label === '屬範圍內' ||
+        label === '需重新鑑界' ||
+        label === '標位不明 (需重測)' ||
+        label === '待查證' ||
+        label === '袋地' ||
+        label === '有異常' ||
+        label === '實測不符' ||
+        label.includes('無法測量') // Covers '無法測量' and '無法測量也無相關資訊'
+    ) {
         return 'bg-rose-600 border-rose-700 border-b-rose-800 text-white shadow-xl shadow-rose-100 dark:bg-rose-600 dark:border-rose-500 dark:border-b-rose-700 dark:shadow-none';
     }
     // Neutral/Active Default (Dark Slate/Blue)
@@ -47,25 +88,67 @@ interface RadioGroupProps {
     layout?: 'flex' | 'grid';
     cols?: number;
     disabled?: boolean;
+    spanFullOption?: string; // New prop: which option text should span full width
 }
-export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 2, disabled = false }) => {
-    // Mobile optimization: STRICT VERTICAL LAYOUT (Senior Friendly)
-    // Force grid-cols-1 or flex-col on mobile regardless of props to ensure large tap targets.
-    const gridColsMobile = 'grid-cols-1';
+export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
+    // Force vertical layout (1 column) on ALL devices as per user request
+    // This simplifies the logic significantly and ensures consistency
+    const gridCols = 'grid-cols-1';
     
+    // Helper to render label with subtitle if parentheses exist
+    const renderLabel = (text: string) => {
+        const match = text.match(/^(.*?)(\s*[\(（].*?[\)）])$/);
+        const mainText = match ? match[1] : text;
+        const subText = match ? match[2].trim() : null;
+
+        let mainContent;
+        // If main text is longer than 4 chars, split after the 2nd char for better vertical rhythm
+        if (mainText.length > 4) {
+            const firstPart = mainText.slice(0, 2);
+            const secondPart = mainText.slice(2);
+            mainContent = (
+                <div className="flex flex-col items-center justify-center leading-normal">
+                    <span>{firstPart}</span>
+                    <span>{secondPart}</span>
+                </div>
+            );
+        } else {
+            mainContent = <span>{mainText}</span>;
+        }
+
+        if (subText) {
+            return (
+                <div className="flex flex-col items-center justify-center w-full py-3 min-h-[5rem]">
+                    <div className="mb-4">
+                        {mainContent}
+                    </div>
+                    <div className="bg-orange-100 dark:bg-orange-900/40 px-3 py-2 rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center">
+                        <span className="text-base font-bold text-slate-700 dark:text-slate-200 block leading-normal break-words whitespace-normal">
+                            {subText}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+        
+        return mainContent;
+    };
+
     return (
-        <div className={`${layout === 'flex' ? 'flex flex-col lg:flex-row flex-wrap gap-3 md:gap-4' : `grid ${gridColsMobile} lg:grid-cols-${cols} gap-3 md:gap-4`}`}>
-            {options.map(v => (
-                <button
-                    key={v}
-                    type="button"
-                    onClick={() => !disabled && onChange(value === v ? '' : v)}
-                    className={`flex-1 py-4 px-3 md:py-6 md:px-5 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-3xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px]
-                    ${getButtonColorClass(value === v, v, disabled)}`}
-                >
-                    <span>{v}</span>
-                </button>
-            ))}
+        <div className={`grid ${gridCols} gap-3 md:gap-4`}>
+            {options.map((v, idx) => {
+                return (
+                    <button
+                        key={v}
+                        type="button"
+                        onClick={() => !disabled && onChange(value === v ? '' : v)}
+                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-2xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px]
+                        ${getButtonColorClass(value === v, v, disabled)}`}
+                    >
+                        {renderLabel(v)}
+                    </button>
+                );
+            })}
         </div>
     );
 };
@@ -80,15 +163,13 @@ interface AccordionRadioProps {
     cols?: number;
 }
 export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
-    // Determine grid columns: STRICT VERTICAL (grid-cols-1) on mobile for accessibility
-    const gridClass = cols > 0 
-        ? `grid grid-cols-1 lg:grid-cols-${cols}` 
-        : 'flex flex-col lg:flex-row flex-wrap';
+    // Force vertical layout (1 column) on ALL devices as per user request
+    const gridClass = 'grid grid-cols-1';
 
     return (
         <div className="flex flex-col gap-4 md:gap-6">
             <div className={`${gridClass} gap-3 md:gap-4`}>
-                {options.map(opt => (
+                {options.map((opt, idx) => (
                     <button 
                         key={opt}
                         type="button" 
@@ -199,8 +280,8 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
     label, 
     value, 
     onChange, 
-    options = ['否', '是'], 
-    trigger = '是', 
+    options = ['無', '有'], // Default updated to '無' / '有'
+    trigger = '有', 
     disabled = false,
     children,
     cols = 2
@@ -512,7 +593,7 @@ export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: 
     </div>
 );
 
-export const DetailInput = ({ value, onChange, placeholder = "請詳細說明情況...", disabled = false, autoFocus = true }: { value: string, onChange: (val: string) => void, placeholder?: string, disabled?: boolean, autoFocus?: boolean }) => {
+export const DetailInput = ({ value, onChange, placeholder = "說明現況", disabled = false, autoFocus = true }: { value: string, onChange: (val: string) => void, placeholder?: string, disabled?: boolean, autoFocus?: boolean }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     
     useEffect(() => {
@@ -588,195 +669,160 @@ export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, su
                     {checked ? <Check className="w-5 h-5 text-black" strokeWidth={3} /> : ''}
                 </div>
             )}
-            <span className="preview-label">{label}{suffix}</span>
+            <span className={`preview-checkbox-label ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
+                {label}{suffix}
+            </span>
         </div>
     );
 };
 
-// === Toast ===
+// --- NEW MODAL AND TOAST COMPONENTS ---
+
+// Toast
 export const Toast: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => {
-    useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
+    useEffect(() => {
+        const timer = setTimeout(onClose, 3000);
+        return () => clearTimeout(timer);
+    }, [message, onClose]);
+
     return (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-8 py-5 md:px-10 md:py-6 rounded-[1.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] z-[200] flex items-center gap-4 md:gap-5 animate-in slide-in-from-top-4 fade-in duration-300 max-w-[90vw] border-2 border-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-300">
-            <Info className="w-6 h-6 md:w-8 md:h-8 text-sky-400 shrink-0 dark:text-sky-600" strokeWidth={3} />
-            <p className="font-black text-xl md:text-2xl whitespace-pre-wrap leading-relaxed tracking-wide">{message}</p>
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-4 rounded-full shadow-2xl z-[100] flex items-center gap-3 animate-in fade-in slide-in-from-top-4 border-2 border-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:border-white">
+            <CheckCircle2 className="w-6 h-6 text-green-400 dark:text-green-600" />
+            <span className="font-bold text-lg">{message}</span>
         </div>
     );
 };
 
-// === Modals ===
-
-// New Generic Confirm Modal to replace window.confirm
-interface ConfirmModalProps {
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-    onCancel: () => void;
-    confirmText?: string;
-    cancelText?: string;
-    type?: 'danger' | 'info';
-}
-
-export const ConfirmModal: React.FC<ConfirmModalProps> = ({ 
-    isOpen, title, message, onConfirm, onCancel, 
-    confirmText = "確定", cancelText = "取消", type = 'danger' 
-}) => {
+// Modal Wrapper
+const Modal: React.FC<{ isOpen: boolean; onClose: () => void; children: React.ReactNode; title?: string }> = ({ isOpen, onClose, children, title }) => {
     if (!isOpen) return null;
-    
-    const isDanger = type === 'danger';
-    const Icon = isDanger ? AlertCircle : HelpCircle;
-    const headerBg = isDanger ? 'bg-rose-600 dark:bg-rose-700' : 'bg-slate-800 dark:bg-slate-700';
-    const confirmBtnClass = isDanger 
-        ? 'bg-rose-600 text-white hover:bg-rose-700 border-b-rose-800 dark:bg-rose-700 dark:border-rose-900' 
-        : 'bg-sky-600 text-white hover:bg-sky-700 border-b-sky-800 dark:bg-sky-700 dark:border-sky-900';
-
     return (
-        <div className="fixed inset-0 bg-slate-900/60 z-[160] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200" onClick={onCancel}>
-            <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl max-w-md w-full overflow-hidden border-4 border-white ring-4 ring-black/5 animate-in zoom-in-95 duration-200 dark:bg-slate-800 dark:border-slate-700" onClick={e => e.stopPropagation()}>
-                <div className={`${headerBg} p-6 md:p-8 flex items-center gap-4 md:gap-5`}>
-                    <Icon className="text-white w-8 h-8 md:w-10 md:h-10" />
-                    <h3 className="text-white font-black text-2xl md:text-3xl">{title}</h3>
-                </div>
-                <div className="p-6 md:p-8 space-y-6 md:space-y-8">
-                    <p className="text-slate-600 font-bold text-lg md:text-xl leading-relaxed dark:text-slate-300 whitespace-pre-line">
-                        {message}
-                    </p>
-                    <div className="space-y-4">
-                        <button onClick={onConfirm} className={`w-full py-4 md:py-5 rounded-2xl font-black text-xl md:text-2xl transition-all duration-150 flex items-center justify-center gap-3 border-b-[6px] active:border-b-2 active:translate-y-[4px] shadow-lg ${confirmBtnClass}`}>
-                            <Check className="w-6 h-6" strokeWidth={3} /> {confirmText}
-                        </button>
-                        <button onClick={onCancel} className="w-full py-4 md:py-5 bg-slate-100 text-slate-600 rounded-2xl font-black text-xl md:text-2xl hover:bg-slate-200 transition-all duration-150 flex items-center justify-center gap-3 border-2 border-slate-200 border-b-[6px] border-b-slate-300 active:border-b-2 active:translate-y-[4px] dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 dark:border-b-slate-800">
-                            <X className="w-6 h-6" strokeWidth={3} /> {cancelText}
-                        </button>
-                    </div>
-                </div>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={onClose} />
+            <div className="relative bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl w-full max-w-lg p-6 md:p-8 animate-in zoom-in-95 duration-200 border-4 border-slate-100 dark:border-slate-800">
+                <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors dark:bg-slate-800 dark:hover:bg-slate-700">
+                    <X className="w-6 h-6 text-slate-500 dark:text-slate-400" />
+                </button>
+                {title && <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-6 pr-8">{title}</h3>}
+                {children}
             </div>
         </div>
     );
 };
 
-export const DraftFoundModal: React.FC<{ isOpen: boolean; onLoad: () => void; onClear: () => void; onClose: () => void }> = ({ isOpen, onLoad, onClear, onClose }) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 bg-slate-900/60 z-[120] flex items-center justify-center p-4 backdrop-blur-sm" onClick={e => e.stopPropagation()}>
-            <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl max-w-md w-full overflow-hidden border-4 border-white ring-4 ring-black/5 dark:bg-slate-800 dark:border-slate-700" onClick={e => e.stopPropagation()}>
-                <div className="bg-slate-800 p-6 md:p-8 flex items-center gap-4 md:gap-5 dark:bg-slate-900">
-                    <Save className="text-white w-8 h-8 md:w-10 md:h-10" />
-                    <h3 className="text-white font-black text-2xl md:text-3xl">發現暫存檔</h3>
-                </div>
-                <div className="p-6 md:p-8 space-y-6 md:space-y-8">
-                    <p className="text-slate-600 font-bold text-lg md:text-xl leading-relaxed dark:text-slate-300">系統偵測到您上次有未完成的填寫紀錄。<br />您想要讀取暫存檔繼續填寫嗎？</p>
-                    <div className="space-y-4">
-                        <button onClick={onLoad} className="w-full py-4 md:py-5 bg-sky-600 text-white rounded-2xl font-black text-xl md:text-2xl hover:bg-sky-700 transition-all duration-150 flex items-center justify-center gap-3 border-b-[6px] border-sky-800 active:border-b-2 active:translate-y-[4px] dark:bg-sky-700 dark:border-sky-900">
-                            <FileInput className="w-6 h-6 md:w-7 md:h-7" /> 讀取暫存檔
-                        </button>
-                        <button onClick={onClear} className="w-full py-4 md:py-5 bg-rose-100 text-rose-700 rounded-2xl font-black text-xl md:text-2xl hover:bg-rose-200 transition-all duration-150 flex items-center justify-center gap-3 border-2 border-rose-200 border-b-[6px] border-b-rose-300 active:border-b-2 active:translate-y-[4px] dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-800">
-                            <Trash2 className="w-6 h-6 md:w-7 md:h-7" /> 清空暫存檔
-                        </button>
-                        <button onClick={onClose} className="w-full py-3 md:py-4 text-slate-400 font-bold text-lg md:text-xl hover:text-slate-600 rounded-2xl hover:bg-slate-50 transition-colors dark:hover:bg-slate-700 dark:text-slate-500">暫不處理</button>
-                    </div>
-                </div>
+// DraftFoundModal
+export const DraftFoundModal: React.FC<{ isOpen: boolean; onLoad: () => void; onClear: () => void; onClose: () => void }> = ({ isOpen, onLoad, onClear, onClose }) => (
+    <Modal isOpen={isOpen} onClose={onClose} title="發現未完成的草稿">
+        <div className="space-y-6">
+            <div className="bg-amber-50 p-4 rounded-2xl border-2 border-amber-100 flex gap-4 items-start dark:bg-amber-900/20 dark:border-amber-800">
+                <Info className="w-6 h-6 text-amber-600 shrink-0 mt-1 dark:text-amber-400" />
+                <p className="text-amber-800 font-bold dark:text-amber-200">
+                    系統偵測到您上次有一份未完成的調查表，是否要載入繼續填寫？
+                </p>
+            </div>
+            <div className="flex flex-col gap-3">
+                <button onClick={onLoad} className="w-full py-4 bg-sky-600 text-white rounded-xl font-black text-xl shadow-lg border-b-4 border-sky-800 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 dark:bg-sky-700 dark:border-sky-900">
+                    <FileInput className="w-5 h-5" /> 載入草稿
+                </button>
+                <button onClick={onClear} className="w-full py-4 bg-white text-slate-500 rounded-xl font-bold text-lg border-2 border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 dark:hover:bg-slate-700">
+                    <Trash2 className="w-5 h-5" /> 捨棄並開始新表單
+                </button>
             </div>
         </div>
-    );
-};
+    </Modal>
+);
 
-interface AlertModalProps {
-    isOpen: boolean;
-    errors?: ValidationError[]; // Changed from message string
-    message?: string; // Backwards compatibility if needed, though we'll switch
-    onClose: () => void;
-    onJumpTo?: (id: string, step: number) => void;
-}
-
-export const AlertModal: React.FC<AlertModalProps> = ({ isOpen, errors = [], message = '', onClose, onJumpTo }) => {
-    if (!isOpen) return null;
-
-    // Use string split for legacy support if errors array is empty but message exists
-    const displayErrors = errors.length > 0 
-        ? errors 
-        : message.split('\n').filter(Boolean).map((msg, i) => ({ id: '', message: msg, step: 1 }));
-
-    return (
-        <div className="fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl max-w-2xl w-full overflow-hidden animate-in zoom-in-95 duration-200 border-4 border-rose-100 flex flex-col max-h-[85vh] dark:bg-slate-800 dark:border-rose-900" onClick={e => e.stopPropagation()}>
-                <div className="bg-rose-600 p-5 md:p-6 flex items-center gap-4 md:gap-5 shrink-0 dark:bg-rose-700">
-                    <AlertCircle className="text-white w-8 h-8 md:w-10 md:h-10" />
-                    <h3 className="text-white font-black text-2xl md:text-3xl">提醒：尚有題目未填寫</h3>
-                </div>
-                <div className="p-6 md:p-8 overflow-y-auto">
-                    <p className="text-slate-500 mb-6 font-bold text-lg md:text-xl dark:text-slate-400">為了確保調查表完整性，請完成以下項目（點擊可跳轉）：</p>
-                    <div className="space-y-4">
-                        {displayErrors.map((err, i) => (
-                            <button 
-                                key={i}
-                                onClick={() => {
-                                    if (onJumpTo && err.id) onJumpTo(err.id, err.step);
-                                    else onClose();
-                                }}
-                                className="w-full text-left p-4 md:p-5 bg-rose-50 hover:bg-rose-100 border-2 border-rose-100 hover:border-rose-300 rounded-2xl transition-all duration-150 flex items-start justify-between group active:scale-[0.99] dark:bg-rose-900/20 dark:border-rose-800 dark:hover:bg-rose-900/30"
-                            >
-                                <div className="flex items-start gap-3">
-                                    <span className="text-rose-500 font-black mt-0.5 text-lg md:text-xl dark:text-rose-400">•</span>
-                                    <span className="text-slate-800 font-bold text-lg md:text-xl dark:text-slate-200">{err.message}</span>
-                                </div>
-                                {err.id && <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-rose-300 group-hover:text-rose-500 shrink-0 mt-1" />}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-                <div className="p-5 md:p-6 bg-slate-50 border-t flex justify-end shrink-0 dark:bg-slate-900 dark:border-slate-700">
-                    <button onClick={onClose} className="bg-slate-800 text-white px-8 py-4 md:px-10 md:py-5 rounded-[1.5rem] font-black hover:bg-slate-700 transition-all duration-150 border-b-[6px] border-slate-950 active:border-b-2 active:translate-y-[4px] w-full sm:w-auto text-xl md:text-2xl shadow-lg shadow-slate-300 dark:bg-slate-700 dark:border-slate-900 dark:shadow-none">
-                        關閉視窗
-                    </button>
-                </div>
+// AlertModal
+export const AlertModal: React.FC<{ isOpen: boolean; errors: ValidationError[]; onClose: () => void; onJumpTo: (id: string, step: number) => void }> = ({ isOpen, errors, onClose, onJumpTo }) => (
+    <Modal isOpen={isOpen} onClose={onClose} title="請檢查以下欄位">
+        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="bg-rose-50 p-4 md:p-6 rounded-2xl border-2 border-rose-100 mb-4 flex items-center gap-3 dark:bg-rose-900/20 dark:border-rose-800">
+                <AlertCircle className="w-8 h-8 md:w-10 md:h-10 text-rose-600 dark:text-rose-400" strokeWidth={3} />
+                <span className="font-black text-xl md:text-2xl text-rose-800 dark:text-rose-200">共有 {errors.length} 個項目需要修正</span>
             </div>
+            {errors.map((err, idx) => (
+                <button 
+                    key={idx}
+                    onClick={() => onJumpTo(err.id, err.step)}
+                    className="w-full text-left p-4 md:p-6 rounded-2xl border-2 border-slate-100 hover:border-sky-300 hover:bg-sky-50 transition-all group flex justify-between items-center bg-white dark:bg-slate-800 dark:border-slate-700 dark:hover:border-sky-600 dark:hover:bg-slate-700"
+                >
+                    <div className="flex items-start gap-4">
+                        <div className="bg-slate-100 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shrink-0 mt-0.5 group-hover:bg-sky-200 group-hover:text-sky-700 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:bg-sky-900 dark:group-hover:text-sky-300">
+                            {idx + 1}
+                        </div>
+                        <span className="font-black text-lg md:text-xl text-slate-700 group-hover:text-sky-800 dark:text-slate-300 dark:group-hover:text-sky-200">{err.message}</span>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-slate-300 group-hover:text-sky-400 dark:text-slate-600" />
+                </button>
+            ))}
         </div>
-    );
-};
+        <div className="mt-6 pt-4 border-t-2 border-slate-100 dark:border-slate-800">
+             <button onClick={onClose} className="w-full py-4 bg-slate-800 text-white rounded-xl font-black text-xl active:scale-95 transition-transform dark:bg-slate-700 shadow-lg">
+                我知道了
+            </button>
+        </div>
+    </Modal>
+);
 
+// ImagePreviewModal
 export const ImagePreviewModal: React.FC<{ isOpen: boolean; imageUrl: string; onClose: () => void }> = ({ isOpen, imageUrl, onClose }) => {
     if (!isOpen) return null;
     return (
-        <div className="fixed inset-0 bg-slate-900/95 z-[150] flex flex-col items-center justify-center p-4 backdrop-blur-xl" onClick={onClose}>
-            <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] max-w-lg w-full text-center space-y-6 md:space-y-8 animate-in zoom-in-95 duration-200 shadow-2xl dark:bg-slate-800" onClick={e => e.stopPropagation()}>
-                <div>
-                    <h3 className="text-2xl md:text-3xl font-black text-slate-800 mb-2 dark:text-white">圖片已產生</h3>
-                    <p className="text-rose-600 font-bold text-lg md:text-xl animate-pulse dark:text-rose-400">💡 請長按圖片進行儲存</p>
-                </div>
-                <div className="overflow-auto max-h-[50vh] rounded-2xl border-4 border-slate-200 shadow-inner bg-slate-100 p-2 dark:bg-slate-900 dark:border-slate-700">
-                    <img src={imageUrl} alt="Generated Survey" className="w-full h-auto rounded-xl shadow-sm" />
-                </div>
-                <button onClick={onClose} className="w-full py-4 md:py-5 bg-slate-800 text-white rounded-2xl font-bold text-xl md:text-2xl transition-all duration-150 border-b-[6px] border-slate-950 active:border-b-2 active:translate-y-[4px] hover:bg-slate-700 dark:bg-slate-700 dark:border-slate-900">關閉視窗</button>
+        <div className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+            <button onClick={onClose} className="absolute top-4 right-4 p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors z-50">
+                <X className="w-8 h-8" />
+            </button>
+            <div className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white rounded-lg shadow-2xl custom-scrollbar dark:bg-slate-900">
+                <img src={imageUrl} alt="Generated Preview" className="w-full h-auto block" />
             </div>
+            <p className="text-white/80 mt-6 font-bold text-lg animate-pulse flex items-center gap-2">
+                <Save className="w-5 h-5" />
+                長按上方圖片即可儲存至手機相簿
+            </p>
         </div>
     );
 };
 
-export const ExportSuccessModal: React.FC<{ isOpen: boolean; onConfirm: () => void; onCancel: () => void }> = ({ isOpen, onConfirm, onCancel }) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 bg-slate-900/60 z-[140] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200" onClick={e => e.stopPropagation()}>
-            <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl max-w-md w-full overflow-hidden border-4 border-white ring-4 ring-black/5 animate-in zoom-in-95 duration-200 dark:bg-slate-800 dark:border-slate-700" onClick={e => e.stopPropagation()}>
-                <div className="bg-emerald-600 p-6 md:p-8 flex items-center gap-4 md:gap-5">
-                    <CheckCircle2 className="text-white w-8 h-8 md:w-10 md:h-10" strokeWidth={3} />
-                    <h3 className="text-white font-black text-2xl md:text-3xl">檔案已順利產出！</h3>
-                </div>
-                <div className="p-6 md:p-8 space-y-6 md:space-y-8">
-                    <p className="text-slate-600 font-bold text-lg md:text-xl leading-relaxed dark:text-slate-300">
-                        請問您是否要<span className="text-rose-600 font-black dark:text-rose-400">清空</span>剛才填寫的資料，以便填寫下一筆案件？
-                    </p>
-                    <div className="space-y-4">
-                        <button onClick={onConfirm} className="w-full py-4 md:py-5 bg-sky-600 text-white rounded-2xl font-black text-xl md:text-2xl hover:bg-sky-700 transition-all duration-150 flex items-center justify-center gap-3 border-b-[6px] border-sky-800 active:border-b-2 active:translate-y-[4px] shadow-lg dark:bg-sky-700 dark:border-sky-900">
-                            <Trash2 className="w-6 h-6" strokeWidth={3} /> 是，清空資料 (填寫下一筆)
-                        </button>
-                        <button onClick={onCancel} className="w-full py-4 md:py-5 bg-slate-100 text-slate-600 rounded-2xl font-black text-xl md:text-2xl hover:bg-slate-200 transition-all duration-150 flex items-center justify-center gap-3 border-2 border-slate-200 border-b-[6px] border-b-slate-300 active:border-b-2 active:translate-y-[4px] dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 dark:border-b-slate-800">
-                            <X className="w-6 h-6" strokeWidth={3} /> 否，保留資料 (還要修改)
-                        </button>
-                    </div>
-                </div>
+// ExportSuccessModal
+export const ExportSuccessModal: React.FC<{ isOpen: boolean; onConfirm: () => void; onCancel: () => void }> = ({ isOpen, onConfirm, onCancel }) => (
+    <Modal isOpen={isOpen} onClose={onCancel} title="匯出成功！">
+        <div className="text-center space-y-6">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 dark:bg-green-900/30">
+                <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+            </div>
+            <p className="text-xl font-bold text-slate-700 dark:text-slate-300">
+                檔案已成功產生。是否要清空目前表單，準備填寫下一筆？
+            </p>
+            <div className="flex gap-4">
+                <button onClick={onConfirm} className="flex-1 py-4 bg-slate-800 text-white rounded-xl font-black text-lg shadow-lg border-b-4 border-slate-950 active:border-b-0 active:translate-y-1 transition-all dark:bg-slate-700 dark:border-slate-900">
+                    是，清空表單
+                </button>
+                <button onClick={onCancel} className="flex-1 py-4 bg-white text-slate-600 rounded-xl font-bold text-lg border-2 border-slate-200 hover:bg-slate-50 transition-colors dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 dark:hover:bg-slate-700">
+                    否，保留內容
+                </button>
             </div>
         </div>
-    );
-};
+    </Modal>
+);
+
+// ConfirmModal
+export const ConfirmModal: React.FC<{ isOpen: boolean; title: string; message: string; onConfirm: () => void; onCancel: () => void; type?: 'danger' | 'info'; confirmText?: string; cancelText?: string }> = ({ isOpen, title, message, onConfirm, onCancel, type = 'info', confirmText = '確定', cancelText = '取消' }) => (
+    <Modal isOpen={isOpen} onClose={onCancel} title={title}>
+        <div className="space-y-6">
+            <div className={`p-4 rounded-2xl border-2 flex gap-4 items-start ${type === 'danger' ? 'bg-rose-50 border-rose-100 dark:bg-rose-900/20 dark:border-rose-800' : 'bg-sky-50 border-sky-100 dark:bg-sky-900/20 dark:border-sky-800'}`}>
+                {type === 'danger' ? <AlertTriangle className="w-6 h-6 text-rose-600 shrink-0 mt-1 dark:text-rose-400" /> : <Info className="w-6 h-6 text-sky-600 shrink-0 mt-1 dark:text-sky-400" />}
+                <p className={`${type === 'danger' ? 'text-rose-800 dark:text-rose-200' : 'text-sky-800 dark:text-sky-200'} font-bold`}>
+                    {message}
+                </p>
+            </div>
+            <div className="flex gap-4">
+                <button onClick={onConfirm} className={`flex-1 py-4 rounded-xl font-black text-lg shadow-lg border-b-4 active:border-b-0 active:translate-y-1 transition-all ${type === 'danger' ? 'bg-rose-600 text-white border-rose-800 dark:bg-rose-700 dark:border-rose-900' : 'bg-sky-600 text-white border-sky-800 dark:bg-sky-700 dark:border-sky-900'}`}>
+                    {confirmText}
+                </button>
+                <button onClick={onCancel} className="flex-1 py-4 bg-white text-slate-600 rounded-xl font-bold text-lg border-2 border-slate-200 hover:bg-slate-50 transition-colors dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 dark:hover:bg-slate-700">
+                    {cancelText}
+                </button>
+            </div>
+        </div>
+    </Modal>
+);

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, ReactNode, useMemo } from 'react';
+import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
 import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon } from 'lucide-react';
 
 import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
@@ -86,12 +86,15 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const previewWrapperRef = useRef<HTMLDivElement>(null);
     const dataRef = useRef(data);
 
+    // Use deferred value for preview to prevent typing lag
+    const deferredData = useDeferredValue(data);
+
     // Synchronize colors with LandingPage - Added Dark Mode variants
-    const themeBg = type === 'parking' ? 'bg-[#BE123C] dark:bg-rose-900' : (type === 'land' ? 'bg-[#15803D] dark:bg-green-900' : (type === 'factory' ? 'bg-[#C2410C] dark:bg-orange-900' : 'bg-[#0369A1] dark:bg-sky-900'));
+    const themeBg = useMemo(() => type === 'parking' ? 'bg-rose-600 dark:bg-rose-900' : (type === 'land' ? 'bg-emerald-600 dark:bg-emerald-900' : (type === 'factory' ? 'bg-orange-600 dark:bg-orange-900' : 'bg-sky-600 dark:bg-sky-900')), [type]);
     // Theme borders for cards are handled in FormSteps via props
-    const themeBorder = type === 'parking' ? 'border-rose-200 dark:border-rose-800' : (type === 'land' ? 'border-green-200 dark:border-green-800' : (type === 'factory' ? 'border-orange-200 dark:border-orange-800' : 'border-sky-200 dark:border-sky-800'));
+    const themeBorder = useMemo(() => type === 'parking' ? 'border-rose-200 dark:border-rose-800' : (type === 'land' ? 'border-emerald-200 dark:border-emerald-800' : (type === 'factory' ? 'border-orange-200 dark:border-orange-800' : 'border-sky-200 dark:border-sky-800')), [type]);
     // Text colors
-    const themeText = type === 'parking' ? 'text-rose-700 dark:text-rose-300' : (type === 'land' ? 'text-green-700 dark:text-green-300' : (type === 'factory' ? 'text-orange-700 dark:text-orange-300' : 'text-sky-700 dark:text-sky-300'));
+    const themeText = useMemo(() => type === 'parking' ? 'text-rose-700 dark:text-rose-300' : (type === 'land' ? 'text-emerald-700 dark:text-emerald-300' : (type === 'factory' ? 'text-orange-700 dark:text-orange-300' : 'text-sky-700 dark:text-sky-300')), [type]);
 
     useEffect(() => { dataRef.current = data; }, [data]);
 
@@ -101,11 +104,14 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         const isOtherPt = data?.q10_hasParkTypeOther === true;
         
         // Defines types that don't need weight
-        const isPlaneType = pts.includes("坡道平面") || pts.includes("一樓平面") || pts.includes("法定空地/自家門前");
+        const isPlaneType = pts.includes("坡道平面") || pts.includes("一樓平面") || pts.includes("法定空地／自家門前");
         
         // Only disable size/height for Legal Vacant Land (Front of House), 
         // User requested Ramp Plane and 1F Plane to SHOW dimensions and height.
-        const isVacantLand = pts.includes("法定空地/自家門前");
+        const isVacantLand = pts.includes("法定空地／自家門前");
+
+        // NEW: Check if 'Unable to measure' is selected to disable weight
+        const isUnableToMeasure = data.q10_measureType === '無法測量也無相關資訊';
 
         return { 
             isNoParking, 
@@ -114,14 +120,15 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             disableNumber: isNoParking || isOtherPt, 
             disableCarStatus: isNoParking || isOtherPt, 
             disableCarSize: isNoParking || isOtherPt || isVacantLand, 
-            disableWeight: isNoParking || isOtherPt || isPlaneType, // Weight still irrelevant for all plane types
+            // Update: Disable weight if plane type OR unable to measure
+            disableWeight: isNoParking || isOtherPt || isPlaneType || isUnableToMeasure, 
             disableHeight: isNoParking || isOtherPt || isVacantLand, 
             disableCharging: isNoParking, 
             disableAbnormal: isNoParking, 
             disableSupplement: isNoParking, 
             disableMoto: false 
         };
-    }, [data.q10_noParking, data.q10_parkTypes, data.q10_hasParkTypeOther]);
+    }, [data.q10_noParking, data.q10_parkTypes, data.q10_hasParkTypeOther, data.q10_measureType]);
 
     useEffect(() => {
         const updates: Partial<SurveyData> = {};
@@ -226,8 +233,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         return () => window.removeEventListener('resize', handleResize);
     }, [mobileTab, exporting]);
 
-    const update = (key: keyof SurveyData, val: any) => setData(p => ({ ...p, [key]: val }));
-    const toggleArr = (key: keyof SurveyData, val: string) => setData(p => { const arr = Array.isArray(p[key]) ? p[key] as string[] : []; return { ...p, [key]: arr.includes(val) ? arr.filter(i => i !== val) : [...arr, val] }; });
+    const update = useCallback((key: keyof SurveyData, val: any) => setData(p => ({ ...p, [key]: val })), []);
+    const toggleArr = useCallback((key: keyof SurveyData, val: string) => setData(p => { const arr = Array.isArray(p[key]) ? p[key] as string[] : []; return { ...p, [key]: arr.includes(val) ? arr.filter(i => i !== val) : [...arr, val] }; }), []);
 
     useEffect(() => { 
         const scrollToTop = () => {
@@ -308,13 +315,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const stepLabels = useMemo(() => { 
         const labels = ["基本資料"]; 
         if (type === 'land') { 
-            labels.push("使用現況-1", "使用現況-2", "環境/其他"); 
+            labels.push("使用現況-1", "使用現況-2", "環境／其他"); 
         } else if (type === 'parking') { 
             labels.push("車位資訊", "環境與其他"); 
         } else if (type === 'factory') {
-            labels.push("內部情況", "設備情況", "外觀/環境");
+            labels.push("內部現況", "設備現況", "外觀／環境");
         } else { 
-            labels.push("內部情況", "公設/車位", "外觀/環境"); 
+            labels.push("內部現況", "公設／車位", "外觀／環境"); 
         } 
         return labels; 
     }, [type]);
@@ -332,7 +339,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     };
 
     return (
-        <div className="flex flex-col lg:flex-row h-full bg-[#fdfbf7] dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300">
+        <div className="flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300">
             {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
             
             <ConfirmModal 
@@ -362,31 +369,31 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             <ImagePreviewModal isOpen={showImageModal} imageUrl={generatedImage} onClose={() => setShowImageModal(false)} />
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
 
-            <div className={`w-full lg:w-[600px] bg-[#fdfbf7] dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r-4 border-slate-200 dark:border-slate-800 transition-transform duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-transform duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className={`p-5 ${themeBg} flex flex-col gap-4 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300`}>
                     <div className="flex justify-between items-center relative z-10">
-                        <button type="button" onClick={handleBackHome} className="bg-white text-slate-800 border-b-4 border-slate-300 px-5 py-3 rounded-2xl hover:bg-slate-50 transition-all duration-150 active:border-b-0 active:translate-y-1 flex items-center gap-2 shadow-lg dark:bg-slate-800 dark:text-white dark:border-slate-900">
-                            <ArrowLeft className="w-6 h-6" strokeWidth={3} />
-                            <span className="font-black text-xl">回首頁</span>
+                        <button type="button" onClick={handleBackHome} className="bg-white/10 text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl hover:bg-white/20 transition-all duration-150 active:scale-95 flex items-center gap-2 shadow-sm">
+                            <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                            <span className="font-bold text-lg">回首頁</span>
                         </button>
                         <div className="flex items-center gap-3">
-                            <span className="bg-black/20 backdrop-blur-sm px-4 py-2 rounded-xl text-white text-sm font-black tracking-wide shadow-sm border border-white/10">{data?.version}</span>
-                            <button onClick={toggleTheme} className="p-2 bg-white/20 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95" aria-label="Toggle Theme">
-                                {isDarkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+                            <span className="bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-xs font-bold tracking-wider shadow-sm border border-white/10">{data?.version}</span>
+                            <button onClick={toggleTheme} className="p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors" aria-label="Toggle Theme">
+                                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             </button>
                         </div>
                     </div>
-                    <div className="flex justify-between gap-8 w-full relative z-10">
-                        <button onClick={() => setDraftFoundModalOpen(true)} className={`flex-1 bg-[#ecfdf5] text-[#115e59] border-[#99f6e4] border-b-4 py-4 rounded-2xl transition-all duration-150 flex justify-center items-center gap-3 font-black text-xl active:border-b-0 active:translate-y-[4px] shadow-lg hover:bg-[#ccfbf1] dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700`}>
-                            <FileInput className="w-7 h-7" strokeWidth={3} /> 讀檔
+                    <div className="flex justify-between gap-4 w-full relative z-10">
+                        <button onClick={() => setDraftFoundModalOpen(true)} className={`flex-1 bg-white/90 text-emerald-700 border-b-4 border-emerald-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-emerald-400`}>
+                            <FileInput className="w-5 h-5" strokeWidth={2.5} /> 讀檔
                         </button>
-                        <button onClick={saveDraft} className={`flex-1 bg-[#fff1f2] text-[#9f1239] border-[#fecdd3] border-b-4 py-4 rounded-2xl transition-all duration-150 flex justify-center items-center gap-3 font-black text-xl active:border-b-0 active:translate-y-[4px] shadow-lg hover:bg-[#ffe4e6] dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-700`}>
-                            <Save className="w-6 h-6" strokeWidth={3} /> 存檔
+                        <button onClick={saveDraft} className={`flex-1 bg-white/90 text-rose-700 border-b-4 border-rose-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-rose-400`}>
+                            <Save className="w-5 h-5" strokeWidth={2.5} /> 存檔
                         </button>
                     </div>
                 </div>
 
-                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-6 space-y-6 pb-40 lg:pb-24 bg-[#fdfbf7] dark:bg-slate-950 relative transition-colors duration-300">
+                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-40 lg:pb-24 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
                         {activeStep === 2 && <Step2 {...stepProps} />}
@@ -416,7 +423,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             </div>
 
             <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 p-4 lg:p-10 overflow-y-auto flex flex-col items-center absolute lg:relative inset-0 z-30 transition-transform duration-300 ${mobileTab === 'preview' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} pb-32 lg:pb-10 dark:bg-slate-900`}>
-                <SurveyPreview data={data} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
+                <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
 
                 <div className="hidden lg:flex shrink-0 w-full gap-4 justify-center mt-10 lg:flex-row text-left relative z-20">
                     <button onClick={() => handleExport('jpg')} className="w-full lg:w-auto px-10 py-5 bg-sky-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-sky-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-sky-700 dark:border-sky-900"><ImageIcon className="w-8 h-8" /> 匯出 JPG 圖片</button>

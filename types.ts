@@ -1,5 +1,4 @@
 
-
 export type SurveyType = 'house' | 'land' | 'factory' | 'parking';
 
 export type MobileTab = 'edit' | 'preview';
@@ -78,9 +77,13 @@ export interface SurveyData {
     q7_hasOther: boolean;
     q7_otherDesc: string;
 
-    // New: Water Booster Field
+    // New: House/Factory Step 2 Solar Status (Group A)
+    house_solar_status: string;
+
+    // New: Water Booster Field (Legacy/Group A)
     water_booster: string;
     water_booster_desc: string;
+    water_booster_items: string[]; // New: Detailed items for Group A
 
     q8_stairIssue: string;
     q8_stairItems: string[]; // New: Detailed stair issues
@@ -91,11 +94,17 @@ export interface SurveyData {
     q9_items: string[];
     q9_hasOther: boolean;
     q9_otherDesc: string;
-    q9_solar_maintenance: string; // New: Solar PV maintenance type
+    q9_solar_maintenance: string; // New: Solar PV maintenance type (Group B / Original logic)
+    q9_water_booster_opt: string; // Legacy: Water booster sub-option for Facilities section (Group B)
+    q9_water_booster_items: string[]; // New: Multiple selection for Group B
 
     publicFacilities: string;
     publicFacilitiesReason: string;
     
+    // New: Garbage Treatment (Phase 3)
+    garbageTreatment: string;
+    garbageTreatmentOther: string;
+
     // Parking (House)
     q10_noParking: boolean;
     q10_parkTypes: string[];
@@ -148,6 +157,7 @@ export interface SurveyData {
     q14_roadMaterial: string;
     q14_roadMaterialOther: string;
     q14_roadWidth: string; // New: Road width
+    q14_buildingLine: string; // New: Building line designation
     q14_ditch: string;
     q14_ditchOther: string;
 
@@ -166,6 +176,7 @@ export interface SurveyData {
     factory_height: string; // 滴水高度
     factory_column_spacing: string; // 柱距
     factory_floor_load: string; // 樓板載重
+    factory_floor_load_unknown: boolean; // New: Floor load unknown/refer to license
     // REMOVED: factory_floor_load_docs: boolean; 
     factory_floor_condition: string; // 地坪狀況
     factory_floor_condition_other: string;
@@ -185,12 +196,12 @@ export interface SurveyData {
     factory_crane_tonnage: string;
     factory_crane_quantity: string;
     
-    factory_waste: string; // 工業排水/廢氣
+    factory_waste: string; // 工業排水／廢氣
     factory_waste_desc: string;
     
     factory_loading_dock: string; // 卸貨碼頭
     factory_truck_access: string; // 大車進出
-    factory_truck_buffer: string; // New: 迴轉空間/緩衝區
+    factory_truck_buffer: string; // New: 迴轉空間／緩衝區
 
     factory_parking_desc: string; // New: Factory simple parking description
     // Factory Parking Lane Land Number
@@ -262,6 +273,7 @@ export interface SurveyData {
     land_q2_material: string;
     land_q2_material_other: string;
     land_q2_roadWidth: string; // New: Road width for land
+    land_q2_buildingLine: string; // New: Building line designation
     land_q2_ditch: string;
     land_q2_ditch_other: string;
 
@@ -303,6 +315,20 @@ export interface SurveyData {
     land_q7_build_rel_detail: string;
     land_q7_build_other: string;
     land_q7_solar: string; // New: Solar PV status
+
+    // New: Land Step 3 Water Booster
+    land_water_booster: string;
+    land_water_booster_items: string[];
+
+    // New: Land Step 3 Facilities
+    land_q7_facilities: string;
+    land_q7_facilities_items: string[];
+    land_q7_facilities_other: string;
+
+    // New fields for Land Survey Step 3 specific property types
+    land_q7_illegal_paving: string;
+    land_q7_fire_setback: string;
+    land_q7_road_opened: string;
 
     land_q8_special: string;
     land_q8_special_desc: string;
