@@ -12,7 +12,8 @@ import {
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
-    InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs 
+    InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs,
+    SectionStatus
 } from './SharedUI';
 
 export const UtilitiesSection = ({ 
@@ -22,7 +23,7 @@ export const UtilitiesSection = ({
     type,
     id,
     highlightedId,
-    isComplete // New prop
+    status = 'neutral'
 }: { 
     data: SurveyData, 
     setData: React.Dispatch<React.SetStateAction<SurveyData>>, 
@@ -30,7 +31,7 @@ export const UtilitiesSection = ({
     type: SurveyType,
     id: string,
     highlightedId: string | null,
-    isComplete?: boolean // New prop type
+    status?: SectionStatus
 }) => {
     const update = (key: keyof SurveyData, val: any) => setData(p => ({ ...p, [key]: val }));
     
@@ -59,7 +60,7 @@ export const UtilitiesSection = ({
     const showWaterBooster = type !== 'land' && GROUP_A_TYPES.includes(data.propertyType);
 
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             <div className="space-y-8">
                 <QuestionBlock>
                     <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-2 text-slate-800 dark:text-slate-100 leading-normal">
@@ -270,7 +271,7 @@ export const ParkingSection = ({
     highlightedId,
     includeExtras = true,
     isFactory = false,
-    isComplete // New prop
+    status = 'neutral'
 }: { 
     data: SurveyData, 
     setData: React.Dispatch<React.SetStateAction<SurveyData>>,
@@ -282,7 +283,7 @@ export const ParkingSection = ({
     highlightedId: string | null,
     includeExtras?: boolean,
     isFactory?: boolean,
-    isComplete?: boolean // New prop type
+    status?: SectionStatus
 }) => {
     const isHouseOrFactory = startNum === 8 || startNum === 11 || startNum === 9; 
     const handleCarUsageToggle = (val: string) => {
@@ -297,7 +298,7 @@ export const ParkingSection = ({
     const hasCarMethod = (data.q10_parkTypes && data.q10_parkTypes.length > 0) || data.q10_hasParkTypeOther;
 
     return (
-        <SurveySection id={ids.main} highlighted={highlightedId === ids.main} isComplete={isComplete}>
+        <SurveySection id={ids.main} highlighted={highlightedId === ids.main} status={status}>
             <div className="flex justify-between items-center border-b-2 pb-6 mb-2 dark:border-slate-700">
                 <p className="text-[1.5rem] md:text-[2rem] font-black text-slate-800 text-left dark:text-slate-100 leading-normal">{isHouseOrFactory ? `${startNum}. 車位資訊` : `${startNum}. 車位資訊`}</p>
             </div>
@@ -493,9 +494,9 @@ export const ParkingSection = ({
     );
 };
 
-export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlightedId, warningText, isComplete }: any) => {
+export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlightedId, warningText, status = 'neutral' }: any) => {
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             {warningText && <InlineWarning>{warningText}</InlineWarning>}
             
             <div className="mb-8">
@@ -514,9 +515,9 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
     );
 };
 
-export const NotesSection = ({ data, setData, update, id, title, highlightedId, type, warningText, isComplete }: any) => {
+export const NotesSection = ({ data, setData, update, id, title, highlightedId, type, warningText, status = 'neutral' }: any) => {
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             {warningText && <InlineWarning>{warningText}</InlineWarning>}
             
             <BooleanReveal 
@@ -540,17 +541,17 @@ export const NotesSection = ({ data, setData, update, id, title, highlightedId, 
     );
 };
 
-export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlightedId, hideQ2, isComplete }: any) => {
+export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlightedId, hideQ2, statusQ3 = 'neutral', statusQ4 = 'neutral' }: any) => {
     return (
         <>
             {!hideQ2 && (
-                <SurveySection id={ids.q2} highlighted={highlightedId === ids.q2} title={titles.q2} isComplete={isComplete?.q2}>
+                <SurveySection id={ids.q2} highlighted={highlightedId === ids.q2} title={titles.q2}>
                     {/* Implementation for Land Q2 if needed separately, currently mostly handled in Access Section or suppressed */}
                     <div />
                 </SurveySection>
             )}
 
-            <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} isComplete={isComplete?.q3}>
+            <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} status={statusQ3}>
                 <div className="space-y-8">
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">土地鑑界與界標現況</p>
@@ -586,7 +587,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                 </div>
             </SurveySection>
 
-            <SurveySection id={ids.q4} highlighted={highlightedId === ids.q4} title={titles.q4} isComplete={isComplete?.q4}>
+            <SurveySection id={ids.q4} highlighted={highlightedId === ids.q4} title={titles.q4} status={statusQ4}>
                 <div className="space-y-8">
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">徵收預定地現況</p>
@@ -615,7 +616,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
     );
 };
 
-export const BuildingLandAccessSection = ({ data, setData, update, prefix, title, id, highlightedId, type, isComplete }: any) => {
+export const BuildingLandAccessSection = ({ data, setData, update, prefix, title, id, highlightedId, type, status = 'neutral' }: any) => {
     const isHouse = type === 'house';
     const accessKey = isHouse ? 'q14_access' : 'land_q2_access';
     const abnormalDescKey = isHouse ? 'q14_abnormalDesc' : 'land_q2_access_desc';
@@ -638,7 +639,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
     const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈', '公寓'].includes(data.propertyType) : false);
 
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             <div className="space-y-10">
                 <QuestionBlock>
                     <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">{isHouse ? '進出現況' : '進出通行現況'}</p>
