@@ -198,7 +198,8 @@ export const SurveySection: React.FC<{
     children: React.ReactNode; 
     highlighted?: boolean; 
     className?: string;
-}> = ({ id, title, children, highlighted = false, className = '' }) => {
+    isCompleted?: boolean;
+}> = ({ id, title, children, highlighted = false, className = '', isCompleted = false }) => {
     // Default open, allowing users to collapse manually
     const [isOpen, setIsOpen] = useState(true);
 
@@ -221,7 +222,7 @@ export const SurveySection: React.FC<{
                 >
                     <div className="flex-grow pt-1">
                         {typeof title === 'string' 
-                            ? <p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 dark:text-slate-100 text-left leading-tight tracking-tight">{title}</p> 
+                            ? <p className={`text-[1.75rem] md:text-[2rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${isCompleted ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100'}`}>{title}</p> 
                             : title
                         }
                     </div>

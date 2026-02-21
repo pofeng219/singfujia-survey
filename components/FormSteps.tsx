@@ -214,7 +214,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對／建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對／建物面積現況評估'}</p>}>
+                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對／建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對／建物面積現況評估'}</p>} hasActiveContent={!!data.q6_hasIssue}>
                         <InlineWarning>※可簡易測量最長／短／寬／窄之距離 (因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內)</InlineWarning>
                         <RadioGroup 
                             options={['實測相符', '實測不符', '無法測量']} 
@@ -223,10 +223,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 setData(prev => ({ ...prev, q6_hasIssue: v, q6_desc: (v === '實測相符') ? '' : prev.q6_desc })); 
                             }} 
                             layout="grid" 
+                            variant="accordion"
                         />{(data?.q6_hasIssue === '實測不符' || data?.q6_hasIssue === '無法測量') && (<SubItemHighlight><DetailInput value={data.q6_desc || ''} onChange={v => update('q6_desc', v)} placeholder="說明現況" /></SubItemHighlight>)}
                     </SurveySection>
 
-                    <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50">
+                    <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" hasActiveContent={!!data.q3_hasLeak}>
                         <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
                         <RadioGroup 
                             options={['無', '有', '全屋天花板包覆']} 
@@ -240,6 +241,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 }
                             }} 
                             layout="grid"
+                            variant="accordion"
                         />
                         {data?.q3_hasLeak === '是' && !data.q3_ceilingWrapped && (
                             <SubItemHighlight>
@@ -251,6 +253,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             value={data.q3_leakType === '全屋天花板包覆' ? '' : (data.q3_leakType || '')} 
                                             onChange={v => setData(prev => ({ ...prev, q3_leakType: v }))} 
                                             layout="grid" 
+                                            variant="accordion"
                                         />
                                     </div>
                                     
@@ -275,6 +278,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     value={data.q3_repairHistory || ''} 
                                     onChange={v => update('q3_repairHistory', v)} 
                                     cols={2}
+                                    variant="accordion"
                                 />
                                 {data.q3_repairHistory === '有修繕紀錄' && (
                                     <SubItemHighlight>
@@ -285,7 +289,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q4" highlighted={highlightedField === 'section-q4'} title={type === 'factory' ? '4. 建物結構現況' : '4. 建物結構現況'}>
+                    <SurveySection id="section-q4" highlighted={highlightedField === 'section-q4'} title={type === 'factory' ? '4. 建物結構現況' : '4. 建物結構現況'} hasActiveContent={!!data.q4_hasIssue}>
                         <div className="space-y-8 md:space-y-10">
                             <QuestionBlock>
                                 <div className="mb-6">
