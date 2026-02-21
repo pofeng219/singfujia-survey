@@ -191,6 +191,81 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
     );
 };
 
+// === Accordion Option Group (Elderly Friendly) ===
+interface AccordionOption {
+    label: string;
+    subLabel?: string;
+    value: string;
+}
+
+interface AccordionOptionGroupProps {
+    options: AccordionOption[] | string[];
+    value: string;
+    onChange: (val: string) => void;
+    disabled?: boolean;
+}
+
+export const AccordionOptionGroup: React.FC<AccordionOptionGroupProps> = ({ options, value, onChange, disabled = false }) => {
+    // Normalize options to object format
+    const normalizedOptions = options.map(opt => {
+        if (typeof opt === 'string') {
+            // Try to extract subLabel from parentheses if it's a string
+            const match = opt.match(/^(.*?)(\s*[\(（].*?[\)）])$/);
+            if (match) {
+                return { label: match[1].trim(), subLabel: match[2].trim(), value: opt };
+            }
+            return { label: opt, value: opt };
+        }
+        return opt;
+    });
+
+    // Smart layout detection: If exactly 2 options and both labels are very short (<= 4 chars), use horizontal layout
+    const isShortOptions = normalizedOptions.length === 2 && normalizedOptions.every(opt => opt.label.length <= 4 && !opt.subLabel);
+    
+    return (
+        <div className={`w-[90%] mx-auto flex gap-4 ${isShortOptions ? 'flex-row' : 'flex-col'}`}>
+            {normalizedOptions.map((opt) => {
+                const isSelected = value === opt.value;
+                return (
+                    <button
+                        key={opt.value}
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => !disabled && onChange(isSelected ? '' : opt.value)}
+                        className={`
+                            relative flex items-center justify-between p-4 min-h-[65px] rounded-2xl border-2 transition-all duration-200 text-left
+                            ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer active:scale-[0.98]'}
+                            ${isSelected 
+                                ? 'bg-sky-50 border-sky-400 shadow-sm dark:bg-sky-900/30 dark:border-sky-500' 
+                                : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
+                            }
+                            ${isShortOptions ? 'flex-1 justify-center' : 'w-full'}
+                        `}
+                    >
+                        <div className={`flex flex-col ${isShortOptions ? 'items-center text-center' : 'items-start'}`}>
+                            <span className={`text-lg font-bold ${isSelected ? 'text-sky-900 dark:text-sky-100' : 'text-slate-800 dark:text-slate-200'}`}>
+                                {opt.label}
+                            </span>
+                            {opt.subLabel && (
+                                <span className={`text-[15px] mt-1 ${isSelected ? 'text-sky-700 dark:text-sky-300' : 'text-slate-500 dark:text-slate-400'}`}>
+                                    {opt.subLabel}
+                                </span>
+                            )}
+                        </div>
+                        
+                        {/* Check Icon - Only show if selected and not in short horizontal mode (where it might crowd the text) */}
+                        {isSelected && !isShortOptions && (
+                            <div className="flex-shrink-0 ml-4 animate-in zoom-in duration-200">
+                                <CheckCircle2 className="w-8 h-8 text-emerald-500 dark:text-emerald-400" strokeWidth={2.5} />
+                            </div>
+                        )}
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
+
 // === Survey Section Wrapper (Accordion Style) ===
 export const SurveySection: React.FC<{ 
     id?: string; 
@@ -198,8 +273,9 @@ export const SurveySection: React.FC<{
     children: React.ReactNode; 
     highlighted?: boolean; 
     className?: string;
-    isCompleted?: boolean;
-}> = ({ id, title, children, highlighted = false, className = '', isCompleted = false }) => {
+    isCompleted?: boolean; // Kept for backward compatibility, but status is preferred
+    status?: 'default' | 'completed' | 'incomplete';
+}> = ({ id, title, children, highlighted = false, className = '', isCompleted = false, status = 'default' }) => {
     // Default open, allowing users to collapse manually
     const [isOpen, setIsOpen] = useState(true);
 
@@ -209,6 +285,19 @@ export const SurveySection: React.FC<{
             setIsOpen(true);
         }
     }, [highlighted]);
+
+    // Determine effective status (fallback to isCompleted if status is default)
+    const effectiveStatus = status !== 'default' ? status : (isCompleted ? 'completed' : 'default');
+
+    // Determine title color based on status and open state
+    let titleColorClass = 'text-slate-800 dark:text-slate-100';
+    if (!isOpen) {
+        if (effectiveStatus === 'completed') {
+            titleColorClass = 'text-emerald-600 dark:text-emerald-400';
+        } else if (effectiveStatus === 'incomplete') {
+            titleColorClass = 'text-rose-600 dark:text-rose-400';
+        }
+    }
 
     return (
         <div 
@@ -220,11 +309,18 @@ export const SurveySection: React.FC<{
                     onClick={() => setIsOpen(!isOpen)}
                     className={`p-6 md:p-10 flex justify-between items-start gap-4 md:gap-6 cursor-pointer select-none transition-colors duration-200 ${isOpen ? '' : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'}`}
                 >
-                    <div className="flex-grow pt-1">
+                    <div className="flex-grow pt-1 flex flex-col gap-2">
                         {typeof title === 'string' 
-                            ? <p className={`text-[1.75rem] md:text-[2rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${isCompleted ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100'}`}>{title}</p> 
+                            ? <p className={`text-[1.75rem] md:text-[2rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${titleColorClass}`}>{title}</p> 
                             : title
                         }
+                        {/* Incomplete Warning Text when collapsed */}
+                        {!isOpen && effectiveStatus === 'incomplete' && (
+                            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 animate-in fade-in duration-300">
+                                <AlertCircle className="w-5 h-5" strokeWidth={2.5} />
+                                <span className="text-base font-bold">尚未完成填寫</span>
+                            </div>
+                        )}
                     </div>
                     {/* Accordion Arrow Icon & Hint */}
                     <div className="flex flex-col items-center gap-2 flex-shrink-0">
