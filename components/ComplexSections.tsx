@@ -12,18 +12,8 @@ import {
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
-    InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs, AccordionOptionGroup
+    InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs 
 } from './SharedUI';
-
-const mapOptions = (options: string[]) => {
-    return options.map(opt => {
-        const match = opt.match(/^(.*?)(\s*[\(（].*?[\)）])$/);
-        if (match) {
-            return { label: match[1], subLabel: match[2].trim(), value: opt };
-        }
-        return { label: opt, value: opt };
-    });
-};
 
 export const UtilitiesSection = ({ 
     data, 
@@ -32,8 +22,7 @@ export const UtilitiesSection = ({
     type,
     id,
     highlightedId,
-    isCompleted,
-    isIncomplete
+    isComplete // New prop
 }: { 
     data: SurveyData, 
     setData: React.Dispatch<React.SetStateAction<SurveyData>>, 
@@ -41,8 +30,7 @@ export const UtilitiesSection = ({
     type: SurveyType,
     id: string,
     highlightedId: string | null,
-    isCompleted?: boolean,
-    isIncomplete?: boolean
+    isComplete?: boolean // New prop type
 }) => {
     const update = (key: keyof SurveyData, val: any) => setData(p => ({ ...p, [key]: val }));
     
@@ -71,7 +59,7 @@ export const UtilitiesSection = ({
     const showWaterBooster = type !== 'land' && GROUP_A_TYPES.includes(data.propertyType);
 
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isCompleted={isCompleted} isIncomplete={isIncomplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
             <div className="space-y-8">
                 <QuestionBlock>
                     <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-2 text-slate-800 dark:text-slate-100 leading-normal">
@@ -85,8 +73,8 @@ export const UtilitiesSection = ({
 
                     {type === 'factory' ? (
                         <div className="space-y-6">
-                            <AccordionOptionGroup 
-                                options={mapOptions(['無電力(需自行申請)', '一般用電(單相 110V／220V，僅供照明冷氣)', '動力用電(三相電)', '高壓電供電', '現場無法判斷 (需詳閱電費單)', '其他未列項目'])} 
+                            <RadioGroup 
+                                options={['無電力(需自行申請)', '一般用電(單相 110V／220V，僅供照明冷氣)', '動力用電(三相電)', '高壓電供電', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} 
                                 value={data?.land_q1_elec || ''} 
                                 onChange={v => {
                                     setData(prev => {
@@ -102,6 +90,8 @@ export const UtilitiesSection = ({
                                         };
                                     });
                                 }} 
+                                layout="grid"
+                                cols={1}
                             />
                             {data?.land_q1_elec === '其他未列項目' && (
                                 <SubItemHighlight><DetailInput value={data.land_q1_elec_other || ''} onChange={v => update('land_q1_elec_other', v)} placeholder="如：發電機、太陽能" /></SubItemHighlight>
@@ -113,20 +103,20 @@ export const UtilitiesSection = ({
                                         <div className="space-y-8">
                                             <div>
                                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電錶型態？</p>
-                                                <AccordionOptionGroup options={mapOptions(['獨立電錶', '共用電錶'])} value={data.land_q1_elec_meter || ''} onChange={v => update('land_q1_elec_meter', v)} />
+                                                <RadioGroup options={['獨立電錶', '共用電錶']} value={data.land_q1_elec_meter || ''} onChange={v => update('land_q1_elec_meter', v)} />
                                             </div>
                                             
                                             {(data.land_q1_elec?.includes('動力用電') || data.land_q1_elec === '高壓電供電') && (
                                                 <div>
                                                     <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電壓規格</p>
-                                                    <AccordionOptionGroup options={mapOptions(['三相 220V', '三相 380V／三相四線式', '高壓電供電', '其他/待查證'])} value={data.land_q1_elec_voltage || ''} onChange={v => update('land_q1_elec_voltage', v)} />
+                                                    <RadioGroup options={['三相 220V', '三相 380V／三相四線式', '高壓電供電', '其他/待查證']} value={data.land_q1_elec_voltage || ''} onChange={v => update('land_q1_elec_voltage', v)} layout="grid" cols={2} />
                                                 </div>
                                             )}
 
                                             <div>
                                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-2 dark:text-slate-200 leading-normal">契約容量 (馬力數)</p>
                                                 <p className="text-slate-500 text-sm font-bold mb-4 dark:text-slate-400">提示：若看到變壓器通常為高壓電；若電錶有倍數標示通常為大馬力</p>
-                                                <AccordionOptionGroup options={mapOptions(['一般用電(無契約容量)', '99馬力(HP)以下(無須設置配電室)', '100馬力(HP)以上(可能需設置高壓變電站)', '現場無法判斷 (需詳閱電費單)', '其他未列項目'])} value={data.land_q1_elec_capacity || ''} onChange={v => update('land_q1_elec_capacity', v)} />
+                                                <RadioGroup options={['一般用電(無契約容量)', '99馬力(HP)以下(無須設置配電室)', '100馬力(HP)以上(可能需設置高壓變電站)', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} value={data.land_q1_elec_capacity || ''} onChange={v => update('land_q1_elec_capacity', v)} layout="grid" cols={1} />
                                             </div>
                                         </div>
                                     </SubItemHighlight>
@@ -148,10 +138,11 @@ export const UtilitiesSection = ({
                             }} 
                             renderDetail={(opt) => (
                                 <>
-                                    {opt === '有' && <SubItemHighlight><div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600"><AccordionOptionGroup options={mapOptions(['獨立電錶', '共有電錶'])} value={data.land_q1_elec_detail || ''} onChange={v => update('land_q1_elec_detail', v)} /></div></SubItemHighlight>}
+                                    {opt === '有' && <SubItemHighlight><div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600"><RadioGroup options={['獨立電錶', '共有電錶']} value={data.land_q1_elec_detail || ''} onChange={v => update('land_q1_elec_detail', v)} /></div></SubItemHighlight>}
                                     {opt === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q1_elec_other || ''} onChange={v => update('land_q1_elec_other', v)} placeholder="如：發電機、太陽能" /></SubItemHighlight>}
                                 </>
                             )} 
+                            cols={2}
                         />
                     )}
                 </QuestionBlock>
@@ -178,20 +169,22 @@ export const UtilitiesSection = ({
                                 {opt === '有' && (
                                     <SubItemHighlight>
                                         <div className="space-y-6">
-                                            <AccordionOptionGroup 
-                                                options={mapOptions(filteredWaterOptions)} 
+                                            <RadioGroup 
+                                                options={filteredWaterOptions} 
                                                 value={data.land_q1_water_cat || ''} 
                                                 onChange={v => setData(prev => ({ ...prev, land_q1_water_cat: v, land_q1_water_tap_detail: v === '自來水' ? prev.land_q1_water_tap_detail : '', land_q1_water_ground_detail: v === '地下水' ? prev.land_q1_water_ground_detail : '', land_q1_water_irr_detail: v === '水利溝渠' ? prev.land_q1_water_irr_detail : '' }))} 
+                                                layout="grid" cols={2} 
                                             />
-                                            {data.land_q1_water_cat === '自來水' && <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 animate-in fade-in slide-in-from-top-2 dark:bg-slate-900/50 dark:border-slate-600"><AccordionOptionGroup options={mapOptions(['獨立水錶', '共有水錶', '無水錶，但管線已臨路', '無水錶，且管線距離遙遠'])} value={data.land_q1_water_tap_detail || ''} onChange={v => update('land_q1_water_tap_detail', v)} /></div>}
-                                            {data.land_q1_water_cat === '地下水' && <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 animate-in fade-in slide-in-from-top-2 dark:bg-slate-900/50 dark:border-slate-600"><AccordionOptionGroup options={mapOptions(['自然湧出流動', '合法水井', '私設水井'])} value={data.land_q1_water_ground_detail || ''} onChange={v => update('land_q1_water_ground_detail', v)} /></div>}
-                                            {data.land_q1_water_cat === '水利溝渠' && <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 animate-in fade-in slide-in-from-top-2 dark:bg-slate-900/50 dark:border-slate-600"><AccordionOptionGroup options={mapOptions(['公有', '私人'])} value={data.land_q1_water_irr_detail || ''} onChange={v => update('land_q1_water_irr_detail', v)} /></div>}
+                                            {data.land_q1_water_cat === '自來水' && <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 animate-in fade-in slide-in-from-top-2 dark:bg-slate-900/50 dark:border-slate-600"><RadioGroup options={['獨立水錶', '共有水錶', '無水錶，但管線已臨路', '無水錶，且管線距離遙遠']} value={data.land_q1_water_tap_detail || ''} onChange={v => update('land_q1_water_tap_detail', v)} /></div>}
+                                            {data.land_q1_water_cat === '地下水' && <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 animate-in fade-in slide-in-from-top-2 dark:bg-slate-900/50 dark:border-slate-600"><RadioGroup options={['自然湧出流動', '合法水井', '私設水井']} value={data.land_q1_water_ground_detail || ''} onChange={v => update('land_q1_water_ground_detail', v)} /></div>}
+                                            {data.land_q1_water_cat === '水利溝渠' && <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 animate-in fade-in slide-in-from-top-2 dark:bg-slate-900/50 dark:border-slate-600"><RadioGroup options={['公有', '私人']} value={data.land_q1_water_irr_detail || ''} onChange={v => update('land_q1_water_irr_detail', v)} /></div>}
                                         </div>
                                     </SubItemHighlight>
                                 )}
                                 {opt === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q1_water_other || ''} onChange={v => update('land_q1_water_other', v)} placeholder="如：山泉水、接鄰居水等" /></SubItemHighlight>}
                             </>
                         )} 
+                        cols={2}
                     />
                 </QuestionBlock>
 
@@ -200,10 +193,11 @@ export const UtilitiesSection = ({
                      <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                         <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
-                        <AccordionOptionGroup 
-                            options={mapOptions(['無設置', '合法設置', '私下設置'])} 
+                        <RadioGroup 
+                            options={['無設置', '合法設置', '私下設置']} 
                             value={data.house_solar_status || ''} 
                             onChange={v => update('house_solar_status', v)} 
+                            cols={3}
                         />
                      </QuestionBlock>
                 )}
@@ -215,8 +209,8 @@ export const UtilitiesSection = ({
                             <InlineWarning>※本項由使用者自行管理維護，若物件型態為道路用地／公設地，確認是否為自來水公司之公共設施，或鄰地非法佔用</InlineWarning>
                         </div>
                         
-                        <AccordionOptionGroup 
-                            options={mapOptions(['無設置', '有設置'])} 
+                        <RadioGroup 
+                            options={['無設置', '有設置']} 
                             value={data.water_booster === '無設置' || data.water_booster === '無' ? '無設置' : (data.water_booster === '有設置' || data.water_booster === '有' ? '有設置' : '')} 
                             onChange={v => {
                                 const val = v === '無設置' ? '無設置' : '有設置';
@@ -226,6 +220,7 @@ export const UtilitiesSection = ({
                                     water_booster_items: val === '無設置' ? [] : prev.water_booster_items 
                                 }));
                             }} 
+                            cols={2}
                         />
 
                         {data.water_booster === '有設置' && (
@@ -256,6 +251,7 @@ export const UtilitiesSection = ({
                             setData(prev => ({ ...prev, land_q1_other_new: val, land_q1_other_desc: val === '是' ? prev.land_q1_other_desc : '' })); 
                         }} 
                         renderDetail={(opt) => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q1_other_desc || ''} onChange={v => update('land_q1_other_desc', v)} placeholder={getOtherFacilityPlaceholder()} /></SubItemHighlight> : null)} 
+                        cols={2}
                     />
                 </QuestionBlock>
             </div>
@@ -274,8 +270,7 @@ export const ParkingSection = ({
     highlightedId,
     includeExtras = true,
     isFactory = false,
-    isCompleted,
-    isIncomplete
+    isComplete // New prop
 }: { 
     data: SurveyData, 
     setData: React.Dispatch<React.SetStateAction<SurveyData>>,
@@ -287,8 +282,7 @@ export const ParkingSection = ({
     highlightedId: string | null,
     includeExtras?: boolean,
     isFactory?: boolean,
-    isCompleted?: boolean,
-    isIncomplete?: boolean
+    isComplete?: boolean // New prop type
 }) => {
     const isHouseOrFactory = startNum === 8 || startNum === 11 || startNum === 9; 
     const handleCarUsageToggle = (val: string) => {
@@ -303,7 +297,7 @@ export const ParkingSection = ({
     const hasCarMethod = (data.q10_parkTypes && data.q10_parkTypes.length > 0) || data.q10_hasParkTypeOther;
 
     return (
-        <SurveySection id={ids.main} highlighted={highlightedId === ids.main} isCompleted={isCompleted} isIncomplete={isIncomplete}>
+        <SurveySection id={ids.main} highlighted={highlightedId === ids.main} isComplete={isComplete}>
             <div className="flex justify-between items-center border-b-2 pb-6 mb-2 dark:border-slate-700">
                 <p className="text-[1.5rem] md:text-[2rem] font-black text-slate-800 text-left dark:text-slate-100 leading-normal">{isHouseOrFactory ? `${startNum}. 車位資訊` : `${startNum}. 車位資訊`}</p>
             </div>
@@ -364,8 +358,8 @@ export const ParkingSection = ({
                     <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-12">
                         <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableNumber ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
                             <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">車位編號：</p>
-                            <AccordionOptionGroup 
-                                options={mapOptions(['無車位編號', '有車位編號'])} 
+                            <RadioGroup 
+                                options={['無車位編號', '有車位編號']} 
                                 value={data?.q10_parkingNumberType === 'number' ? '有車位編號' : (data?.q10_parkingNumberType === 'none' ? '無車位編號' : '')} 
                                 onChange={(v) => { 
                                     if (v === '有車位編號') update('q10_parkingNumberType', 'number'); 
@@ -390,11 +384,14 @@ export const ParkingSection = ({
                             <p className="font-black text-[1.5rem] md:text-[1.75rem] text-slate-800 text-left dark:text-blue-100 leading-normal">汽車車位尺寸 (公尺)</p>
                             
                             <div className="mb-4">
-                                <AccordionOptionGroup 
-                                    options={mapOptions(['實際測量', '依車位資訊告示牌', '無法測量也無相關資訊'])} 
+                                <RadioGroup 
+                                    options={['實際測量', '依車位資訊告示牌', '無法測量也無相關資訊']} 
                                     value={data?.q10_measureType || ''} 
                                     onChange={v => update('q10_measureType', v)} 
                                     disabled={parkingLogic.disableCarSize} 
+                                    layout="grid"
+                                    cols={2}
+                                    spanFullOption="無法測量也無相關資訊" // New prop usage
                                 />
                             </div>
 
@@ -437,7 +434,7 @@ export const ParkingSection = ({
                 <div className={`space-y-10 ${parkingLogic.disableCharging ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-8 dark:text-slate-200 leading-normal">車位充電設備配置</p>
-                        <AccordionOptionGroup options={mapOptions(['無', '有', '僅預留管線／孔位', '須經管委會同意'])} value={data?.q10_charging === '否' ? '無' : (data?.q10_charging === '是' ? '有' : (data?.q10_charging || ''))} onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); if (val === '僅預留管線／孔位' || val === '須經管委會同意') { update('q10_charging', val); update('q10_chargingOther', ''); } else { setData(p => ({ ...p, q10_charging: val, q10_chargingOther: '' })); } }} disabled={parkingLogic.disableCharging} />
+                        <RadioGroup options={['無', '有', '僅預留管線／孔位', '須經管委會同意']} value={data?.q10_charging === '否' ? '無' : (data?.q10_charging === '是' ? '有' : (data?.q10_charging || ''))} onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); if (val === '僅預留管線／孔位' || val === '須經管委會同意') { update('q10_charging', val); update('q10_chargingOther', ''); } else { setData(p => ({ ...p, q10_charging: val, q10_chargingOther: '' })); } }} cols={2} layout="grid" disabled={parkingLogic.disableCharging} />
                     </QuestionBlock>
                 </div>
                 
@@ -496,9 +493,9 @@ export const ParkingSection = ({
     );
 };
 
-export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlightedId, warningText, isCompleted, isIncomplete }: any) => {
+export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlightedId, warningText, isComplete }: any) => {
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isCompleted={isCompleted} isIncomplete={isIncomplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
             {warningText && <InlineWarning>{warningText}</InlineWarning>}
             
             <div className="mb-8">
@@ -517,9 +514,9 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
     );
 };
 
-export const NotesSection = ({ data, setData, update, id, title, highlightedId, type, warningText, isCompleted, isIncomplete }: any) => {
+export const NotesSection = ({ data, setData, update, id, title, highlightedId, type, warningText, isComplete }: any) => {
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isCompleted={isCompleted} isIncomplete={isIncomplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
             {warningText && <InlineWarning>{warningText}</InlineWarning>}
             
             <BooleanReveal 
@@ -543,22 +540,22 @@ export const NotesSection = ({ data, setData, update, id, title, highlightedId, 
     );
 };
 
-export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlightedId, hideQ2, statuses }: any) => {
+export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlightedId, hideQ2, isComplete }: any) => {
     return (
         <>
             {!hideQ2 && (
-                <SurveySection id={ids.q2} highlighted={highlightedId === ids.q2} title={titles.q2} isCompleted={statuses?.q2?.isCompleted} isIncomplete={statuses?.q2?.isIncomplete}>
+                <SurveySection id={ids.q2} highlighted={highlightedId === ids.q2} title={titles.q2} isComplete={isComplete?.q2}>
                     {/* Implementation for Land Q2 if needed separately, currently mostly handled in Access Section or suppressed */}
                     <div />
                 </SurveySection>
             )}
 
-            <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} isCompleted={statuses?.q3?.isCompleted} isIncomplete={statuses?.q3?.isIncomplete}>
+            <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} isComplete={isComplete?.q3}>
                 <div className="space-y-8">
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">土地鑑界與界標現況</p>
-                        <AccordionOptionGroup 
-                            options={mapOptions(['已鑑界 (標完好)', '待查證', '標位不明 (需重測)', '從未鑑界'])} 
+                        <RadioGroup 
+                            options={['已鑑界 (標完好)', '待查證', '標位不明 (需重測)', '從未鑑界']} 
                             value={
                                 data?.land_q3_survey === '否' ? '從未鑑界' : 
                                 (data?.land_q3_survey === '是' ? '已鑑界 (標完好)' : 
@@ -569,6 +566,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                                 const val = v === '從未鑑界' ? '否' : v; 
                                 setData((prev: any) => ({...prev, land_q3_survey: val})); 
                             }} 
+                            layout="grid" cols={2}
                         />
                         {(data?.land_q3_survey === '是' || data?.land_q3_survey === '已鑑界 (標完好)') && <SubItemHighlight><DetailInput value={data.land_q3_survey_detail || ''} onChange={v => update('land_q3_survey_detail', v)} placeholder="如：界標完整" /></SubItemHighlight>}
                         {data?.land_q3_survey === '待查證' && <SubItemHighlight><DetailInput value={data.land_q3_survey_other || ''} onChange={v => update('land_q3_survey_other', v)} placeholder="如：不確定界標位置" /></SubItemHighlight>}
@@ -576,10 +574,11 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
 
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">產權與使用糾紛現況</p>
-                        <AccordionOptionGroup 
-                            options={mapOptions(['無', '有', '待查證'])} 
+                        <RadioGroup 
+                            options={['無', '有', '待查證']} 
                             value={data?.land_q3_dispute === '否' ? '無' : (data?.land_q3_dispute === '是' ? '有' : (data?.land_q3_dispute || ''))} 
                             onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData((prev: any) => ({...prev, land_q3_dispute: val})); }} 
+                            layout="grid" cols={2}
                         />
                         {data?.land_q3_dispute === '是' && <SubItemHighlight><DetailInput value={data.land_q3_dispute_desc || ''} onChange={v => update('land_q3_dispute_desc', v)} placeholder="說明現況" /></SubItemHighlight>}
                         {data?.land_q3_dispute === '待查證' && <SubItemHighlight><DetailInput value={data.land_q3_dispute_other || ''} onChange={v => update('land_q3_dispute_other', v)} placeholder="說明現況" /></SubItemHighlight>}
@@ -587,24 +586,26 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                 </div>
             </SurveySection>
 
-            <SurveySection id={ids.q4} highlighted={highlightedId === ids.q4} title={titles.q4} isCompleted={statuses?.q4?.isCompleted} isIncomplete={statuses?.q4?.isIncomplete}>
+            <SurveySection id={ids.q4} highlighted={highlightedId === ids.q4} title={titles.q4} isComplete={isComplete?.q4}>
                 <div className="space-y-8">
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">徵收預定地現況</p>
-                        <AccordionOptionGroup 
-                            options={mapOptions(['非範圍內', '屬範圍內', '待查證'])} 
+                        <RadioGroup 
+                            options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_expro === '否' ? '非範圍內' : (data?.land_q4_expro === '是' ? '屬範圍內' : (data?.land_q4_expro || ''))} 
                             onChange={v => { const val = v === '非範圍內' ? '否' : (v === '屬範圍內' ? '是' : v); setData((prev: any) => ({...prev, land_q4_expro: val})); }} 
+                            layout="grid" cols={2}
                         />
                         {(data?.land_q4_expro === '是' || data?.land_q4_expro === '待查證') && <SubItemHighlight><DetailInput value={data.land_q4_expro_other || ''} onChange={v => update('land_q4_expro_other', v)} placeholder="說明現況" /></SubItemHighlight>}
                     </QuestionBlock>
 
                     <QuestionBlock>
                          <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">重劃與區段徵收現況</p>
-                        <AccordionOptionGroup 
-                            options={mapOptions(['非範圍內', '屬範圍內', '待查證'])} 
+                        <RadioGroup 
+                            options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_resurvey === '否' ? '非範圍內' : (data?.land_q4_resurvey === '是' ? '屬範圍內' : (data?.land_q4_resurvey || ''))} 
                             onChange={v => { const val = v === '非範圍內' ? '否' : (v === '屬範圍內' ? '是' : v); setData((prev: any) => ({...prev, land_q4_resurvey: val})); }} 
+                            layout="grid" cols={2}
                         />
                         {(data?.land_q4_resurvey === '是' || data?.land_q4_resurvey === '待查證') && <SubItemHighlight><DetailInput value={data.land_q4_resurvey_other || ''} onChange={v => update('land_q4_resurvey_other', v)} placeholder="說明現況" /></SubItemHighlight>}
                     </QuestionBlock>
@@ -614,7 +615,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
     );
 };
 
-export const BuildingLandAccessSection = ({ data, setData, update, prefix, title, id, highlightedId, type, isCompleted, isIncomplete }: any) => {
+export const BuildingLandAccessSection = ({ data, setData, update, prefix, title, id, highlightedId, type, isComplete }: any) => {
     const isHouse = type === 'house';
     const accessKey = isHouse ? 'q14_access' : 'land_q2_access';
     const abnormalDescKey = isHouse ? 'q14_abnormalDesc' : 'land_q2_access_desc';
@@ -637,17 +638,18 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
     const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈', '公寓'].includes(data.propertyType) : false);
 
     return (
-        <SurveySection id={id} highlighted={highlightedId === id} title={title} isCompleted={isCompleted} isIncomplete={isIncomplete}>
+        <SurveySection id={id} highlighted={highlightedId === id} title={title} isComplete={isComplete}>
             <div className="space-y-10">
                 <QuestionBlock>
                     <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">{isHouse ? '進出現況' : '進出通行現況'}</p>
-                    <AccordionOptionGroup 
-                        options={mapOptions(ACCESS_STATUS_OPTIONS)} 
+                    <RadioGroup 
+                        options={ACCESS_STATUS_OPTIONS} 
                         value={data[accessKey]?.includes('順暢') ? '通行順暢' : (data[accessKey]?.includes('受限') ? '通行受限（如狹窄、有障礙物）' : (data[accessKey]?.includes('袋地') ? '袋地（無合法出入口）' : ''))} 
                         onChange={v => {
                             const val = v.includes('順暢') ? '通行順暢' : (v.includes('受限') ? '通行受限' : (v.includes('袋地') ? '袋地' : v));
                             setData((prev: any) => ({...prev, [accessKey]: val}));
                         }} 
+                        cols={1} layout="grid" 
                     />
                     
                     {data[accessKey]?.includes('順暢') && (
@@ -655,28 +657,31 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                             <div className="space-y-8">
                                 <div>
                                     <p className="font-bold text-xl text-slate-700 mb-4 dark:text-slate-200">通行權屬與保障</p>
-                                    <AccordionOptionGroup 
-                                        options={mapOptions(['公有', '私人'])} 
+                                    <RadioGroup 
+                                        options={['公有', '私人']} 
                                         value={data[ownerKey] || ''} 
                                         onChange={v => {
                                             setData((prev: any) => ({...prev, [ownerKey]: v, [protectionKey]: ''}));
                                         }} 
+                                        layout="grid" cols={2}
                                     />
                                     {data[ownerKey] === '公有' && (
                                         <div className="mt-4 animate-in fade-in slide-in-from-top-2">
-                                            <AccordionOptionGroup 
-                                                options={mapOptions(PROTECTION_OPTS_PUBLIC)} 
+                                            <RadioGroup 
+                                                options={PROTECTION_OPTS_PUBLIC} 
                                                 value={data[protectionKey] || ''} 
                                                 onChange={v => update(protectionKey, v)} 
+                                                layout="grid" cols={2}
                                             />
                                         </div>
                                     )}
                                     {data[ownerKey] === '私人' && (
                                         <div className="mt-4 animate-in fade-in slide-in-from-top-2 space-y-4">
-                                            <AccordionOptionGroup 
-                                                options={mapOptions(PROTECTION_OPTS_PRIVATE)} 
+                                            <RadioGroup 
+                                                options={PROTECTION_OPTS_PRIVATE} 
                                                 value={data[protectionKey] || ''} 
                                                 onChange={v => update(protectionKey, v)} 
+                                                layout="grid" cols={2}
                                             />
                                             {/* For Land Q2, if private, ask for owner description if needed, or re-use existing field? 
                                                 The types say `land_q2_owner_desc`.
@@ -693,7 +698,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
 
                                 <div className="pt-6 border-t-2 border-slate-200">
                                     <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
-                                    <AccordionOptionGroup options={mapOptions(['柏油', '水泥', '泥土/石子', '其他未列項目'])} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} />
+                                    <RadioGroup options={['柏油', '水泥', '泥土/石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} layout="grid" cols={2} />
                                     {data[materialKey] === '其他未列項目' && <div className="mt-4"><DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /></div>}
                                 </div>
 
@@ -705,7 +710,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                     {!hideBuildingLine && (
                                         <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                              <p className="font-bold text-lg mb-2 text-slate-600">建築線指定狀況</p>
-                                             <AccordionOptionGroup options={mapOptions(BUILDING_LINE_OPTIONS)} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
+                                             <RadioGroup options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
                                         </div>
                                     )}
                                 </div>
@@ -713,7 +718,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                 {!hideDitch && (
                                     <div className="pt-6 border-t-2 border-slate-200">
                                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路排水溝現況</p>
-                                        <AccordionOptionGroup options={mapOptions(DRAINAGE_OPTIONS)} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} />
+                                        <RadioGroup options={DRAINAGE_OPTIONS} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} layout="grid" cols={1} />
                                         {data[ditchKey] === '其他未列項目' && <div className="mt-4"><DetailInput value={data[ditchOtherKey] || ''} onChange={v => update(ditchOtherKey, v)} placeholder="說明現況" /></div>}
                                     </div>
                                 )}

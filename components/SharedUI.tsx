@@ -7,60 +7,11 @@ import { ValidationError } from '../types';
 const getButtonColorClass = (checked: boolean, label: string, disabled: boolean) => {
     if (disabled) return 'bg-white border-slate-300 text-slate-300 opacity-50 cursor-not-allowed grayscale dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600';
     
-    // Unchecked state (Phase 3: Increased contrast)
-    if (!checked) return 'bg-white border-slate-500 border-b-slate-600 text-slate-700 hover:bg-slate-50 hover:border-slate-600 hover:text-slate-900 dark:bg-slate-800 dark:border-slate-500 dark:border-b-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white';
+    // Unchecked state (Physical feel - Thick border, shadow)
+    if (!checked) return 'bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-800 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white';
 
-    // Checked States
-    // Safe keywords (Green)
-    if (
-        label.includes('否') || 
-        label.includes('正常') || 
-        label.includes('相符') || 
-        label === '可進入' || 
-        label === '無' || 
-        label === '無設置' ||
-        label === '無機車車位' ||
-        label === '無車位' ||
-        label === '無異常' ||
-        label === '無重要環境設施' ||
-        label === '實測相符' ||
-        label === '界標完整' ||
-        label === '已鑑界 (標完好)' ||
-        label === '非範圍內' ||
-        label.startsWith('無 (') || 
-        label === '無糾紛' || 
-        label === '無修繕紀錄' || 
-        label.includes('確認無誤') || 
-        label === '確認無異常' ||
-        label === '依車位資訊告示牌' // Added new safe keyword
-    ) {
-        return 'bg-emerald-600 border-emerald-700 border-b-emerald-800 text-white shadow-xl shadow-emerald-100 dark:bg-emerald-600 dark:border-emerald-500 dark:border-b-emerald-700 dark:shadow-none';
-    }
-    // Danger keywords (Red/Rose)
-    if (
-        label.includes('是') || 
-        label.includes('有') || 
-        label.includes('異常') || 
-        label.includes('不符') || 
-        label === '不可進入' || 
-        label === '有纠纷' || 
-        label.includes('疑似') || 
-        label.includes('疑慮') ||
-        label === '全屋天花板包覆' || 
-        label.includes('需說明') ||
-        label === '屬範圍內' ||
-        label === '需重新鑑界' ||
-        label === '標位不明 (需重測)' ||
-        label === '待查證' ||
-        label === '袋地' ||
-        label === '有異常' ||
-        label === '實測不符' ||
-        label.includes('無法測量') // Covers '無法測量' and '無法測量也無相關資訊'
-    ) {
-        return 'bg-rose-600 border-rose-700 border-b-rose-800 text-white shadow-xl shadow-rose-100 dark:bg-rose-600 dark:border-rose-500 dark:border-b-rose-700 dark:shadow-none';
-    }
-    // Neutral/Active Default (Dark Slate/Blue)
-    return 'bg-slate-800 border-slate-900 border-b-black text-white shadow-xl shadow-slate-200 dark:bg-sky-600 dark:border-sky-500 dark:border-b-sky-700 dark:shadow-none';
+    // Selected State (Warm Light Blue - Replaces Traffic Light)
+    return 'bg-[#E0F2FE] border-[#7DD3FC] border-b-[#0EA5E9] text-[#0369A1] shadow-md dark:bg-sky-900/40 dark:border-sky-500 dark:border-b-sky-600 dark:text-sky-100';
 };
 
 // === CheckBox ===
@@ -73,10 +24,13 @@ interface CheckBoxProps {
 export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => (
     <div 
         onClick={() => !disabled && onClick()} 
-        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-black text-xl md:text-3xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px]
+        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-black text-xl md:text-3xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] relative overflow-hidden
         ${getButtonColorClass(checked, label, disabled)}`}
     >
-        <span>{label}</span>
+        <span className="relative z-10 flex items-center justify-center gap-2">
+            {checked && <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-500 fill-white" strokeWidth={2.5} />}
+            {label}
+        </span>
     </div>
 );
 
@@ -91,12 +45,15 @@ interface RadioGroupProps {
     spanFullOption?: string; // New prop: which option text should span full width
 }
 export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
-    // Force vertical layout (1 column) on ALL devices as per user request
-    // This simplifies the logic significantly and ensures consistency
-    const gridCols = 'grid-cols-1';
+    // Stage 2: Intelligent Layout Detection
+    // Default force vertical (1 column). Only switch to horizontal (2 columns) if:
+    // 1. Exactly 2 options
+    // 2. Both options are very short (<= 4 chars)
+    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
+    const gridCols = isShortAndSimple ? 'grid-cols-2' : 'grid-cols-1';
     
     // Helper to render label with subtitle if parentheses exist
-    const renderLabel = (text: string) => {
+    const renderLabel = (text: string, isSelected: boolean) => {
         const match = text.match(/^(.*?)(\s*[\(（].*?[\)）])$/);
         const mainText = match ? match[1] : text;
         const subText = match ? match[2].trim() : null;
@@ -119,7 +76,8 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
         if (subText) {
             return (
                 <div className="flex flex-col items-center justify-center w-full py-3 min-h-[5rem]">
-                    <div className="mb-4">
+                    <div className="mb-4 flex items-center gap-2">
+                        {isSelected && <CheckCircle2 className="w-6 h-6 text-emerald-500 fill-white" strokeWidth={2.5} />}
                         {mainContent}
                     </div>
                     <div className="bg-orange-100 dark:bg-orange-900/40 px-3 py-2 rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center">
@@ -131,21 +89,27 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
             );
         }
         
-        return mainContent;
+        return (
+            <div className="flex items-center gap-2">
+                {isSelected && <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-500 fill-white" strokeWidth={2.5} />}
+                {mainContent}
+            </div>
+        );
     };
 
     return (
         <div className={`grid ${gridCols} gap-3 md:gap-4`}>
             {options.map((v, idx) => {
+                const isSelected = value === v;
                 return (
                     <button
                         key={v}
                         type="button"
                         onClick={() => !disabled && onChange(value === v ? '' : v)}
-                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-2xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px]
-                        ${getButtonColorClass(value === v, v, disabled)}`}
+                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-2xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
+                        ${getButtonColorClass(isSelected, v, disabled)}`}
                     >
-                        {renderLabel(v)}
+                        {renderLabel(v, isSelected)}
                     </button>
                 );
             })}
@@ -163,24 +127,31 @@ interface AccordionRadioProps {
     cols?: number;
 }
 export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
-    // Force vertical layout (1 column) on ALL devices as per user request
-    const gridClass = 'grid grid-cols-1';
+    // Stage 2: Intelligent Layout Detection
+    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
+    const gridClass = isShortAndSimple ? 'grid grid-cols-2' : 'grid grid-cols-1';
 
     return (
         <div className="flex flex-col gap-4 md:gap-6">
             <div className={`${gridClass} gap-3 md:gap-4`}>
-                {options.map((opt, idx) => (
-                    <button 
-                        key={opt}
-                        type="button" 
-                        disabled={disabled} 
-                        onClick={() => onChange(value === opt ? '' : opt)} 
-                        className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-3xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px]
-                        ${getButtonColorClass(value === opt, opt, disabled)}`}
-                    >
-                        <span>{opt}</span>
-                    </button>
-                ))}
+                {options.map((opt, idx) => {
+                    const isSelected = value === opt;
+                    return (
+                        <button 
+                            key={opt}
+                            type="button" 
+                            disabled={disabled} 
+                            onClick={() => onChange(value === opt ? '' : opt)} 
+                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-3xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
+                            ${getButtonColorClass(isSelected, opt, disabled)}`}
+                        >
+                            <span className="flex items-center gap-2">
+                                {isSelected && <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-500 fill-white" strokeWidth={2.5} />}
+                                <span>{opt}</span>
+                            </span>
+                        </button>
+                    );
+                })}
             </div>
             {value && renderDetail(value) && (
                 <div className="animate-in slide-in-from-top-4 fade-in duration-300 w-full">
@@ -191,91 +162,57 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
     );
 };
 
-// === Accordion Option Group (Elderly Friendly) ===
-interface AccordionOption {
+// === Accordion Option (New) ===
+interface AccordionOptionProps {
     label: string;
     subLabel?: string;
-    value: string;
+    checked: boolean;
+    onClick: () => void;
 }
 
-interface AccordionOptionGroupProps {
-    options: AccordionOption[] | string[];
-    value: string;
-    onChange: (val: string) => void;
-    disabled?: boolean;
-}
-
-export const AccordionOptionGroup: React.FC<AccordionOptionGroupProps> = ({ options, value, onChange, disabled = false }) => {
-    // Normalize options to object format
-    const normalizedOptions = options.map(opt => {
-        if (typeof opt === 'string') {
-            // Try to extract subLabel from parentheses if it's a string
-            const match = opt.match(/^(.*?)(\s*[\(（].*?[\)）])$/);
-            if (match) {
-                return { label: match[1].trim(), subLabel: match[2].trim(), value: opt };
-            }
-            return { label: opt, value: opt };
-        }
-        return opt;
-    });
-
-    // Smart layout detection: If exactly 2 options and both labels are very short (<= 4 chars), use horizontal layout
-    const isShortOptions = normalizedOptions.length === 2 && normalizedOptions.every(opt => opt.label.length <= 4 && !opt.subLabel);
-    
-    return (
-        <div className={`w-[90%] mx-auto flex gap-4 ${isShortOptions ? 'flex-row' : 'flex-col'}`}>
-            {normalizedOptions.map((opt) => {
-                const isSelected = value === opt.value;
-                return (
-                    <button
-                        key={opt.value}
-                        type="button"
-                        disabled={disabled}
-                        onClick={() => !disabled && onChange(isSelected ? '' : opt.value)}
-                        className={`
-                            relative flex items-center justify-between p-4 min-h-[65px] rounded-2xl border-2 transition-all duration-200 text-left
-                            ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer active:scale-[0.98]'}
-                            ${isSelected 
-                                ? 'bg-sky-50 border-sky-400 shadow-sm dark:bg-sky-900/30 dark:border-sky-500' 
-                                : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
-                            }
-                            ${isShortOptions ? 'flex-1 justify-center' : 'w-full'}
-                        `}
-                    >
-                        <div className={`flex flex-col ${isShortOptions ? 'items-center text-center' : 'items-start'}`}>
-                            <span className={`text-lg font-bold ${isSelected ? 'text-sky-900 dark:text-sky-100' : 'text-slate-800 dark:text-slate-200'}`}>
-                                {opt.label}
-                            </span>
-                            {opt.subLabel && (
-                                <span className={`text-[15px] mt-1 ${isSelected ? 'text-sky-700 dark:text-sky-300' : 'text-slate-500 dark:text-slate-400'}`}>
-                                    {opt.subLabel}
-                                </span>
-                            )}
-                        </div>
-                        
-                        {/* Check Icon - Only show if selected and not in short horizontal mode (where it might crowd the text) */}
-                        {isSelected && !isShortOptions && (
-                            <div className="flex-shrink-0 ml-4 animate-in zoom-in duration-200">
-                                <CheckCircle2 className="w-8 h-8 text-emerald-500 dark:text-emerald-400" strokeWidth={2.5} />
-                            </div>
-                        )}
-                    </button>
-                );
-            })}
+export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabel, checked, onClick }) => (
+    <div
+        onClick={onClick}
+        className={`w-[90%] mx-auto min-h-[65px] flex items-center justify-between px-5 py-3 rounded-xl border transition-all duration-200 cursor-pointer select-none mb-3
+        ${checked
+            ? 'bg-sky-50 border-sky-200 shadow-sm dark:bg-sky-900/30 dark:border-sky-700'
+            : 'bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
+        }`}
+    >
+        <div className="flex flex-col text-left">
+            <span className={`text-[18px] font-bold leading-tight ${checked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
+                {label}
+            </span>
+            {subLabel && (
+                <span className="text-[15px] text-slate-500 mt-1 leading-normal dark:text-slate-400">
+                    {subLabel}
+                </span>
+            )}
         </div>
-    );
-};
+        
+        {/* Icon Area */}
+        <div className="flex-shrink-0 ml-4">
+            {checked && (
+                <div className="w-8 h-8 rounded-full bg-white border-2 border-emerald-500 flex items-center justify-center shadow-sm dark:bg-slate-800 dark:border-emerald-400">
+                    <Check className="w-5 h-5 text-emerald-500 dark:text-emerald-400" strokeWidth={3} />
+                </div>
+            )}
+        </div>
+    </div>
+);
 
 // === Survey Section Wrapper (Accordion Style) ===
+export type SectionStatus = 'incomplete' | 'complete' | 'neutral';
+
 export const SurveySection: React.FC<{ 
     id?: string; 
     title?: React.ReactNode; 
     children: React.ReactNode; 
     highlighted?: boolean; 
     className?: string;
-    isCompleted?: boolean; // Kept for backward compatibility, but status is preferred
-    status?: 'default' | 'completed' | 'incomplete';
-}> = ({ id, title, children, highlighted = false, className = '', isCompleted = false, status = 'default' }) => {
+    hasActiveContent?: boolean; // Deprecated in favor of status, but kept for backward compatibility if needed
+    status?: SectionStatus;
+}> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
     // Default open, allowing users to collapse manually
     const [isOpen, setIsOpen] = useState(true);
 
@@ -286,23 +223,30 @@ export const SurveySection: React.FC<{
         }
     }, [highlighted]);
 
-    // Determine effective status (fallback to isCompleted if status is default)
-    const effectiveStatus = status !== 'default' ? status : (isCompleted ? 'completed' : 'default');
-
-    // Determine title color based on status and open state
-    let titleColorClass = 'text-slate-800 dark:text-slate-100';
-    if (!isOpen) {
-        if (effectiveStatus === 'completed') {
-            titleColorClass = 'text-emerald-600 dark:text-emerald-400';
-        } else if (effectiveStatus === 'incomplete') {
-            titleColorClass = 'text-rose-600 dark:text-rose-400';
+    // Determine styles based on status
+    const getStatusStyles = () => {
+        if (highlighted) return 'error-highlight-anim border-3 border-slate-200'; // Error takes precedence
+        
+        switch (status) {
+            case 'complete':
+                return 'bg-[#ECFDF5] border-3 border-[#A7F3D0] dark:bg-emerald-900/30 dark:border-emerald-800'; // Soft bean paste green
+            case 'incomplete':
+                return 'bg-[#FFF1F2] border-3 border-[#FECDD3] dark:bg-rose-900/30 dark:border-rose-800'; // Low saturation warm red
+            default:
+                return 'bg-white border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700';
         }
-    }
+    };
+
+    const getTitleColor = () => {
+        if (status === 'complete') return 'text-emerald-800 dark:text-emerald-300';
+        if (status === 'incomplete') return 'text-rose-800 dark:text-rose-300';
+        return hasActiveContent ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100';
+    };
 
     return (
         <div 
             id={id} 
-            className={`warm-card rounded-[2rem] md:rounded-[2.5rem] shadow-sm transition-all duration-500 border-3 border-slate-200 ${highlighted ? 'error-highlight-anim' : 'bg-white dark:bg-slate-800 dark:border-slate-700'} overflow-hidden ${className.replace(/space-y-\d+/g, '')}`} 
+            className={`warm-card rounded-[2rem] md:rounded-[2.5rem] shadow-sm transition-all duration-500 ${getStatusStyles()} overflow-hidden ${className.replace(/space-y-\d+/g, '')}`} 
         >
             {title ? (
                 <div 
@@ -311,14 +255,17 @@ export const SurveySection: React.FC<{
                 >
                     <div className="flex-grow pt-1 flex flex-col gap-2">
                         {typeof title === 'string' 
-                            ? <p className={`text-[1.75rem] md:text-[2rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${titleColorClass}`}>{title}</p> 
+                            ? <p className={`text-[1.75rem] md:text-[2rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${getTitleColor()}`}>{title}</p> 
                             : title
                         }
-                        {/* Incomplete Warning Text when collapsed */}
-                        {!isOpen && effectiveStatus === 'incomplete' && (
-                            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 animate-in fade-in duration-300">
-                                <AlertCircle className="w-5 h-5" strokeWidth={2.5} />
-                                <span className="text-base font-bold">尚未完成填寫</span>
+                        
+                        {/* Prompt Text for Incomplete State */}
+                        {status === 'incomplete' && (
+                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
+                                <span className="inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                                <span className="text-base md:text-lg font-bold text-rose-500/90">
+                                    尚有未填項目
+                                </span>
                             </div>
                         )}
                     </div>
@@ -337,14 +284,16 @@ export const SurveySection: React.FC<{
                 <div className="h-4"></div>
             )}
             
-            <div className={`transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'hidden opacity-0'}`}>
-                <div className="px-6 md:px-10 pb-6 md:pb-10 pt-0">
-                    {/* Divider Line */}
-                    {title && <div className="border-b-4 border-slate-100 dark:border-slate-700 mb-6 md:mb-8 -mt-2" />}
-                    
-                    {/* Content */}
-                    <div className={className.includes('space-y') ? className : `space-y-8 md:space-y-10 ${className}`}>
-                        {children}
+            <div className={`grid transition-all duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                <div className="overflow-hidden">
+                    <div className="px-6 md:px-10 pb-6 md:pb-10 pt-0">
+                        {/* Divider Line */}
+                        {title && <div className={`border-b-4 mb-6 md:mb-8 -mt-2 ${status === 'complete' ? 'border-emerald-100 dark:border-emerald-800' : (status === 'incomplete' ? 'border-rose-100 dark:border-rose-800' : 'border-slate-100 dark:border-slate-700')}`} />}
+                        
+                        {/* Content */}
+                        <div className={className.includes('space-y') ? className : `space-y-8 md:space-y-10 ${className}`}>
+                            {children}
+                        </div>
                     </div>
                 </div>
             </div>

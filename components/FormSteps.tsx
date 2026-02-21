@@ -13,11 +13,11 @@ import {
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
-    AccordionRadio, QuestionBlock, BooleanReveal, UnitInput, FormInput, LandNumberInputs, SignaturePad, AccordionOptionGroup
+    AccordionRadio, QuestionBlock, BooleanReveal, UnitInput, FormInput, LandNumberInputs, SignaturePad,
+    SectionStatus
 } from './SharedUI';
 import { UtilitiesSection, ParkingSection, EnvironmentSection, NotesSection, LandQuestionsGroup, BuildingLandAccessSection } from './ComplexSections';
 import { ROCDatePicker } from './ROCDatePicker';
-import { validateForm } from '../utils/validators';
 
 interface StepProps {
     data: SurveyData;
@@ -34,16 +34,6 @@ interface StepProps {
 const getFactoryHeightLabel = (pType: string) => {
     if (pType === "立體化廠辦大樓" || pType === "標準廠房(工業園區內)") return "樑下淨高／樓層高度";
     return "滴水高度";
-};
-
-const mapOptions = (options: string[]) => {
-    return options.map(opt => {
-        const match = opt.match(/^(.*?)(\s*[\(（].*?[\)）])$/);
-        if (match) {
-            return { label: match[1], subLabel: match[2].trim(), value: opt };
-        }
-        return { label: opt, value: opt };
-    });
 };
 
 // Reusable Step Container to remove duplication of layout and header styles
@@ -65,91 +55,121 @@ const StepContainer: React.FC<{
     );
 };
 
-export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, type, highlightedField, themeText, themeBorder }) => {
-    const isStep1Complete = React.useMemo(() => {
-        const hasPropertyType = type === 'parking' ? true : !!data.propertyType;
-        const hasAccess = !!data.access;
-        return hasPropertyType && hasAccess;
-    }, [data.propertyType, data.access, type]);
-
-    return (
-        <StepContainer title="第一步：基本資料" type={type} themeText={themeText}>
-            <div className={`space-y-6 md:space-y-8 warm-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-sm ${themeBorder}`}>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                    <FormInput id="field-caseName" label="物件案名" value={data?.caseName || ''} onChange={v => update('caseName', v)} placeholder="輸入案名" highlighted={highlightedField === 'field-caseName'} />
-                    <FormInput id="field-authNumber" label="委託書編號" value={data?.authNumber || ''} onChange={v => update('authNumber', v)} placeholder="輸入編號" highlighted={highlightedField === 'field-authNumber'} />
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                    <FormInput id="field-storeName" label="所屬店名" value={data?.storeName || ''} onChange={v => update('storeName', v)} placeholder="輸入店名" highlighted={highlightedField === 'field-storeName'} />
-                    <FormInput id="field-agentName" label="調查業務" value={data?.agentName || ''} onChange={v => update('agentName', v)} placeholder="輸入姓名" highlighted={highlightedField === 'field-agentName'} />
-                </div>
-                <div className="space-y-3"><label className="block text-slate-800 font-black mb-2 text-[1.5rem] md:text-[1.75rem] text-left leading-normal">填寫日期</label><div className="mt-1"><ROCDatePicker value={data?.fillDate || ''} onChange={(d) => update('fillDate', d)} /></div></div>
-                <FormInput id="field-address" label={type === 'land' ? '坐落位置' : (type === 'parking' ? '標的位置' : '標的地址')} value={data?.address || ''} onChange={v => update('address', v)} placeholder={type === 'land' ? "輸入坐落位置或相關位置" : "輸入地址／位置"} highlighted={highlightedField === 'field-address'} />
+export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, type, highlightedField, themeText, themeBorder }) => (
+    <StepContainer title="第一步：基本資料" type={type} themeText={themeText}>
+        <div className={`space-y-6 md:space-y-8 warm-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-sm ${themeBorder}`}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <FormInput id="field-caseName" label="物件案名" value={data?.caseName || ''} onChange={v => update('caseName', v)} placeholder="輸入案名" highlighted={highlightedField === 'field-caseName'} />
+                <FormInput id="field-authNumber" label="委託書編號" value={data?.authNumber || ''} onChange={v => update('authNumber', v)} placeholder="輸入編號" highlighted={highlightedField === 'field-authNumber'} />
             </div>
-            <SurveySection 
-                id="section-access" 
-                highlighted={highlightedField === 'section-access'} 
-                title={type === 'factory' || type === 'house' || type === 'land' ? "本物件型態與現況" : "本物件現況"} 
-                className={themeBorder}
-                isCompleted={isStep1Complete}
-                isIncomplete={!isStep1Complete}
-            >
-                {type === 'factory' && (
-                    <>
-                        <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                            <AccordionOptionGroup options={mapOptions(FACTORY_PROPERTY_TYPE_OPTIONS)} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他特殊工業設施' ? prev.propertyTypeOther : '' })); }} />
-                            {data?.propertyType === '其他特殊工業設施' && (<SubItemHighlight><DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明物件型態" /></SubItemHighlight>)}
-                        </div>
-                        <div className="animate-in fade-in slide-in-from-top-2">
-                            <BooleanReveal 
-                                label="本物件現況"
-                                value={data?.access || ''}
-                                onChange={(v) => { setData(prev => ({ ...prev, access: v, accessType: v === '不可進入' ? prev.accessType : [], accessOther: v === '不可進入' ? prev.accessOther : '' })); }}
-                                options={['可進入', '不可進入']}
-                                trigger="不可進入"
-                            >
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-6 place-items-stretch">{ACCESS_SUB_OPTIONS_FACTORY.map(opt => (<CheckBox key={opt} checked={data?.accessType?.includes(opt) || false} label={opt} onClick={() => toggleArr('accessType', opt)} />))}</div>
-                                {data?.accessType?.includes('其他未列項目') && (<div className="space-y-4 w-full"><input type="text" className="full-width-input !mt-0" value={data?.accessOther || ''} onChange={v => update('accessOther', v.target.value)} placeholder="說明現況" autoComplete="off" /></div>)}
-                                <div className="mt-8"><InlineWarning>若為上述現況，建議待整屋搬空/清空後再進行完整調查</InlineWarning></div>
-                            </BooleanReveal>
-                        </div>
-                    </>
-                )}
-                {type === 'house' && (
-                     <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <FormInput id="field-storeName" label="所屬店名" value={data?.storeName || ''} onChange={v => update('storeName', v)} placeholder="輸入店名" highlighted={highlightedField === 'field-storeName'} />
+                <FormInput id="field-agentName" label="調查業務" value={data?.agentName || ''} onChange={v => update('agentName', v)} placeholder="輸入姓名" highlighted={highlightedField === 'field-agentName'} />
+            </div>
+            <div className="space-y-3"><label className="block text-slate-800 font-black mb-2 text-[1.5rem] md:text-[1.75rem] text-left leading-normal">填寫日期</label><div className="mt-1"><ROCDatePicker value={data?.fillDate || ''} onChange={(d) => update('fillDate', d)} /></div></div>
+            <FormInput id="field-address" label={type === 'land' ? '坐落位置' : (type === 'parking' ? '標的位置' : '標的地址')} value={data?.address || ''} onChange={v => update('address', v)} placeholder={type === 'land' ? "輸入坐落位置或相關位置" : "輸入地址／位置"} highlighted={highlightedField === 'field-address'} />
+        </div>
+        <SurveySection id="section-access" highlighted={highlightedField === 'section-access'} title={type === 'factory' || type === 'house' || type === 'land' ? "本物件型態與現況" : "本物件現況"} className={themeBorder}>
+            {type === 'factory' && (
+                <>
+                    <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <AccordionOptionGroup options={mapOptions(HOUSE_PROPERTY_TYPE_OPTIONS)} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                        <RadioGroup options={FACTORY_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他特殊工業設施' ? prev.propertyTypeOther : '' })); }} />
+                        {data?.propertyType === '其他特殊工業設施' && (<SubItemHighlight><DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明物件型態" /></SubItemHighlight>)}
                     </div>
-                )}
-                {type === 'land' && (
-                     <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <AccordionOptionGroup options={mapOptions(LAND_PROPERTY_TYPE_OPTIONS)} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                    <div className="animate-in fade-in slide-in-from-top-2">
+                        <BooleanReveal 
+                            label="本物件現況"
+                            value={data?.access || ''}
+                            onChange={(v) => { setData(prev => ({ ...prev, access: v, accessType: v === '不可進入' ? prev.accessType : [], accessOther: v === '不可進入' ? prev.accessOther : '' })); }}
+                            options={['可進入', '不可進入']}
+                            trigger="不可進入"
+                        >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-6 place-items-stretch">{ACCESS_SUB_OPTIONS_FACTORY.map(opt => (<CheckBox key={opt} checked={data?.accessType?.includes(opt) || false} label={opt} onClick={() => toggleArr('accessType', opt)} />))}</div>
+                            {data?.accessType?.includes('其他未列項目') && (<div className="space-y-4 w-full"><input type="text" className="full-width-input !mt-0" value={data?.accessOther || ''} onChange={v => update('accessOther', v.target.value)} placeholder="說明現況" autoComplete="off" /></div>)}
+                            <div className="mt-8"><InlineWarning>若為上述現況，建議待整屋搬空/清空後再進行完整調查</InlineWarning></div>
+                        </BooleanReveal>
                     </div>
-                )}
-                {type !== 'factory' && (
-                    <BooleanReveal 
-                        label={type === 'house' || type === 'land' ? "本物件現況" : ""}
-                        value={data?.access || ''}
-                        onChange={(v) => { setData(prev => ({ ...prev, access: v, accessType: v === '不可進入' ? prev.accessType : [], accessOther: v === '不可進入' ? prev.accessOther : '' })); }}
-                        options={['可進入', '不可進入']}
-                        trigger="不可進入"
-                    >
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-6 place-items-stretch">{(type === 'land' ? ACCESS_SUB_OPTIONS_LAND : (type === 'parking' ? ACCESS_SUB_OPTIONS_PARKING : ACCESS_SUB_OPTIONS)).map(opt => (<CheckBox key={opt} checked={data?.accessType?.includes(opt) || false} label={opt} onClick={() => toggleArr('accessType', opt)} />))}</div>
-                        {data?.accessType?.includes('其他未列項目') && (<div className="space-y-4 w-full"><input type="text" className="full-width-input !mt-0" value={data?.accessOther || ''} onChange={v => update('accessOther', v.target.value)} placeholder="說明現況" autoComplete="off" /></div>)}
-                        {type !== 'parking' && <div className="mt-8"><InlineWarning>{type === 'land' ? '若為上述現況，建議待找可進行調查時間點時再進行完整調查' : '若為上述現況，建議待整屋搬空/清空後再進行完整調查'}</InlineWarning></div>}
-                    </BooleanReveal>
-                )}
-            </SurveySection>
-        </StepContainer>
-    );
-});
+                </>
+            )}
+            {type === 'house' && (
+                 <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
+                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
+                    <RadioGroup options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                </div>
+            )}
+            {type === 'land' && (
+                 <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
+                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
+                    <RadioGroup options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                </div>
+            )}
+            {type !== 'factory' && (
+                <BooleanReveal 
+                    label={type === 'house' || type === 'land' ? "本物件現況" : ""}
+                    value={data?.access || ''}
+                    onChange={(v) => { setData(prev => ({ ...prev, access: v, accessType: v === '不可進入' ? prev.accessType : [], accessOther: v === '不可進入' ? prev.accessOther : '' })); }}
+                    options={['可進入', '不可進入']}
+                    trigger="不可進入"
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-6 place-items-stretch">{(type === 'land' ? ACCESS_SUB_OPTIONS_LAND : (type === 'parking' ? ACCESS_SUB_OPTIONS_PARKING : ACCESS_SUB_OPTIONS)).map(opt => (<CheckBox key={opt} checked={data?.accessType?.includes(opt) || false} label={opt} onClick={() => toggleArr('accessType', opt)} />))}</div>
+                    {data?.accessType?.includes('其他未列項目') && (<div className="space-y-4 w-full"><input type="text" className="full-width-input !mt-0" value={data?.accessOther || ''} onChange={v => update('accessOther', v.target.value)} placeholder="說明現況" autoComplete="off" /></div>)}
+                    {type !== 'parking' && <div className="mt-8"><InlineWarning>{type === 'land' ? '若為上述現況，建議待找可進行調查時間點時再進行完整調查' : '若為上述現況，建議待整屋搬空/清空後再進行完整調查'}</InlineWarning></div>}
+                </BooleanReveal>
+            )}
+        </SurveySection>
+    </StepContainer>
+));
 
 export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, type, highlightedField, themeText, parkingLogic }) => {
     
     // Check if property type belongs to Group A
     const isGroupA = GROUP_A_TYPES.includes(data.propertyType);
+
+    // --- Status Logic Helpers ---
+    const getQ1Status = (): SectionStatus => {
+        if (!data.q1_hasExt) return 'incomplete';
+        if (data.q1_hasExt === '是' && (!data.q1_items || data.q1_items.length === 0)) return 'incomplete';
+        if (!data.q2_hasOccupancy) return 'incomplete';
+        if (data.q2_hasOccupancy !== '否' && data.q2_hasOccupancy !== '無' && !data.q2_desc) return 'incomplete';
+        if (!data.q2_other_occupancy) return 'incomplete';
+        if (data.q2_other_occupancy !== '否' && data.q2_other_occupancy !== '無' && !data.q2_other_occupancy_desc) return 'incomplete';
+        return 'complete';
+    };
+
+    const getQ6Status = (): SectionStatus => {
+        if (!data.q6_hasIssue) return 'incomplete';
+        if ((data.q6_hasIssue === '實測不符' || data.q6_hasIssue === '無法測量') && !data.q6_desc) return 'incomplete';
+        return 'complete';
+    };
+
+    const getQ3Status = (): SectionStatus => {
+        if (!data.q3_hasLeak && !data.q3_ceilingWrapped) return 'incomplete';
+        if (data.q3_hasLeak === '是') {
+            if (!data.q3_leakType) return 'incomplete';
+            if (data.q3_leakType !== '全屋天花板包覆' && (!data.q3_locations || data.q3_locations.length === 0)) return 'incomplete';
+        }
+        if (!data.q3_repairHistory) return 'incomplete';
+        return 'complete';
+    };
+
+    const getQ4Status = (): SectionStatus => {
+        if (!data.q4_hasIssue && !data.q4_ceilingWrapped) return 'incomplete';
+        if (data.q4_hasIssue === '是' && !data.q4_ceilingWrapped && (!data.q4_items || data.q4_items.length === 0)) return 'incomplete';
+        if (!data.q5_hasTilt) return 'incomplete';
+        return 'complete';
+    };
+
+    const getQ7Status = (): SectionStatus => {
+        if (!data.q7_gasType) return 'incomplete';
+        if (!data.q7_hasIssue) return 'incomplete';
+        if (data.q7_hasIssue === '是' && (!data.q7_items || data.q7_items.length === 0)) return 'incomplete';
+        if (isGroupA) {
+            if (!data.house_solar_status) return 'incomplete';
+            if (!data.water_booster) return 'incomplete';
+        }
+        return 'complete';
+    };
 
     return (
         <StepContainer title={type === 'land' ? '第二步：使用現況-1' : (type === 'parking' ? '第二步：車位資訊與現況' : '第二步：內部現況')} type={type} themeText={themeText}>
@@ -188,7 +208,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             )}
             {(type === 'house' || type === 'factory') && (
                 <div className="space-y-8 md:space-y-12">
-                    <SurveySection id="section-q1" highlighted={highlightedField === 'section-q1'} title="1. 增建與占用／被占用現況">
+                    <SurveySection id="section-q1" highlighted={highlightedField === 'section-q1'} title="1. 增建與占用／被占用現況" status={getQ1Status()}>
                         <div className="space-y-8 md:space-y-10 pl-0 md:pl-2">
                             <BooleanReveal 
                                 label={
@@ -240,7 +260,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對／建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對／建物面積現況評估'}</p>} hasActiveContent={!!data.q6_hasIssue}>
+                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對／建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對／建物面積現況評估'}</p>} status={getQ6Status()}>
                         <InlineWarning>※可簡易測量最長／短／寬／窄之距離 (因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內)</InlineWarning>
                         <RadioGroup 
                             options={['實測相符', '實測不符', '無法測量']} 
@@ -249,11 +269,10 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 setData(prev => ({ ...prev, q6_hasIssue: v, q6_desc: (v === '實測相符') ? '' : prev.q6_desc })); 
                             }} 
                             layout="grid" 
-                            variant="accordion"
                         />{(data?.q6_hasIssue === '實測不符' || data?.q6_hasIssue === '無法測量') && (<SubItemHighlight><DetailInput value={data.q6_desc || ''} onChange={v => update('q6_desc', v)} placeholder="說明現況" /></SubItemHighlight>)}
                     </SurveySection>
 
-                    <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" hasActiveContent={!!data.q3_hasLeak}>
+                    <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
                         <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
                         <RadioGroup 
                             options={['無', '有', '全屋天花板包覆']} 
@@ -267,7 +286,6 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 }
                             }} 
                             layout="grid"
-                            variant="accordion"
                         />
                         {data?.q3_hasLeak === '是' && !data.q3_ceilingWrapped && (
                             <SubItemHighlight>
@@ -279,7 +297,6 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             value={data.q3_leakType === '全屋天花板包覆' ? '' : (data.q3_leakType || '')} 
                                             onChange={v => setData(prev => ({ ...prev, q3_leakType: v }))} 
                                             layout="grid" 
-                                            variant="accordion"
                                         />
                                     </div>
                                     
@@ -304,7 +321,6 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     value={data.q3_repairHistory || ''} 
                                     onChange={v => update('q3_repairHistory', v)} 
                                     cols={2}
-                                    variant="accordion"
                                 />
                                 {data.q3_repairHistory === '有修繕紀錄' && (
                                     <SubItemHighlight>
@@ -315,7 +331,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q4" highlighted={highlightedField === 'section-q4'} title={type === 'factory' ? '4. 建物結構現況' : '4. 建物結構現況'} hasActiveContent={!!data.q4_hasIssue}>
+                    <SurveySection id="section-q4" highlighted={highlightedField === 'section-q4'} title={type === 'factory' ? '4. 建物結構現況' : '4. 建物結構現況'} status={getQ4Status()}>
                         <div className="space-y-8 md:space-y-10">
                             <QuestionBlock>
                                 <div className="mb-6">
@@ -365,7 +381,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                     {type === 'house' && (
                         <>
-                            <SurveySection id="section-q7" highlighted={highlightedField === 'section-q7'} title="5. 電、水、瓦斯與其他設施使用現況">
+                            <SurveySection id="section-q7" highlighted={highlightedField === 'section-q7'} title="5. 電、水、瓦斯與其他設施使用現況" status={getQ7Status()}>
                                  <div className="space-y-8">
                                      {/* 1. Gas Supply Type - Top */}
                                      <QuestionBlock>
