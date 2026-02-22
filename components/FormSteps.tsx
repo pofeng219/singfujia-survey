@@ -331,11 +331,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
                         <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
                         <RadioGroup 
-                            options={['無', '有', '全屋天花板包覆']} 
-                            value={data.q3_ceilingWrapped ? '全屋天花板包覆' : (data?.q3_hasLeak === '否' ? '無' : (data?.q3_hasLeak === '是' ? '有' : (data?.q3_hasLeak ? '' : '')))} 
+                            options={['無', '有', '全屋天花板包覆 (無法檢查)']} 
+                            value={data.q3_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q3_hasLeak === '否' ? '無' : (data?.q3_hasLeak === '是' ? '有' : (data?.q3_hasLeak ? '' : '')))} 
                             onChange={(v) => { 
-                                if (v === '全屋天花板包覆') {
-                                    setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '', q3_suspected: false, q3_suspectedDesc: '' })); 
+                                if (v === '全屋天花板包覆 (無法檢查)') {
+                                    setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆 (無法檢查)', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '因裝潢包覆無法檢視內部，需特別留意', q3_suspected: false, q3_suspectedDesc: '' })); 
                                 } else {
                                     const val = v === '無' ? '否' : (v === '有' ? '是' : v);
                                     setData(prev => ({ ...prev, q3_hasLeak: val, q3_leakType: val === '是' ? prev.q3_leakType : '', q3_ceilingWrapped: false, q3_locations: val === '是' ? prev.q3_locations : [], q3_hasOther: val === '是' ? prev.q3_hasOther : false, q3_other: val === '是' ? prev.q3_other : '', q3_suspected: val === '是' ? prev.q3_suspected : false, q3_suspectedDesc: val === '是' ? prev.q3_suspectedDesc : '' })); 
@@ -350,13 +350,13 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                         <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-500 block md:inline md:ml-2">(請確認現場狀況)</span></p>
                                         <RadioGroup 
                                             options={['滲漏水', '壁癌', '兩者皆有']} 
-                                            value={data.q3_leakType === '全屋天花板包覆' ? '' : (data.q3_leakType || '')} 
+                                            value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' ? '' : (data.q3_leakType || '')} 
                                             onChange={v => setData(prev => ({ ...prev, q3_leakType: v }))} 
                                             layout="grid" 
                                         />
                                     </div>
                                     
-                                    {(data.q3_leakType && data.q3_leakType !== '全屋天花板包覆') && (
+                                    {(data.q3_leakType && data.q3_leakType !== '全屋天花板包覆' && data.q3_leakType !== '全屋天花板包覆 (無法檢查)') && (
                                         <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 md:space-y-8">
                                             <div>
                                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">發生位置：</p>
@@ -396,11 +396,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
                                 </div>
                                 <RadioGroup 
-                                    options={['無', '有', '全屋天花板包覆']} 
-                                    value={data.q4_ceilingWrapped ? '全屋天花板包覆' : (data?.q4_hasIssue === '否' ? '無' : (data?.q4_hasIssue === '是' ? '有' : (data?.q4_hasIssue ? '' : '')))} 
+                                    options={['無', '有', '全屋天花板包覆 (無法檢查)']} 
+                                    value={data.q4_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q4_hasIssue === '否' ? '無' : (data?.q4_hasIssue === '是' ? '有' : (data?.q4_hasIssue ? '' : '')))} 
                                     onChange={(v) => { 
-                                        if (v === '全屋天花板包覆') {
-                                            setData(prev => ({ ...prev, q4_hasIssue: '是', q4_ceilingWrapped: true, q4_items: [], q4_hasOther: false, q4_otherDesc: '', q4_suspected: false, q4_suspectedDesc: '' })); 
+                                        if (v === '全屋天花板包覆 (無法檢查)') {
+                                            setData(prev => ({ ...prev, q4_hasIssue: '是', q4_ceilingWrapped: true, q4_items: [], q4_hasOther: false, q4_otherDesc: '因裝潢包覆無法檢視內部，需特別留意', q4_suspected: false, q4_suspectedDesc: '' })); 
                                         } else {
                                             const val = v === '無' ? '否' : (v === '有' ? '是' : v);
                                             setData(prev => ({ ...prev, q4_hasIssue: val, q4_ceilingWrapped: false, q4_items: val === '是' ? prev.q4_items : [], q4_hasOther: val === '是' ? prev.q4_hasOther : false, q4_otherDesc: val === '是' ? prev.q4_otherDesc : '', q4_suspected: val === '是' ? prev.q4_suspected : false, q4_suspectedDesc: val === '是' ? prev.q4_suspectedDesc : '' })); 

@@ -58,20 +58,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
         const mainText = match ? match[1] : text;
         const subText = match ? match[2].trim() : null;
 
-        let mainContent;
-        // If main text is longer than 4 chars, split after the 2nd char for better vertical rhythm
-        if (mainText.length > 4) {
-            const firstPart = mainText.slice(0, 2);
-            const secondPart = mainText.slice(2);
-            mainContent = (
-                <div className="flex flex-col items-center justify-center leading-normal">
-                    <span>{firstPart}</span>
-                    <span>{secondPart}</span>
-                </div>
-            );
-        } else {
-            mainContent = <span>{mainText}</span>;
-        }
+        const mainContent = <span>{mainText}</span>;
 
         if (subText) {
             return (
@@ -370,7 +357,7 @@ export const FormInput: React.FC<{
         <label className="block text-slate-800 font-black mb-3 text-[1.5rem] md:text-[1.75rem] text-left dark:text-slate-100">{label}</label>
         <input 
             type="text" 
-            className="full-width-input" 
+            className="full-width-input text-lg" 
             value={value || ''} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -386,7 +373,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
             type="number" 
             inputMode="decimal"
             disabled={disabled}
-            className={`full-width-input pr-16 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
+            className={`full-width-input text-lg pr-16 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
             value={value} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -656,7 +643,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950" 
+                className="full-width-input text-lg !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950" 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 

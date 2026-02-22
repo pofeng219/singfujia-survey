@@ -257,7 +257,7 @@ const getHouseLabels = (data: SurveyData) => {
         return labels.join(', ');
     };
     const q3 = () => {
-        if (data?.q3_ceilingWrapped || data?.q3_leakType === '全屋天花板包覆') return "全屋天花板包覆";
+        if (data?.q3_ceilingWrapped || data?.q3_leakType === '全屋天花板包覆' || data?.q3_leakType === '全屋天花板包覆 (無法檢查)') return "全屋天花板包覆 (無法檢查) - 因裝潢包覆無法檢視內部，需特別留意";
         const locations = [...(data?.q3_locations || [])];
         if (data?.q3_suspected && data.q3_suspectedDesc) locations.push(`待查證: ${data.q3_suspectedDesc}`);
         if (data?.q3_hasOther && data.q3_other) locations.push(`其他: ${data.q3_other}`);
@@ -270,7 +270,7 @@ const getHouseLabels = (data: SurveyData) => {
     };
     const q4 = () => {
         const labels = [...(data?.q4_items || [])];
-        if (data?.q4_ceilingWrapped) labels.push("全屋天花板包覆");
+        if (data?.q4_ceilingWrapped) labels.push("全屋天花板包覆 (無法檢查) - 因裝潢包覆無法檢視內部，需特別留意");
         if (data?.q4_suspected && data.q4_suspectedDesc) labels.push(`待查證: ${data.q4_suspectedDesc}`);
         if (data?.q4_hasOther && data.q4_otherDesc) labels.push(`其他: ${data.q4_otherDesc}`);
         return labels.join(', ');
