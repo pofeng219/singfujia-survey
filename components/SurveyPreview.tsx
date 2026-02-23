@@ -119,7 +119,7 @@ const ParkingContent: React.FC<{ data: SurveyData, parkingSummary: any, activeMo
             {(data?.q10_laneSection || data?.q10_laneNumber) && (
                 <div><span className="font-bold mr-2">車道經過地號:</span><span className="font-medium">{formatAccessLandAddress(data.q10_laneSection, data.q10_laneSubSection, data.q10_laneNumber).replace('地號: ', '')}</span></div>
             )}
-            {parkingSummary.showCharging && (<div><span className="font-bold mr-2">車位充電設備配置:</span><PreviewResult checked={data?.q10_charging === '有'} label="有" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '無'} label="無" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '僅預留管線／孔位'} label="僅預留管線／孔位" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '須經管委會同意'} label="須經管委會同意" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '其他' || data?.q10_charging === '其他未列項目'} label="其他" suffix={': ' + (data?.q10_chargingOther || '')} variant={prVariant} /></div>)}
+            {parkingSummary.showCharging && (<div><span className="font-bold mr-2">車位充電設備配置:</span><PreviewResult checked={data?.q10_charging === '有' || data?.q10_charging === '是'} label="有" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '無' || data?.q10_charging === '否'} label="無" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '僅預留管線／孔位'} label="僅預留管線／孔位" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '須經管委會同意'} label="須經管委會同意" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '其他' || data?.q10_charging === '其他未列項目'} label="其他" suffix={': ' + (data?.q10_chargingOther || '')} variant={prVariant} /></div>)}
             {parkingSummary.isNoParking && (<div><span className="font-bold mr-2">停車方式:</span><PreviewResult checked={true} label="無車位" variant={prVariant} /></div>)}
         </div>
     );
@@ -1020,7 +1020,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             showMethod: !isNoParking,
             showNumber: !isNoParking && !isOtherPt && (data?.q10_parkingNumberType === 'number' || data?.q10_parkingNumberType === 'none'),
             showCarStatus: !isNoParking && !isOtherPt && ((data?.q10_carUsage || []).length > 0 || data?.q10_hasCarUsageOther),
-            showCarSize: !isNoParking && !isOtherPt && data?.q10_measureType !== '無法測量' && data?.q10_measureType !== '無法測量也無相關資訊' && !pts.includes("法定空地／自家門前"),
+            showCarSize: !isNoParking && !isOtherPt && !pts.includes("法定空地／自家門前"),
             showWeight: !isNoParking && !isOtherPt && !isPlaneType && data?.q10_mechWeight && data?.q10_measureType !== '無法測量也無相關資訊',
             showHeight: !isNoParking && !isOtherPt && !pts.includes("法定空地／自家門前") && data?.q10_entryHeight,
             showCharging: !isNoParking,
