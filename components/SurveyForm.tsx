@@ -241,9 +241,20 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' }); 
             if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'auto' }); 
         };
+        
+        // Immediate scroll
         scrollToTop();
-        const t = setTimeout(scrollToTop, 100); 
-        return () => clearTimeout(t);
+        
+        // Scroll after short delay (for React render)
+        const t1 = setTimeout(scrollToTop, 50);
+        
+        // Scroll after animation delay (300ms is the duration of slide-in)
+        const t2 = setTimeout(scrollToTop, 320); 
+        
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
     }, [activeStep]);
 
     const handleJumpToError = (id: string, step: number) => {

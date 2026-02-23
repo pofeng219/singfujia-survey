@@ -182,7 +182,7 @@ export const UtilitiesSection = ({
                                         </div>
                                     </SubItemHighlight>
                                 )}
-                                {opt === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q1_water_other || ''} onChange={v => update('land_q1_water_other', v)} placeholder="如：山泉水、接鄰居水等" /></SubItemHighlight>}
+                                {opt === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q1_water_other || ''} onChange={v => update('land_q1_water_other', v)} placeholder="說明現況" /></SubItemHighlight>}
                             </>
                         )} 
                         cols={2}
@@ -352,7 +352,7 @@ export const ParkingSection = ({
                             </div>
                         ))}
                     </div>
-                    <div className={`bg-white p-4 md:p-6 rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 mt-6 dark:bg-slate-800 dark:border-slate-700`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => update('q10_hasParkTypeOther', !data.q10_hasParkTypeOther)} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="如：庭院停車、騎樓停車" /></SubItemHighlight>)}</div>
+                    <div className={`bg-white p-4 md:p-6 rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 mt-6 dark:bg-slate-800 dark:border-slate-700`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => update('q10_hasParkTypeOther', !data.q10_hasParkTypeOther)} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="騎樓停車" /></SubItemHighlight>)}</div>
                 </QuestionBlock>
                 
                 {hasCarMethod && (
@@ -377,7 +377,7 @@ export const ParkingSection = ({
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                 {CAR_USAGE_OPTS.map(u => <div key={u} className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes(u) || false} label={u} onClick={() => handleCarUsageToggle(u)} disabled={parkingLogic.disableCarStatus} /></div>)}
                                 <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes("須固定抽籤") || false} label="須固定抽籤" onClick={() => handleCarUsageToggle("須固定抽籤")} disabled={parkingLogic.disableCarStatus} />{data?.q10_carUsage?.includes("須固定抽籤") && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><div className="ml-0 md:ml-4 flex items-center justify-center gap-4 mt-2 font-black text-xl md:text-2xl text-slate-700 dark:text-slate-200">每 <input type="number" inputMode="numeric" disabled={parkingLogic.disableCarStatus} className="w-20 md:w-28 border-3 rounded-2xl p-2 md:p-4 text-center bg-white shadow-inner dark:bg-slate-900 dark:border-slate-600" value={data.q10_carLotteryMonth || ''} onChange={e => update('q10_carLotteryMonth', e.target.value)} /> 月抽籤一次</div></SubItemHighlight>)}</div>
-                                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 text-center dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_hasCarUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasCarUsageOther', !data.q10_hasCarUsageOther)} disabled={parkingLogic.disableCarStatus} />{data?.q10_hasCarUsageOther && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><DetailInput value={data.q10_carUsageOther || ''} onChange={v => update('q10_carUsageOther', v)} placeholder="如：僅夜間使用" /></SubItemHighlight>)}</div>
+                                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 text-center dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_hasCarUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasCarUsageOther', !data.q10_hasCarUsageOther)} disabled={parkingLogic.disableCarStatus} />{data?.q10_hasCarUsageOther && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><DetailInput value={data.q10_carUsageOther || ''} onChange={v => update('q10_carUsageOther', v)} placeholder="說明現況" /></SubItemHighlight>)}</div>
                             </div>
                         </QuestionBlock>
 

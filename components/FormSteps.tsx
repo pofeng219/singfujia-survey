@@ -284,7 +284,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             >
                                 <div className="space-y-6 md:space-y-8 pt-4">
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{EXT_LIST.map(i => (<div key={i} className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 hover:border-slate-300 transition-colors"><CheckBox checked={data?.q1_items?.includes(i) || false} label={i} onClick={() => toggleArr('q1_items', i)} />{i === "地下室增建" && data?.q1_items?.includes("地下室增建") && (<div className="mt-4 text-left"><CheckBox checked={data?.q1_basementPartition || false} label="內含隔間" onClick={() => update('q1_basementPartition', !data.q1_basementPartition)} /></div>)}</div>))}</div>
-                                    <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q1_hasOther || false} label="其他未列項目" onClick={() => update('q1_hasOther', !data.q1_hasOther)} />{data?.q1_hasOther && <DetailInput value={data.q1_other || ''} onChange={v => update('q1_other', v)} placeholder="如：平台外推、露台外推" />}</div>
+                                    <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q1_hasOther || false} label="其他未列項目" onClick={() => update('q1_hasOther', !data.q1_hasOther)} />{data?.q1_hasOther && <DetailInput value={data.q1_other || ''} onChange={v => update('q1_other', v)} placeholder="如遮雨棚增建、平台外推" />}</div>
                                 </div>
                             </BooleanReveal>
 
@@ -413,7 +413,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     <SubItemHighlight>
                                         <div className="space-y-8 pt-4">
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{STRUCTURAL_ISSUES.map(i => <CheckBox key={i} checked={data?.q4_items?.includes(i) || false} label={i} onClick={() => toggleArr('q4_items', i)} />)}</div>
-                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q4_hasOther || false} label="其他未列項目" onClick={() => update('q4_hasOther', !data.q4_hasOther)} />{data?.q4_hasOther && <DetailInput value={data.q4_otherDesc || ''} onChange={v => update('q4_otherDesc', v)} placeholder="說明現況" />}</div>
+                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q4_hasOther || false} label="其他未列項目" onClick={() => update('q4_hasOther', !data.q4_hasOther)} />{data?.q4_hasOther && <DetailInput value={data.q4_otherDesc || ''} onChange={v => update('q4_otherDesc', v)} placeholder="說明現況與位置" />}</div>
                                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q4_suspected || false} label="現況需待查證" onClick={() => update('q4_suspected', !data.q4_suspected)} />{data?.q4_suspected && <DetailInput value={data.q4_suspectedDesc || ''} onChange={v => update('q4_suspectedDesc', v)} placeholder="說明位置與現況" />}</div>
                                         </div>
                                     </SubItemHighlight>
@@ -685,7 +685,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </div>
                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left">
                                 <CheckBox checked={data?.q8_stairItems?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => toggleArr('q8_stairItems', '其他未列項目')} />
-                                {data?.q8_stairItems?.includes('其他未列項目') && <DetailInput value={data.q8_stairOther || ''} onChange={v => update('q8_stairOther', v)} placeholder="說明現況" />}
+                                {data?.q8_stairItems?.includes('其他未列項目') && <DetailInput value={data.q8_stairOther || ''} onChange={v => update('q8_stairOther', v)} placeholder="說明現況與位置" />}
                             </div>
                         </div>
                      </BooleanReveal>
@@ -1369,7 +1369,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <QuestionBlock>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 dark:text-slate-200">土壤汙染與地下掩埋物現況</p>
                         <RadioGroup 
-                            options={['無', '有', '不確定', '待查證']} 
+                            options={['無', '有', '待查證']} 
                             value={data.soil_q1_status || ''} 
                             onChange={v => update('soil_q1_status', v)} 
                             layout="grid" cols={2}
