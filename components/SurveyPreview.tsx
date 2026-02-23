@@ -233,7 +233,14 @@ const Footer = ({ showSignature, hideBranding = false, signatureImage }: { showS
             )}
             {!hideBranding && (
                 <div className="flex flex-col items-end flex-shrink-0 text-right max-w-[60%]">
-                    <div className="text-3xl font-black italic text-sky-500">幸福家不動產</div>
+                    <div className="flex flex-col items-center mb-1 select-none">
+                        <div className="text-[2.2rem] font-black tracking-widest text-[#009FE3] leading-none" style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif', textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
+                            幸福家不動產
+                        </div>
+                        <div className="text-[0.75rem] font-bold tracking-[0.15em] text-[#009FE3] w-full text-justify flex justify-between mt-0.5 px-1">
+                            <span>S</span><span>I</span><span>N</span><span>G</span><span>F</span><span>U</span><span>J</span><span>I</span><span>A</span> <span>R</span><span>E</span><span>A</span><span>L</span><span>T</span><span>Y</span> <span>I</span><span>N</span><span>C</span><span>.</span>
+                        </div>
+                    </div>
                     <span className="text-[11px] font-bold text-slate-500 tracking-wider mt-1 block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
                     <span className="text-[9px] text-gray-400 mt-1 font-mono tracking-tighter">Exported: {timestamp}</span>
                 </div>
