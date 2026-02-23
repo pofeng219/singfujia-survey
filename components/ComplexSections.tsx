@@ -396,7 +396,7 @@ export const ParkingSection = ({
                                 />
                             </div>
 
-                            {data?.q10_measureType !== '無法測量也無相關資訊' && data?.q10_measureType !== '依車位資訊告示牌' && (
+                            {data?.q10_measureType !== '無法測量也無相關資訊' && (
                                 <div className="flex gap-4 md:gap-6 animate-in slide-in-from-top-4 flex-wrap md:flex-nowrap">
                                     <UnitInput unit="米" placeholder="長" value={data?.q10_dimL || ''} onChange={v => update('q10_dimL', v)} disabled={parkingLogic.disableCarSize} />
                                     <UnitInput unit="米" placeholder="寬" value={data?.q10_dimW || ''} onChange={v => update('q10_dimW', v)} disabled={parkingLogic.disableCarSize} />

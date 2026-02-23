@@ -115,11 +115,23 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
                 v.requireIf(d.q10_carUsage?.includes("須固定抽籤") || false, d.q10_carLotteryMonth, sMain, `${qInfo}：汽車使用-請填寫抽籤月數`, startStep);
                 v.requireOther(d.q10_hasCarUsageOther, d.q10_carUsageOther, sMain, `${qInfo}：汽車使用-請填寫「其他」說明內容`, startStep);
 
-                // Dimensions - Updated logic: Check unless measure type is 'Unable' or it is Vacant Land
-                if (d.q10_measureType !== '無法測量' && !isVacantLand) {
+                // Dimensions - Updated logic: Check unless measure type is 'Unable' or 'Unable and no info' or it is Vacant Land
+                if (d.q10_measureType !== '無法測量' && d.q10_measureType !== '無法測量也無相關資訊' && !isVacantLand) {
                     const dimMissing = !d.q10_dimL || !d.q10_dimW || !d.q10_dimH;
                     v.check(dimMissing, sMain, `${qInfo}：請填寫長寬高或選擇無法測量`, startStep);
                 }
+
+                // Mechanical Weight
+                const isFactory = ['獨棟自建廠房', '倉儲物流廠房', '其他特殊工業設施'].includes(d.propertyType);
+                const isPlaneType = pts.some(t => ["坡道平面", "一樓平面", "法定空地／自家門前"].includes(t));
+                const isUnableToMeasure = d.q10_measureType === '無法測量也無相關資訊';
+                
+                if (!isFactory && !isPlaneType && !isUnableToMeasure) {
+                     v.require(d.q10_mechWeight, sMain, `${qInfo}：機械載重未填寫`, startStep);
+                }
+
+                // Lane Land Number
+                v.require(d.q10_laneSection, sMain, `${qInfo}：車道經過地號-段號未填寫`, startStep);
             }
 
             // Charging

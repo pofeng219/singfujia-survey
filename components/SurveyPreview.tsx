@@ -59,8 +59,21 @@ const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' |
 
 const Watermark = () => (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden">
-        <div className="transform -rotate-45 text-slate-300 text-[100px] font-black whitespace-nowrap tracking-widest opacity-25" style={{ textShadow: '0 0 5px rgba(0,0,0,0.05)' }}>
-            幸福家不動產
+        <div className="transform -rotate-45 opacity-[0.12] flex flex-col items-center justify-center grayscale-0">
+            {/* Simulated Logo Icon */}
+            <svg width="180" height="180" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6">
+                <path d="M100 20L40 50V180H100V20Z" fill="#00B4E1" />
+                <path d="M100 20L160 50V180H100V20Z" fill="#0088CE" />
+                <rect x="55" y="60" width="15" height="120" fill="white" />
+                <rect x="130" y="60" width="15" height="120" fill="white" />
+                <rect x="55" y="100" width="90" height="15" fill="white" />
+            </svg>
+            <div className="text-[90px] font-black tracking-widest text-[#009FE3] leading-none text-center antialiased" style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
+                幸福家不動產
+            </div>
+            <div className="text-[28px] font-bold tracking-[0.2em] text-[#009FE3] mt-4 text-center antialiased">
+                SINGFUJIA REALTY INC.
+            </div>
         </div>
     </div>
 );

@@ -225,6 +225,37 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     const showWaterBooster = type !== 'land' && GROUP_A_TYPES.includes(data.propertyType);
 
+    const getParkingStatus = (): SectionStatus => {
+        if (data.q10_noParking) return 'complete';
+        if ((!data.q10_parkTypes || data.q10_parkTypes.length === 0) && !data.q10_hasParkTypeOther) return 'incomplete';
+        if (data.q10_hasParkTypeOther && !data.q10_parkTypeOther) return 'incomplete';
+        if (!data.q10_parkingNumberType) return 'incomplete';
+        if (data.q10_parkingNumberType === 'number' && !data.q10_parkingNumberVal) return 'incomplete';
+        if ((!data.q10_carUsage || data.q10_carUsage.length === 0) && !data.q10_hasCarUsageOther) return 'incomplete';
+        if (data.q10_carUsage?.includes("須固定抽籤") && !data.q10_carLotteryMonth) return 'incomplete';
+        if (data.q10_hasCarUsageOther && !data.q10_carUsageOther) return 'incomplete';
+        if (!parkingLogic.disableCarSize) {
+             if (!data.q10_measureType) return 'incomplete';
+             if (data.q10_measureType !== '無法測量' && data.q10_measureType !== '無法測量也無相關資訊') {
+                 if (!data.q10_dimL || !data.q10_dimW || !data.q10_dimH) return 'incomplete';
+             }
+        }
+        if (!parkingLogic.disableWeight && !data.q10_mechWeight) return 'incomplete';
+        if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
+        if (!data.q10_laneSection) return 'incomplete';
+        if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
+        if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
+        if (!data.q10_charging) return 'incomplete';
+        if (!data.q11_hasIssue) return 'incomplete';
+        if (data.q11_hasIssue === '是') {
+            if ((!data.q11_items || data.q11_items.length === 0) && !data.q11_hasOther) return 'incomplete';
+            if (data.q11_hasOther && !data.q11_other) return 'incomplete';
+        }
+        if (!data.q12_hasNote) return 'incomplete';
+        if (data.q12_hasNote === '是' && !data.q12_note) return 'incomplete';
+        return 'complete';
+    };
+
     return (
         <StepContainer title={type === 'land' ? '第二步：使用現況-1' : (type === 'parking' ? '第二步：車位資訊與現況' : '第二步：內部現況')} type={type} themeText={themeText}>
             {(type === 'house' || type === 'factory' || type === 'land') && (
@@ -235,7 +266,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 </InlineWarning>
             )}
             
-            {type === 'parking' && <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={1} ids={{ main: 'section-parking-main', abnormal: 'section-parking-abnormal', supplement: 'section-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={data.q10_parkTypes && data.q10_parkTypes.length > 0 ? 'complete' : 'incomplete'} />}
+            {type === 'parking' && <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={1} ids={{ main: 'section-parking-main', abnormal: 'section-parking-abnormal', supplement: 'section-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={getParkingStatus()} />}
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
                     <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
@@ -644,6 +675,60 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         return 'complete';
     };
 
+    const getParkingStatus = (): SectionStatus => {
+        if (data.q10_noParking) return 'complete';
+        
+        // 1. Parking Method
+        if ((!data.q10_parkTypes || data.q10_parkTypes.length === 0) && !data.q10_hasParkTypeOther) return 'incomplete';
+        if (data.q10_hasParkTypeOther && !data.q10_parkTypeOther) return 'incomplete';
+
+        // 2. Parking Number
+        if (!data.q10_parkingNumberType) return 'incomplete';
+        if (data.q10_parkingNumberType === 'number' && !data.q10_parkingNumberVal) return 'incomplete';
+
+        // 3. Car Usage
+        if ((!data.q10_carUsage || data.q10_carUsage.length === 0) && !data.q10_hasCarUsageOther) return 'incomplete';
+        if (data.q10_carUsage?.includes("須固定抽籤") && !data.q10_carLotteryMonth) return 'incomplete';
+        if (data.q10_hasCarUsageOther && !data.q10_carUsageOther) return 'incomplete';
+
+        // 4. Car Dimensions
+        if (!parkingLogic.disableCarSize) {
+             if (!data.q10_measureType) return 'incomplete';
+             if (data.q10_measureType !== '無法測量' && data.q10_measureType !== '無法測量也無相關資訊') {
+                 if (!data.q10_dimL || !data.q10_dimW || !data.q10_dimH) return 'incomplete';
+             }
+        }
+        
+        // Mechanical Weight
+        if (type !== 'factory' && !parkingLogic.disableWeight && !data.q10_mechWeight) return 'incomplete';
+        
+        // Entry Height
+        if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
+
+        // 5. Lane Land Number
+        if (!data.q10_laneSection) return 'incomplete';
+
+        // 6. Motorcycle Usage
+        if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
+        if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
+
+        // 7. Charging Equipment
+        if (!data.q10_charging) return 'incomplete';
+
+        // 8. Parking Usage Status (Abnormalities)
+        if (!data.q11_hasIssue) return 'incomplete';
+        if (data.q11_hasIssue === '是') {
+            if ((!data.q11_items || data.q11_items.length === 0) && !data.q11_hasOther) return 'incomplete';
+            if (data.q11_hasOther && !data.q11_other) return 'incomplete';
+        }
+
+        // 9. Parking Notes
+        if (!data.q12_hasNote) return 'incomplete';
+        if (data.q12_hasNote === '是' && !data.q12_note) return 'incomplete';
+
+        return 'complete';
+    };
+
     if (type === 'parking') {
         return (
             <StepContainer title="第三步：環境與其他" type={type} themeText={themeText}>
@@ -748,7 +833,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                      </BooleanReveal>
                 </SurveySection>
-                <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={10} ids={{ main: 'section-house-parking-main', abnormal: 'section-house-parking-abnormal', supplement: 'section-house-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={data.q10_parkTypes && data.q10_parkTypes.length > 0 ? 'complete' : 'incomplete'} />
+                <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={10} ids={{ main: 'section-house-parking-main', abnormal: 'section-house-parking-abnormal', supplement: 'section-house-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={getParkingStatus()} />
              </StepContainer>
         );
     }
@@ -1061,6 +1146,37 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             return 'complete';
         };
 
+        const getParkingStatus = (): SectionStatus => {
+            if (data.q10_noParking) return 'complete';
+            if ((!data.q10_parkTypes || data.q10_parkTypes.length === 0) && !data.q10_hasParkTypeOther) return 'incomplete';
+            if (data.q10_hasParkTypeOther && !data.q10_parkTypeOther) return 'incomplete';
+            if (!data.q10_parkingNumberType) return 'incomplete';
+            if (data.q10_parkingNumberType === 'number' && !data.q10_parkingNumberVal) return 'incomplete';
+            if ((!data.q10_carUsage || data.q10_carUsage.length === 0) && !data.q10_hasCarUsageOther) return 'incomplete';
+            if (data.q10_carUsage?.includes("須固定抽籤") && !data.q10_carLotteryMonth) return 'incomplete';
+            if (data.q10_hasCarUsageOther && !data.q10_carUsageOther) return 'incomplete';
+            if (!parkingLogic.disableCarSize) {
+                 if (!data.q10_measureType) return 'incomplete';
+                 if (data.q10_measureType !== '無法測量' && data.q10_measureType !== '無法測量也無相關資訊') {
+                     if (!data.q10_dimL || !data.q10_dimW || !data.q10_dimH) return 'incomplete';
+                 }
+            }
+            // Factory: Skip weight check as it is hidden
+            if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
+            if (!data.q10_laneSection) return 'incomplete';
+            if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
+            if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
+            if (!data.q10_charging) return 'incomplete';
+            if (!data.q11_hasIssue) return 'incomplete';
+            if (data.q11_hasIssue === '是') {
+                if ((!data.q11_items || data.q11_items.length === 0) && !data.q11_hasOther) return 'incomplete';
+                if (data.q11_hasOther && !data.q11_other) return 'incomplete';
+            }
+            if (!data.q12_hasNote) return 'incomplete';
+            if (data.q12_hasNote === '是' && !data.q12_note) return 'incomplete';
+            return 'complete';
+        };
+
         const getFactoryLogisticsStatus = (): SectionStatus => {
             if (!data.factory_loading_dock || !data.factory_truck_access) return 'incomplete';
             return 'complete';
@@ -1193,7 +1309,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                          </QuestionBlock>
                     </SurveySection>
                 ) : (
-                    <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={9} ids={{ main: 'section-factory-parking', abnormal: 'section-factory-parking-abn', supplement: 'section-factory-parking-sup' }} highlightedId={highlightedField} includeExtras={true} isFactory={true} status={data.q10_parkTypes && data.q10_parkTypes.length > 0 ? 'complete' : 'incomplete'} />
+                    <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={9} ids={{ main: 'section-factory-parking', abnormal: 'section-factory-parking-abn', supplement: 'section-factory-parking-sup' }} highlightedId={highlightedField} includeExtras={true} isFactory={true} status={getParkingStatus()} />
                 )}
 
                 {/* 10. Facilities (Similar to House Q9) */}
