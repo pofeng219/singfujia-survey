@@ -50,30 +50,28 @@ const TableHeaderRow: React.FC = () => (
 );
 
 const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' | 'a4' }> = ({ label, value, variant = 'a4' }) => (
-    <div className={`font-bold text-[17px] mt-0.5 flex items-start leading-tight ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
+    <div className={`font-bold text-[19px] mt-0.5 flex items-start leading-tight ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
         <span className="mr-2 shrink-0">•</span>
         <span className="mr-1 shrink-0">{label}：</span>
         <span>{value || ''}</span>
     </div>
 );
 
+const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = "" }: { className?: string, textClassName?: string, subTextClassName?: string }) => (
+    <div className={`flex flex-col items-center justify-center ${className}`}>
+        <div className={`font-black tracking-widest text-[#009FE3] leading-none whitespace-nowrap ${textClassName}`} style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
+            幸福家不動產
+        </div>
+        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-none mt-1 whitespace-nowrap ${subTextClassName}`}>
+            SINGFUJIA REALTY INC.
+        </div>
+    </div>
+);
+
 const Watermark = () => (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden">
-        <div className="transform -rotate-45 opacity-[0.12] flex flex-col items-center justify-center grayscale-0">
-            {/* Simulated Logo Icon */}
-            <svg width="180" height="180" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6">
-                <path d="M100 20L40 50V180H100V20Z" fill="#00B4E1" />
-                <path d="M100 20L160 50V180H100V20Z" fill="#0088CE" />
-                <rect x="55" y="60" width="15" height="120" fill="white" />
-                <rect x="130" y="60" width="15" height="120" fill="white" />
-                <rect x="55" y="100" width="90" height="15" fill="white" />
-            </svg>
-            <div className="text-[90px] font-black tracking-widest text-[#009FE3] leading-none text-center antialiased" style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
-                幸福家不動產
-            </div>
-            <div className="text-[28px] font-bold tracking-[0.2em] text-[#009FE3] mt-4 text-center antialiased">
-                SINGFUJIA REALTY INC.
-            </div>
+        <div className="transform -rotate-45 opacity-[0.08] grayscale-0">
+            <SingfujiaLogo className="scale-150" textClassName="text-[100px]" subTextClassName="text-[32px] mt-4" />
         </div>
     </div>
 );
@@ -247,12 +245,7 @@ const Footer = ({ showSignature, hideBranding = false, signatureImage }: { showS
             {!hideBranding && (
                 <div className="flex flex-col items-end flex-shrink-0 text-right max-w-[60%]">
                     <div className="flex flex-col items-center mb-1 select-none">
-                        <div className="text-[2.2rem] font-black tracking-widest text-[#009FE3] leading-none" style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif', textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
-                            幸福家不動產
-                        </div>
-                        <div className="text-[0.75rem] font-bold tracking-[0.15em] text-[#009FE3] w-full text-justify flex justify-between mt-0.5 px-1">
-                            <span>S</span><span>I</span><span>N</span><span>G</span><span>F</span><span>U</span><span>J</span><span>I</span><span>A</span> <span>R</span><span>E</span><span>A</span><span>L</span><span>T</span><span>Y</span> <span>I</span><span>N</span><span>C</span><span>.</span>
-                        </div>
+                         <SingfujiaLogo className="h-16 mb-2" textClassName="text-[2.2rem]" subTextClassName="text-[0.75rem]" />
                     </div>
                     <span className="text-[11px] font-bold text-slate-500 tracking-wider mt-1 block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
                     <span className="text-[9px] text-gray-400 mt-1 font-mono tracking-tighter">Exported: {timestamp}</span>

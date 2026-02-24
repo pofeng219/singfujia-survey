@@ -116,7 +116,7 @@ export const UtilitiesSection = ({
 
                                             <div>
                                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-2 dark:text-slate-200 leading-normal">契約容量 (馬力數)</p>
-                                                <p className="text-slate-500 text-sm font-bold mb-4 dark:text-slate-400">提示：若看到變壓器通常為高壓電；若電錶有倍數標示通常為大馬力</p>
+                                                <p className="text-slate-500 text-xl font-bold mb-4 dark:text-slate-400">提示：若看到變壓器通常為高壓電；若電錶有倍數標示通常為大馬力</p>
                                                 <RadioGroup options={['一般用電(無契約容量)', '99馬力(HP)以下(無須設置配電室)', '100馬力(HP)以上(可能需設置高壓變電站)', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} value={data.land_q1_elec_capacity || ''} onChange={v => update('land_q1_elec_capacity', v)} layout="grid" cols={1} />
                                             </div>
                                         </div>
@@ -328,7 +328,7 @@ export const ParkingSection = ({
                                 </div>
                                 {((pt === "坡道機械" || pt === "升降機械") && data?.q10_parkTypes?.[0] === pt) && (
                                     <div className="p-4 md:p-6 pt-2 animate-in slide-in-from-top-4 duration-300 mt-2">
-                                        <p className="text-lg md:text-xl font-bold text-slate-500 mb-3 text-center dark:text-slate-400">請選擇所在層置：</p>
+                                        <p className="text-xl md:text-2xl font-bold text-slate-500 mb-3 text-center dark:text-slate-400">請選擇所在層置：</p>
                                         <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
                                             {['上層', '中層', '下層'].map(loc => (
                                                 <button 

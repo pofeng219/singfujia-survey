@@ -24,7 +24,7 @@ interface CheckBoxProps {
 export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => (
     <div 
         onClick={() => !disabled && onClick()} 
-        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-black text-xl md:text-3xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] relative overflow-hidden
+        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-black text-2xl md:text-4xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] relative overflow-hidden
         ${getButtonColorClass(checked, label, disabled)}`}
     >
         <span className="relative z-10 flex items-center justify-center gap-2">
@@ -68,7 +68,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                         {mainContent}
                     </div>
                     <div className="bg-orange-100 dark:bg-orange-900/40 px-3 py-2 rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center">
-                        <span className="text-base font-bold text-slate-700 dark:text-slate-200 block leading-normal break-words whitespace-normal">
+                        <span className="text-lg font-bold text-slate-700 dark:text-slate-200 block leading-normal break-words whitespace-normal">
                             {subText}
                         </span>
                     </div>
@@ -93,7 +93,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                         key={v}
                         type="button"
                         onClick={() => !disabled && onChange(value === v ? '' : v)}
-                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-2xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
+                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-2xl md:text-3xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
                         ${getButtonColorClass(isSelected, v, disabled)}`}
                     >
                         {renderLabel(v, isSelected)}
@@ -129,7 +129,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                             type="button" 
                             disabled={disabled} 
                             onClick={() => onChange(value === opt ? '' : opt)} 
-                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-xl md:text-3xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
+                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-2xl md:text-4xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
                             ${getButtonColorClass(isSelected, opt, disabled)}`}
                         >
                             <span className="flex items-center gap-2">
@@ -167,11 +167,11 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
         }`}
     >
         <div className="flex flex-col text-left">
-            <span className={`text-[18px] font-bold leading-tight ${checked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
+            <span className={`text-xl font-bold leading-tight ${checked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
                 {label}
             </span>
             {subLabel && (
-                <span className="text-[15px] text-slate-500 mt-1 leading-normal dark:text-slate-400">
+                <span className="text-lg text-slate-500 mt-1 leading-normal dark:text-slate-400">
                     {subLabel}
                 </span>
             )}
@@ -357,7 +357,7 @@ export const FormInput: React.FC<{
         <label className="block text-slate-800 font-black mb-3 text-[1.5rem] md:text-[1.75rem] text-left dark:text-slate-100">{label}</label>
         <input 
             type="text" 
-            className="full-width-input text-lg" 
+            className="full-width-input text-xl" 
             value={value || ''} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -373,7 +373,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
             type="number" 
             inputMode="decimal"
             disabled={disabled}
-            className={`full-width-input text-lg pr-16 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
+            className={`full-width-input text-xl pr-16 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
             value={value} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -397,7 +397,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center">
             <input 
                 type="text" 
-                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-300 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={section || ''} 
                 onChange={e => onChangeSection(e.target.value)} 
                 placeholder="段" 
@@ -408,7 +408,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center">
             <input 
                 type="text" 
-                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-300 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={subSection || ''} 
                 onChange={e => onChangeSubSection(e.target.value)} 
                 placeholder="小段" 
@@ -419,7 +419,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center flex-grow md:flex-grow-0">
             <input 
                 type="text" 
-                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-300 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={number || ''} 
                 onChange={e => onChangeNumber(e.target.value)} 
                 placeholder="地號" 
@@ -643,7 +643,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input text-lg !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950" 
+                className="full-width-input text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950" 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 
@@ -749,7 +749,7 @@ export const DraftFoundModal: React.FC<{ isOpen: boolean; onLoad: () => void; on
         <div className="space-y-6">
             <div className="bg-amber-50 p-4 rounded-2xl border-2 border-amber-100 flex gap-4 items-start dark:bg-amber-900/20 dark:border-amber-800">
                 <Info className="w-6 h-6 text-amber-600 shrink-0 mt-1 dark:text-amber-400" />
-                <p className="text-amber-800 font-bold dark:text-amber-200">
+                <p className="text-amber-800 font-bold text-xl dark:text-amber-200">
                     系統偵測到您上次有一份未完成的調查表，是否要載入繼續填寫？
                 </p>
             </div>
@@ -844,7 +844,7 @@ export const ConfirmModal: React.FC<{ isOpen: boolean; title: string; message: s
         <div className="space-y-6">
             <div className={`p-4 rounded-2xl border-2 flex gap-4 items-start ${type === 'danger' ? 'bg-rose-50 border-rose-100 dark:bg-rose-900/20 dark:border-rose-800' : 'bg-sky-50 border-sky-100 dark:bg-sky-900/20 dark:border-sky-800'}`}>
                 {type === 'danger' ? <AlertTriangle className="w-6 h-6 text-rose-600 shrink-0 mt-1 dark:text-rose-400" /> : <Info className="w-6 h-6 text-sky-600 shrink-0 mt-1 dark:text-sky-400" />}
-                <p className={`${type === 'danger' ? 'text-rose-800 dark:text-rose-200' : 'text-sky-800 dark:text-sky-200'} font-bold`}>
+                <p className={`${type === 'danger' ? 'text-rose-800 dark:text-rose-200' : 'text-sky-800 dark:text-sky-200'} font-bold text-xl`}>
                     {message}
                 </p>
             </div>

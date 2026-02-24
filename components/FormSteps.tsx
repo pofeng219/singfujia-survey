@@ -423,7 +423,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <QuestionBlock>
                                 <div className="mb-6">
                                     <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-1 leading-normal">結構牆面與樑柱現況</p>
-                                    <p className="text-lg text-slate-500 font-bold mb-6">(非單純壁癌或油漆剝落)</p>
+                                    <p className="text-xl text-slate-500 font-bold mb-6">(非單純壁癌或油漆剝落)</p>
                                     <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
                                 </div>
                                 <RadioGroup 

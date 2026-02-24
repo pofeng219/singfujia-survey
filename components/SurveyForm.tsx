@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
-import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon } from 'lucide-react';
+import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check } from 'lucide-react';
 
 import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
 import { INITIAL_STATE } from '../constants';
@@ -413,17 +413,47 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </ErrorBoundary>
 
                     <div className="no-print bg-white border-t-4 border-slate-200 p-6 pb-40 lg:pb-10 flex flex-col items-center justify-center shrink-0 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
-                        <div className="w-full max-w-5xl grid gap-4 mb-4" style={{ gridTemplateColumns: `repeat(${stepsToShow}, minmax(0, 1fr))` }}>
-                            {stepLabels.slice(0, stepsToShow).map((label, idx) => {
-                                const stepNum = idx + 1;
-                                const isActive = activeStep === stepNum;
-                                return (
-                                    <button key={stepNum} type="button" onClick={() => setActiveStep(stepNum)} className={`relative flex flex-col items-center justify-center py-5 px-2 rounded-2xl transition-all duration-200 border-b-[6px] active:border-b-2 active:translate-y-[4px] ${isActive ? 'bg-slate-800 text-white border-slate-950 shadow-inner translate-y-[2px] border-b-4 dark:bg-slate-700 dark:border-slate-900' : 'bg-white text-slate-500 border-slate-300 hover:bg-slate-50 hover:text-slate-700 hover:border-slate-400 shadow-md dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400'}`}>
-                                        <span className={`text-sm font-black mb-1 tracking-widest uppercase ${isActive ? 'opacity-100 text-sky-300' : 'opacity-60'}`}>STEP {stepNum}</span>
-                                        <span className={`text-lg md:text-xl font-black whitespace-nowrap overflow-hidden text-ellipsis w-full px-1 ${isActive ? 'opacity-100' : 'opacity-80'}`}>{label}</span>
-                                    </button>
-                                );
-                            })}
+                        <div className="w-full max-w-3xl mx-auto mb-12 mt-4 px-4 md:px-12 relative">
+                            {/* Track */}
+                            <div className="absolute left-0 top-1/2 w-full h-1.5 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
+                            {/* Progress Line */}
+                            <div 
+                                className="absolute left-0 top-1/2 h-1.5 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
+                                style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
+                            ></div>
+                            
+                            <div className="flex justify-between items-center w-full">
+                                {stepLabels.slice(0, stepsToShow).map((label, idx) => {
+                                    const stepNum = idx + 1;
+                                    const isActive = activeStep === stepNum;
+                                    const isCompleted = activeStep > stepNum;
+                                    const pageLabel = ["第一頁", "第二頁", "第三頁", "第四頁"][idx];
+
+                                    return (
+                                        <button 
+                                            key={stepNum} 
+                                            type="button"
+                                            onClick={() => setActiveStep(stepNum)}
+                                            className="group relative flex flex-col items-center focus:outline-none"
+                                        >
+                                            {/* Page Label (Above) */}
+                                            <span className={`absolute -top-10 text-sm md:text-base font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-400 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-600 translate-y-1 opacity-60')}`}>
+                                                {pageLabel}
+                                            </span>
+                                            
+                                            {/* Dot */}
+                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-lg md:text-xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600')}`}>
+                                                {isCompleted ? <Check className="w-6 h-6" strokeWidth={3} /> : stepNum}
+                                            </div>
+                                            
+                                            {/* Content Label (Below) */}
+                                            <span className={`absolute -bottom-8 text-xs md:text-sm font-bold whitespace-nowrap max-w-[100px] overflow-hidden text-ellipsis transition-colors duration-300 ${isActive ? 'text-slate-800 dark:text-slate-200 opacity-100' : 'text-slate-400 dark:text-slate-600 opacity-70'}`}>
+                                                {label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                         <button onClick={clearDraft} className="w-full py-6 bg-rose-50 border-4 border-rose-200 text-rose-600 rounded-3xl font-black text-2xl flex items-center justify-center gap-4 hover:bg-rose-100 hover:text-rose-700 transition-all duration-200 shadow-sm active:scale-[0.98] dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
                             <Trash2 className="w-8 h-8" />
