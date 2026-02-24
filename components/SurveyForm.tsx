@@ -383,9 +383,9 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-transform duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className={`p-5 ${themeBg} flex flex-col gap-4 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300`}>
                     <div className="flex justify-between items-center relative z-10">
-                        <button type="button" onClick={handleBackHome} className="bg-white/10 text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl hover:bg-white/20 transition-all duration-150 active:scale-95 flex items-center gap-2 shadow-sm">
-                            <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
-                            <span className="font-bold text-lg">回首頁</span>
+                        <button type="button" onClick={handleBackHome} className="bg-white text-slate-900 border-b-4 border-slate-300 px-6 py-3 rounded-2xl hover:bg-slate-50 transition-all duration-150 active:border-b-0 active:translate-y-[4px] flex items-center gap-3 shadow-xl dark:bg-slate-800 dark:text-white dark:border-slate-950">
+                            <ArrowLeft className="w-6 h-6" strokeWidth={3} />
+                            <span className="font-black text-xl tracking-wide">回首頁</span>
                         </button>
                         <div className="flex items-center gap-3">
                             <span className="bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-xs font-bold tracking-wider shadow-sm border border-white/10">{data?.version}</span>
