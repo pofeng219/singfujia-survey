@@ -70,7 +70,7 @@ const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = 
 
 const Watermark = () => (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden">
-        <div className="transform -rotate-45 opacity-[0.08] grayscale-0">
+        <div className="transform -rotate-45 opacity-[0.05] grayscale-0">
             <SingfujiaLogo className="scale-150" textClassName="text-[100px]" subTextClassName="text-[32px] mt-4" />
         </div>
     </div>

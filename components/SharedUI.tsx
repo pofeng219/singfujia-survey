@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Info, Save, FileInput, Trash2, AlertCircle, ChevronRight, AlertTriangle, ChevronDown, CheckCircle2, X, Eraser, Check, HelpCircle } from 'lucide-react';
+import { Info, Save, FileInput, Trash2, AlertCircle, ChevronRight, AlertTriangle, ChevronDown, CheckCircle2, X, Eraser, Check, HelpCircle, Mic } from 'lucide-react';
 import { ValidationError } from '../types';
 
 // Helper to determine color based on label content (Heuristic for Safety/Danger)
@@ -639,17 +639,39 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
     }, [disabled, autoFocus]);
 
     return (
-        <div className={`space-y-3 w-full ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+        <div className={`relative w-full ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950" 
+                className="full-width-input text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950 pr-24" 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 
                 autoComplete="off"
                 disabled={disabled}
             />
+            
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                {/* Voice Input Hint */}
+                <div className="text-slate-400 dark:text-slate-500 animate-pulse" title="可使用鍵盤語音輸入">
+                    <Mic className="w-6 h-6" />
+                </div>
+
+                {/* Clear Button */}
+                {value && (
+                    <button 
+                        type="button"
+                        onClick={() => {
+                            onChange('');
+                            inputRef.current?.focus();
+                        }}
+                        className="p-1 bg-slate-200 rounded-full text-slate-500 hover:bg-slate-300 hover:text-slate-700 transition-colors dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-slate-200"
+                        title="清除內容"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
