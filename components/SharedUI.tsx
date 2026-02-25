@@ -261,7 +261,7 @@ export const SurveySection: React.FC<{
                         <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${isOpen ? 'bg-slate-100 border-slate-200 text-slate-600 rotate-0 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300' : 'bg-slate-800 border-slate-900 text-white -rotate-90 dark:bg-sky-600 dark:border-sky-500'}`}>
                             <ChevronDown className="w-6 h-6 md:w-7 md:h-7" strokeWidth={3} />
                         </div>
-                        <span className={`text-[11px] md:text-[13px] font-black text-slate-400 transition-all duration-300 whitespace-nowrap dark:text-slate-500 ${isOpen ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+                        <span className={`text-base md:text-lg font-black text-slate-400 transition-all duration-300 whitespace-nowrap dark:text-slate-500 ${isOpen ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
                             點擊收合
                         </span>
                     </div>
