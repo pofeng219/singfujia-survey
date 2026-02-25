@@ -357,7 +357,7 @@ export const FormInput: React.FC<{
         <label className="block text-slate-800 font-black mb-3 text-[1.5rem] md:text-[1.75rem] text-left dark:text-slate-100">{label}</label>
         <input 
             type="text" 
-            className="full-width-input text-xl" 
+            className="full-width-input text-xl border-2 border-slate-500 focus:border-slate-800" 
             value={value || ''} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -373,7 +373,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
             type="number" 
             inputMode="decimal"
             disabled={disabled}
-            className={`full-width-input text-xl pr-16 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
+            className={`full-width-input text-xl pr-16 border-2 border-slate-500 focus:border-slate-800 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
             value={value} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -397,7 +397,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center">
             <input 
                 type="text" 
-                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-[6px] border-slate-500 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-slate-900 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={section || ''} 
                 onChange={e => onChangeSection(e.target.value)} 
                 placeholder="段" 
@@ -408,7 +408,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center">
             <input 
                 type="text" 
-                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-[6px] border-slate-500 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-slate-900 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={subSection || ''} 
                 onChange={e => onChangeSubSection(e.target.value)} 
                 placeholder="小段" 
@@ -419,7 +419,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center flex-grow md:flex-grow-0">
             <input 
                 type="text" 
-                className="border-b-4 border-slate-300 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-slate-800 outline-none transition-colors dark:border-slate-600 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-[6px] border-slate-500 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-slate-900 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={number || ''} 
                 onChange={e => onChangeNumber(e.target.value)} 
                 placeholder="地號" 
@@ -644,7 +644,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950 pr-24" 
+                className="full-width-input text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-slate-950 pr-24 border-2 border-slate-500 focus:border-slate-800" 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 
