@@ -77,6 +77,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const [showHomeConfirm, setShowHomeConfirm] = useState(false);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false); // New state for scroll button
 
     const DRAFT_KEY = `survey_draft_${type}`;
     const page1Ref = useRef<HTMLDivElement>(null);
@@ -85,6 +86,32 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const formScrollRef = useRef<HTMLDivElement>(null);
     const previewWrapperRef = useRef<HTMLDivElement>(null);
     const dataRef = useRef(data);
+
+    // Scroll to Top Logic
+    useEffect(() => {
+        const handleScroll = () => {
+            if (formScrollRef.current) {
+                setShowScrollTop(formScrollRef.current.scrollTop > 100);
+            }
+        };
+
+        const scrollContainer = formScrollRef.current;
+        if (scrollContainer) {
+            scrollContainer.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (scrollContainer) {
+                scrollContainer.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    const scrollToTop = () => {
+        if (formScrollRef.current) {
+            formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
 
     // Use deferred value for preview to prevent typing lag
     const deferredData = useDeferredValue(data);
@@ -511,6 +538,30 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     <Loader2 className="w-16 h-16 animate-spin mb-6 text-sky-400" />
                     <p className="text-2xl md:text-3xl font-black tracking-widest drop-shadow-md">正在製作圖片中，請稍候...</p>
                 </div>
+            )}
+
+            {/* Scroll To Top Button */}
+            {showScrollTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-24 lg:bottom-10 right-6 z-[9999] p-4 rounded-full bg-sky-600 text-white shadow-xl hover:bg-sky-700 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 border-4 border-white dark:border-slate-800"
+                    aria-label="Scroll to top"
+                >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="28" 
+                        height="28" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="3" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                    >
+                        <path d="M12 19V5" />
+                        <path d="M5 12l7-7 7 7" />
+                    </svg>
+                </button>
             )}
         </div>
     );
