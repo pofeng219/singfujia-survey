@@ -55,7 +55,7 @@ export const INITIAL_STATE: SurveyData = {
     
     q15_occupy: '', q15_section: '', q15_subSection: '', q15_number: '',
     q16_noFacilities: false, q16_items: [], q16_hasOther: false, q16_other: '',
-    q17_issue: '', q17_desc: '',
+    q17_issue: '', q17_desc: '', q17_homicide: '',
 
     // Factory Init
     factory_height: '', factory_column_spacing: '', factory_floor_load: '', 
@@ -93,7 +93,7 @@ export const INITIAL_STATE: SurveyData = {
     land_q2_access_section: '', land_q2_access_subSection: '', land_q2_access_number: '',
     land_q2_owner: '', land_q2_owner_desc: '', land_q2_protection: '',
     land_q2_material: '', land_q2_material_other: '', land_q2_roadWidth: '', land_q2_buildingLine: '', land_q2_ditch: '', land_q2_ditch_other: '',
-    land_q3_survey: '', land_q3_survey_detail: '', land_q3_survey_other: '',
+    land_q3_survey: '', land_q3_survey_detail: '', land_q3_survey_other: '', land_q3_survey_date: '',
     land_q3_dispute: '', land_q3_dispute_desc: '', land_q3_dispute_other: '',
     land_q4_expro: '', land_q4_expro_other: '', land_q4_resurvey: '', land_q4_resurvey_other: '',
     land_q5_encroached: '', land_q5_encroached_desc: '', land_q5_encroaching: '', land_q5_encroaching_desc: '',
@@ -119,7 +119,7 @@ export const INITIAL_STATE: SurveyData = {
 export const EXT_LIST = ["頂樓增建", "露台增建", "夾層增建", "防火巷增建", "陽台增建", "天井增建", "一樓空地增建", "地下室增建", "陽台外推", "平台外推", "上下樓層內梯"];
 export const LEAK_LOCATIONS = ["屋頂", "外牆", "窗框", "冷熱水器", "浴室", "前陽台", "後陽台", "廚房", "臥室", "客廳"];
 export const STRUCTURAL_ISSUES = ["水泥塊剝落", "鋼筋外露", "窗框45度角裂縫", "樑柱／牆壁有明顯環狀龜裂"];
-export const UTILITY_ISSUES = ["無水錶", "無電錶", "無瓦斯掛錶", "無瓦斯管線", "對講機功能異常"];
+export const UTILITY_ISSUES = ["無水錶", "無電錶", "無瓦斯掛錶", "無瓦斯管線"];
 export const FACILITY_OPTIONS = ["變電箱／桶", "基地台", "太陽能光電發電設備", "加壓受水設備"];
 export const ACCESS_SUB_OPTIONS = ["出租中", "屋主自住", "空屋須請屋主開門", "尚未搬空", "其他未列項目"];
 // Updated Factory Access Options
@@ -137,7 +137,7 @@ export const PARK_TYPES = ["坡道平面", "坡道機械", "升降平面", "一�
 export const CAR_USAGE_OPTS = ["固定位置使用", "須承租", "須排隊等候", "每日先到先停"];
 export const Q11_OPTS = ["機械式車位故障", "車位不易駛入或停放"];
 export const PROPERTY_TYPE_OPTIONS = ["透天獨棟廠房", "立體化廠辦大樓", "標準廠房(工業園區內)", "倉儲物流廠房", "其他未列項目"];
-export const HOUSE_PROPERTY_TYPE_OPTIONS = ["透天別墅", "透天店面", "大樓華廈", "公寓"];
+export const HOUSE_PROPERTY_TYPE_OPTIONS = ["透天別墅", "透天店面", "大樓華廈 (10樓以下有電梯)", "公寓 (5樓以下無電梯)"];
 export const LAND_PROPERTY_TYPE_OPTIONS = ["農地", "建地", "工業地", "其他(道路用地／公設地)"];
 // New Factory Property Type Options
 export const FACTORY_PROPERTY_TYPE_OPTIONS = ["獨棟自建廠房", "立體化廠辦大樓", "園區標準廠房（集合式／分租型）", "倉儲物流廠房", "其他特殊工業設施"];
@@ -149,7 +149,7 @@ export const GROUP_A_TYPES = [
     '其他(道路用地／公設地)'
 ];
 export const GROUP_B_TYPES = [
-    '大樓華廈', '公寓', '立體化廠辦大樓', 
+    '大樓華廈 (10樓以下有電梯)', '公寓 (5樓以下無電梯)', '立體化廠辦大樓', 
     '園區標準廠房（集合式／分租型）'
 ];
 
@@ -176,9 +176,9 @@ export const WATER_BOOSTER_ITEMS_B = [
 ];
 
 export const ACCESS_STATUS_OPTIONS = ['通行順暢', '通行受限（如狹窄、有障礙物）', '袋地（無合法出入口）'];
-export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
+export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯 (無天然瓦斯)', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
 export const BUILDING_LINE_OPTIONS = ['已核定', '未核定', '申請中', '須申請'];
-export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '灌溉渠道（嚴禁搭排）', '無排水系統'];
+export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '水利溝渠 (灌溉溝渠)', '無排水系統'];
 
 // Protection Options (Access)
 export const PROTECTION_OPTS_PUBLIC = ['現狀通行', '已向政府承租', '計畫道路'];

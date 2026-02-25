@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
-import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check } from 'lucide-react';
+import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2 } from 'lucide-react';
 
 import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
 import { INITIAL_STATE } from '../constants';
@@ -503,6 +503,14 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                         </button>
                     </div>
                 </>
+            )}
+
+            {/* Exporting Loading Overlay */}
+            {exporting && (
+                <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center text-white animate-in fade-in duration-200">
+                    <Loader2 className="w-16 h-16 animate-spin mb-6 text-sky-400" />
+                    <p className="text-2xl md:text-3xl font-black tracking-widest drop-shadow-md">正在製作圖片中，請稍候...</p>
+                </div>
             )}
         </div>
     );

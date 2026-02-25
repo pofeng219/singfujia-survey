@@ -628,6 +628,7 @@ export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: 
 
 export const DetailInput = ({ value, onChange, placeholder = "說明現況", disabled = false, autoFocus = true }: { value: string, onChange: (val: string) => void, placeholder?: string, disabled?: boolean, autoFocus?: boolean }) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [showMicHint, setShowMicHint] = useState(false);
     
     useEffect(() => {
         if (!disabled && autoFocus && inputRef.current) {
@@ -653,8 +654,24 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             
             <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 {/* Voice Input Hint */}
-                <div className="text-slate-400 dark:text-slate-500 animate-pulse" title="可使用鍵盤語音輸入">
-                    <Mic className="w-6 h-6" />
+                <div className="relative">
+                    <button 
+                        type="button"
+                        onClick={() => {
+                            setShowMicHint(true);
+                            setTimeout(() => setShowMicHint(false), 3000);
+                        }}
+                        className="text-slate-400 dark:text-slate-500 animate-pulse hover:text-sky-500 transition-colors p-1" 
+                        title="可使用鍵盤語音輸入"
+                    >
+                        <Mic className="w-6 h-6" />
+                    </button>
+                    {showMicHint && (
+                        <div className="absolute bottom-full right-0 mb-3 w-56 bg-slate-800 text-white text-sm font-bold p-3 rounded-xl shadow-xl z-20 text-center animate-in fade-in zoom-in-95 border border-slate-600">
+                            請點擊下方鍵盤上的<br/>麥克風按鈕進行語音輸入
+                            <div className="absolute top-full right-3 border-8 border-transparent border-t-slate-800"></div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Clear Button */}
@@ -736,7 +753,7 @@ export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, su
 // Toast
 export const Toast: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => {
     useEffect(() => {
-        const timer = setTimeout(onClose, 3000);
+        const timer = setTimeout(onClose, 4500);
         return () => clearTimeout(timer);
     }, [message, onClose]);
 

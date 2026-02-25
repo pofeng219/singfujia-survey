@@ -62,7 +62,7 @@ const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = 
         <div className={`font-black tracking-widest text-[#009FE3] leading-none whitespace-nowrap ${textClassName}`} style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
             幸福家不動產
         </div>
-        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-none mt-1 whitespace-nowrap ${subTextClassName}`}>
+        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-none mt-[2px] whitespace-nowrap ${subTextClassName}`}>
             SINGFUJIA REALTY INC.
         </div>
     </div>
@@ -244,11 +244,11 @@ const Footer = ({ showSignature, hideBranding = false, signatureImage }: { showS
             )}
             {!hideBranding && (
                 <div className="flex flex-col items-end flex-shrink-0 text-right max-w-[60%]">
-                    <div className="flex flex-col items-center mb-1 select-none">
-                         <SingfujiaLogo className="h-16 mb-2" textClassName="text-[2.2rem]" subTextClassName="text-[0.75rem]" />
+                    <div className="flex flex-col items-center select-none">
+                         <SingfujiaLogo className="h-16" textClassName="text-[2.2rem]" subTextClassName="text-[0.75rem]" />
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 tracking-wider mt-1 block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
-                    <span className="text-[9px] text-gray-400 mt-1 font-mono tracking-tighter">Exported: {timestamp}</span>
+                    <span className="text-[11px] font-bold text-slate-500 tracking-wider block leading-tight mt-[2px]">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
+                    <span className="text-[9px] text-gray-400 font-mono tracking-tighter mt-[2px] leading-none">Exported: {timestamp}</span>
                 </div>
             )}
         </div>
@@ -411,8 +411,17 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         </CheckRow>
 
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案或本社區須注意的事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案或本區須注意的事項`} />
+        <tr className="text-black">
+            <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide ? 'V' : ''}</td>
+            <td colSpan={9} className="py-1 px-4 text-left text-black">
+                <div className="flex flex-wrap items-center">
+                    <span className="font-black mr-2">是否曾發生非自然死亡情事：</span>
+                    <span className="font-medium">{data?.q17_homicide || '未填寫'}</span>
+                </div>
+            </td>
+        </tr>
         <CheckRow checked={data?.q17_issue === '否'}>
-             <span className="font-black mr-2">注意事項</span>
+             <span className="font-black mr-2">其他應注意事項</span>
             <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
         </CheckRow>
     </>
@@ -501,7 +510,6 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                 </CheckRow>
             )}
 
-            {/* NEW: Garbage Treatment Section - Moved to Page 1 Q6 */}
             <SectionHeader title="6. 垃圾處理方式" />
             <CheckRow checked={!!data?.garbageTreatment}>
                  <PreviewResult checked={data?.garbageTreatment === '社區統一處理 (有環保室)'} label="社區統一處理 (有環保室)" />
@@ -1195,8 +1203,17 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                              {!data?.q16_noFacilities && <span className="font-medium">{getEnvFacilitiesLabel(data)}</span>}
                                     </CheckRow>
                                     <SectionHeader title="3. 本案或本社區須注意的事項" />
+                                    <tr className="text-black">
+                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide ? 'V' : ''}</td>
+                                        <td colSpan={9} className="py-1 px-4 text-left text-black">
+                                            <div className="flex flex-wrap items-center">
+                                                <span className="font-black mr-2">是否曾發生非自然死亡情事：</span>
+                                                <span className="font-medium">{data?.q17_homicide || '未填寫'}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <CheckRow checked={data?.q17_issue === '否'}>
-                                             <span className="font-black mr-2">注意事項</span>
+                                             <span className="font-black mr-2">其他應注意事項</span>
                                             <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
                                     </CheckRow>
                                 </>

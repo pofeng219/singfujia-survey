@@ -362,13 +362,13 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
                         <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
                         <RadioGroup 
-                            options={['無', '有', '全屋天花板包覆 (無法檢查)']} 
-                            value={data.q3_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q3_hasLeak === '否' ? '無' : (data?.q3_hasLeak === '是' ? '有' : (data?.q3_hasLeak ? '' : '')))} 
+                            options={['無', '有 (含舊有水漬)', '全屋天花板包覆 (無法檢查)']} 
+                            value={data.q3_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q3_hasLeak === '否' ? '無' : (data?.q3_hasLeak === '是' ? '有 (含舊有水漬)' : (data?.q3_hasLeak ? '' : '')))} 
                             onChange={(v) => { 
                                 if (v === '全屋天花板包覆 (無法檢查)') {
                                     setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆 (無法檢查)', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '因裝潢包覆無法檢視內部，需特別留意', q3_suspected: false, q3_suspectedDesc: '' })); 
                                 } else {
-                                    const val = v === '無' ? '否' : (v === '有' ? '是' : v);
+                                    const val = v === '無' ? '否' : (v === '有 (含舊有水漬)' ? '是' : v);
                                     setData(prev => ({ ...prev, q3_hasLeak: val, q3_leakType: val === '是' ? prev.q3_leakType : '', q3_ceilingWrapped: false, q3_locations: val === '是' ? prev.q3_locations : [], q3_hasOther: val === '是' ? prev.q3_hasOther : false, q3_other: val === '是' ? prev.q3_other : '', q3_suspected: val === '是' ? prev.q3_suspected : false, q3_suspectedDesc: val === '是' ? prev.q3_suspectedDesc : '' })); 
                                 }
                             }} 
@@ -1190,7 +1190,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         <QuestionBlock>
                             <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">廠房規格</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-                                <UnitInput unit="米" value={data.factory_height || ''} onChange={v => update('factory_height', v)} placeholder={getFactoryHeightLabel(data.propertyType)} />
+                                <div className="w-full">
+                                    <UnitInput unit="米" value={data.factory_height || ''} onChange={v => update('factory_height', v)} placeholder={getFactoryHeightLabel(data.propertyType)} />
+                                    <p className="text-red-500 text-sm mt-1 font-bold">※滴水高度：屋頂最低緣至地面</p>
+                                </div>
                                 <UnitInput unit="米" value={data.factory_column_spacing || ''} onChange={v => update('factory_column_spacing', v)} placeholder="柱距" />
                                 <div className="space-y-3">
                                     <UnitInput 
@@ -1505,17 +1508,86 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             />
 
             {/* Notes */}
-            <NotesSection 
-                data={data} setData={setData} update={update} id="section-q17" 
+            {/* Notes */}
+            <SurveySection 
+                id="section-q17" 
+                highlighted={highlightedField === 'section-q17'} 
                 title={type === 'house' ? "13. 本案或本社區須注意的事項" : (type === 'land' ? "11. 本案或周圍須注意的事項" : `${noteNum}. 本案或本社區須注意的事項`)} 
-                highlightedId={highlightedField} type={type}
-                warningText={
-                    type === 'house' ? "※身故事件、氯離子過高、海砂屋、危險建築、新聞事件、糾紛等" :
-                    (type === 'land' ? "※前身為亂葬崗、環保議題、新聞事件、開發現況等" :
-                    "※危險建築、新聞事件、糾紛等")
-                }
                 status={getNotesStatus()}
-            />
+            >
+                <div className="space-y-10">
+                    {/* Sub-question 1: Homicide */}
+                    <QuestionBlock>
+                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">特殊事故紀錄</p>
+                        <div className="mb-4">
+                             <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
+                                 <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
+                                     ※兇殺、自殺、一氧化碳中毒或其他非自然死亡之情事
+                                 </p>
+                             </div>
+                        </div>
+                        <RadioGroup 
+                            options={['無', '有', '待查證']} 
+                            value={data.q17_homicide || ''} 
+                            onChange={v => update('q17_homicide', v)} 
+                            layout="grid" cols={3}
+                        />
+                    </QuestionBlock>
+
+                    {/* Sub-question 2: Other Notes */}
+                    <QuestionBlock>
+                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">其他應注意事項</p>
+                         <div className="mb-4">
+                             <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
+                                 <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
+                                     {type === 'house' ? "※氯離子過高、海砂屋、危險建築、新聞事件、糾紛等" :
+                                     (type === 'land' ? "※前身為亂葬崗、環保議題、新聞事件、開發現況等" :
+                                     "※危險建築、新聞事件、糾紛等")}
+                                 </p>
+                             </div>
+                        </div>
+                        
+                        <RadioGroup 
+                            options={['無', '有']} 
+                            value={type === 'land' ? (data.land_q8_special === '是' ? '有' : (data.land_q8_special === '否' ? '無' : '')) : (data.q17_issue === '是' ? '有' : (data.q17_issue === '否' ? '無' : ''))} 
+                            onChange={v => {
+                                const val = v === '無' ? '否' : (v === '有' ? '是' : '');
+                                if (type === 'land') {
+                                    update('land_q8_special', val);
+                                    if (val === '否') update('land_q8_special_desc', '');
+                                } else {
+                                    update('q17_issue', val);
+                                    if (val === '否') update('q17_desc', '');
+                                }
+                            }} 
+                            layout="grid" cols={2}
+                        />
+                        
+                        {((type === 'land' && data.land_q8_special === '是') || (type !== 'land' && data.q17_issue === '是')) && (
+                            <SubItemHighlight>
+                                <DetailInput 
+                                    value={type === 'land' ? (data.land_q8_special_desc || '') : (data.q17_desc || '')} 
+                                    onChange={v => update(type === 'land' ? 'land_q8_special_desc' : 'q17_desc', v)} 
+                                    placeholder="說明現況" 
+                                />
+                            </SubItemHighlight>
+                        )}
+                    </QuestionBlock>
+                </div>
+            </SurveySection>
+
+            {/* Camera Reminder */}
+            <div className="bg-sky-100 border-l-8 border-sky-500 p-6 rounded-r-xl shadow-md mb-8 animate-in slide-in-from-left-2">
+                <div className="flex items-start gap-4">
+                    <div className="bg-white p-2 rounded-full shadow-sm shrink-0">
+                        <span className="text-3xl">📸</span>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-black text-sky-800 mb-1">離開前請確認拍攝</h3>
+                        <p className="text-sky-700 font-bold text-lg">建物外觀、門牌、電箱、內部現況</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Signature */}
             <SurveySection id="section-signature" highlighted={highlightedField === 'section-signature'} title={type === 'house' ? "14. 調查人員簽章" : (type === 'land' ? "12. 調查人員簽章" : `${sigNum}. 調查人員簽章`)} status={data.signatureImage ? 'complete' : 'incomplete'}>

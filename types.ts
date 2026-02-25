@@ -171,6 +171,7 @@ export interface SurveyData {
     q16_other: string;
     q17_issue: string;
     q17_desc: string;
+    q17_homicide: string; // New: Homicide question
 
     // Factory Specific - Phase 1 Expansion
     factory_height: string; // 滴水高度
@@ -280,6 +281,7 @@ export interface SurveyData {
     land_q3_survey: string;
     land_q3_survey_detail: string;
     land_q3_survey_other: string;
+    land_q3_survey_date: string; // New: Survey date
     land_q3_dispute: string;
     land_q3_dispute_desc: string;
     land_q3_dispute_other: string;

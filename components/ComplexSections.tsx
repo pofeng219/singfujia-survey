@@ -407,7 +407,7 @@ export const ParkingSection = ({
                             {!isFactory && !parkingLogic.disableWeight && (
                                 <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
                                     <p className="font-black text-[1.5rem] md:text-[1.75rem] text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">機械載重 (公斤)</p>
-                                    <UnitInput unit="kg" value={data?.q10_mechWeight || ''} onChange={v => update('q10_mechWeight', v)} placeholder={"查閱機械車位資訊告示牌"} />
+                                    <UnitInput unit="kg" value={data?.q10_mechWeight || ''} onChange={v => update('q10_mechWeight', v)} placeholder={"若無標示填『無』"} />
                                 </div>
                             )}
                             <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
@@ -564,12 +564,28 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                                 (data?.land_q3_survey || '')))
                             } 
                             onChange={v => { 
-                                const val = v === '從未鑑界' ? '否' : v; 
+                                const val = v === '從未鑑界' ? '否' : (v === '已鑑界 (標完好)' ? '是' : (v === '標位不明 (需重測)' ? '須重新鑑界' : v)); 
                                 setData((prev: any) => ({...prev, land_q3_survey: val})); 
                             }} 
                             layout="grid" cols={2}
                         />
-                        {(data?.land_q3_survey === '是' || data?.land_q3_survey === '已鑑界 (標完好)') && <SubItemHighlight><DetailInput value={data.land_q3_survey_detail || ''} onChange={v => update('land_q3_survey_detail', v)} placeholder="如：界標完整" /></SubItemHighlight>}
+                        {(data?.land_q3_survey === '是' || data?.land_q3_survey === '已鑑界 (標完好)') && (
+                            <SubItemHighlight>
+                                <div className="space-y-4">
+                                    <DetailInput value={data.land_q3_survey_detail || ''} onChange={v => update('land_q3_survey_detail', v)} placeholder="如：界標完整" />
+                                    <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
+                                        <p className="font-bold text-lg mb-2">最近一次鑑界時間 (年份)：</p>
+                                        <input 
+                                            type="text" 
+                                            className="full-width-input" 
+                                            value={data.land_q3_survey_date || ''} 
+                                            onChange={e => update('land_q3_survey_date', e.target.value)} 
+                                            placeholder="如：112年 (若不確定可填不詳)" 
+                                        />
+                                    </div>
+                                </div>
+                            </SubItemHighlight>
+                        )}
                         {data?.land_q3_survey === '待查證' && <SubItemHighlight><DetailInput value={data.land_q3_survey_other || ''} onChange={v => update('land_q3_survey_other', v)} placeholder="如：不確定界標位置" /></SubItemHighlight>}
                     </QuestionBlock>
 
@@ -635,8 +651,8 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
     const numberKey = isHouse ? 'q14_number' : 'land_q2_access_number';
 
     // Hiding Logic
-    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '園區標準廠房（集合式／分租型）'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈', '公寓'].includes(data.propertyType) : false);
-    const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈', '公寓'].includes(data.propertyType) : false);
+    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '園區標準廠房（集合式／分租型）'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈 (10樓以下有電梯)', '公寓 (5樓以下無電梯)'].includes(data.propertyType) : false);
+    const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈 (10樓以下有電梯)', '公寓 (5樓以下無電梯)'].includes(data.propertyType) : false);
 
     return (
         <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
