@@ -427,8 +427,11 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                         <button onClick={() => setDraftFoundModalOpen(true)} className={`flex-1 bg-white/90 text-emerald-700 border-b-4 border-emerald-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-emerald-400`}>
                             <FileInput className="w-5 h-5" strokeWidth={2.5} /> 讀檔
                         </button>
-                        <button onClick={saveDraft} className={`flex-1 bg-white/90 text-rose-700 border-b-4 border-rose-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-rose-400`}>
+                        <button onClick={saveDraft} className={`flex-1 bg-white/90 text-sky-700 border-b-4 border-sky-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-sky-400`}>
                             <Save className="w-5 h-5" strokeWidth={2.5} /> 存檔
+                        </button>
+                        <button onClick={clearDraft} className={`flex-1 bg-white/90 text-rose-700 border-b-4 border-rose-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-rose-400`}>
+                            <Trash2 className="w-5 h-5" strokeWidth={2.5} /> 清空
                         </button>
                     </div>
                 </div>
@@ -503,26 +506,19 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             {isMobile && mobileTab === 'edit' && (
                 <div className="lg:hidden fixed bottom-[88px] left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 flex items-center justify-between gap-3 z-40 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900/95 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300">
-                    <button 
-                        onClick={() => {
-                            if (activeStep > 1) {
-                                setActiveStep(prev => prev - 1);
-                                if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                            }
-                        }}
-                        disabled={activeStep === 1}
-                        className={`flex-1 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${activeStep === 1 ? 'opacity-0 pointer-events-none' : 'bg-slate-100 text-slate-600 border-2 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}`}
-                    >
-                        <ArrowLeft className="w-5 h-5" /> 上一步
-                    </button>
-
-                    <button 
-                        onClick={saveDraft}
-                        className="w-14 h-14 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-lg active:scale-90 transition-all border-4 border-white dark:border-slate-700 dark:bg-slate-700"
-                        aria-label="Save Draft"
-                    >
-                        <Save className="w-6 h-6" />
-                    </button>
+                    {activeStep > 1 && (
+                        <button 
+                            onClick={() => {
+                                if (activeStep > 1) {
+                                    setActiveStep(prev => prev - 1);
+                                    if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                }
+                            }}
+                            className="flex-1 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95 bg-slate-100 text-slate-600 border-2 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                        >
+                            <ArrowLeft className="w-5 h-5" /> 上一步
+                        </button>
+                    )}
 
                     <button 
                         onClick={() => {
