@@ -373,7 +373,7 @@ export const FormInput: React.FC<{
         <label className="block text-slate-800 font-black mb-3 text-[1.5rem] md:text-[1.75rem] text-left dark:text-slate-100">{label}</label>
         <input 
             type="text" 
-            className="full-width-input text-xl border-2 border-slate-500 focus:border-slate-800 focus:bg-yellow-50 dark:focus:bg-yellow-900/20" 
+            className="full-width-input !text-xl border-2 border-slate-500 focus:border-slate-800 focus:bg-yellow-50 dark:focus:bg-yellow-900/20" 
             value={value || ''} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -389,7 +389,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
             type="number" 
             inputMode="decimal"
             disabled={disabled}
-            className={`full-width-input text-xl pr-16 border-2 border-slate-500 focus:border-slate-800 focus:bg-yellow-50 dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
+            className={`full-width-input !text-xl pr-16 border-2 border-slate-500 focus:border-slate-800 focus:bg-yellow-50 dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
             value={value} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -441,6 +441,30 @@ export const LandNumberInputs: React.FC<{
                 placeholder="地號" 
             />
             <span className="font-black text-xl md:text-2xl ml-2 mb-1 text-slate-700 dark:text-slate-300">號</span>
+        </div>
+    </div>
+);
+
+export const Select: React.FC<{
+    value: string;
+    onChange: (val: string) => void;
+    options: string[];
+    placeholder?: string;
+    className?: string;
+}> = ({ value, onChange, options, placeholder = "請選擇", className = '' }) => (
+    <div className={`relative ${className}`}>
+        <select
+            className="w-full appearance-none bg-white border-2 border-slate-300 text-slate-900 text-xl rounded-xl px-4 py-4 pr-10 focus:outline-none focus:border-slate-800 focus:ring-4 focus:ring-slate-100 transition-all cursor-pointer dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+        >
+            <option value="" disabled>{placeholder}</option>
+            {options.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+            ))}
+        </select>
+        <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500 dark:text-slate-400">
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
         </div>
     </div>
 );
@@ -660,7 +684,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input text-xl !mt-0 !bg-white focus:!bg-yellow-50 dark:!bg-slate-900 dark:focus:!bg-yellow-900/20 pr-24 border-2 border-slate-500 focus:border-slate-800" 
+                className="full-width-input !text-xl !mt-0 !bg-white focus:!bg-yellow-50 dark:!bg-slate-900 dark:focus:!bg-yellow-900/20 pr-24 border-2 border-slate-500 focus:border-slate-800" 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 

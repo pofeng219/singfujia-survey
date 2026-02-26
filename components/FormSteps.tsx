@@ -362,13 +362,13 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
                         <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
                         <RadioGroup 
-                            options={['無', '有 (含舊有水漬)', '全屋天花板包覆 (無法檢查)']} 
-                            value={data.q3_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q3_hasLeak === '否' ? '無' : (data?.q3_hasLeak === '是' ? '有 (含舊有水漬)' : (data?.q3_hasLeak ? '' : '')))} 
+                            options={['無 (現況乾燥)', '有 (含壁癌/水漬/修繕痕跡)', '全屋天花板包覆 (無法檢查)']} 
+                            value={data.q3_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q3_hasLeak === '否' ? '無 (現況乾燥)' : (data?.q3_hasLeak === '是' ? '有 (含壁癌/水漬/修繕痕跡)' : (data?.q3_hasLeak ? '' : '')))} 
                             onChange={(v) => { 
                                 if (v === '全屋天花板包覆 (無法檢查)') {
                                     setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆 (無法檢查)', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '因裝潢包覆無法檢視內部，需特別留意', q3_suspected: false, q3_suspectedDesc: '' })); 
                                 } else {
-                                    const val = v === '無' ? '否' : (v === '有 (含舊有水漬)' ? '是' : v);
+                                    const val = v === '無 (現況乾燥)' ? '否' : (v === '有 (含壁癌/水漬/修繕痕跡)' ? '是' : v);
                                     setData(prev => ({ ...prev, q3_hasLeak: val, q3_leakType: val === '是' ? prev.q3_leakType : '', q3_ceilingWrapped: false, q3_locations: val === '是' ? prev.q3_locations : [], q3_hasOther: val === '是' ? prev.q3_hasOther : false, q3_other: val === '是' ? prev.q3_other : '', q3_suspected: val === '是' ? prev.q3_suspected : false, q3_suspectedDesc: val === '是' ? prev.q3_suspectedDesc : '' })); 
                                 }
                             }} 

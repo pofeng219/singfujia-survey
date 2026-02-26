@@ -13,7 +13,7 @@ import {
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
     InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs,
-    SectionStatus
+    SectionStatus, FormInput
 } from './SharedUI';
 
 export const UtilitiesSection = ({ 
@@ -577,7 +577,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                                         <p className="font-bold text-lg mb-2">最近一次鑑界時間 (年份)：</p>
                                         <input 
                                             type="text" 
-                                            className="full-width-input" 
+                                            className="full-width-input !text-xl" 
                                             value={data.land_q3_survey_date || ''} 
                                             onChange={e => update('land_q3_survey_date', e.target.value)} 
                                             placeholder="如：112年 (若不確定可填不詳)" 
@@ -723,6 +723,11 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                     <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                          <p className="font-bold text-lg mb-2 text-slate-600">現況路寬</p>
                                          <UnitInput unit="米" value={data[roadWidthKey] || ''} onChange={v => update(roadWidthKey, v)} placeholder="輸入寬度" />
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
+                                         <p className="font-bold text-lg mb-2 text-slate-600">路名</p>
+                                         <FormInput id="field-roadName" label="" value={data[isHouse ? 'q14_roadName' : 'land_q2_roadName'] || ''} onChange={v => update(isHouse ? 'q14_roadName' : 'land_q2_roadName', v)} placeholder="輸入路名" className="!p-0 !m-0" />
+                                         <div className="mt-2"><InlineWarning>※若為私設道路或既成巷道請備註</InlineWarning></div>
                                     </div>
                                     {!hideBuildingLine && (
                                         <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
