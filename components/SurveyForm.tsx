@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
-import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2 } from 'lucide-react';
+import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2, ChevronRight } from 'lucide-react';
 
 import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
 import { INITIAL_STATE } from '../constants';
@@ -57,6 +57,8 @@ const isDataDirty = (current: SurveyData, initial: SurveyData): boolean => {
         return false;
     }
 };
+
+// Sticky Action Bar Component removed (inlined)
 
 export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode, toggleTheme }) => {
     const [data, setData] = useState<SurveyData>(INITIAL_STATE);
@@ -498,6 +500,49 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     <button onClick={() => handleExport('pdf')} className="w-full lg:w-auto px-10 py-5 bg-red-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-red-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-red-700 dark:border-red-900"><FileText className="w-8 h-8" /> 匯出 PDF 文件</button>
                 </div>
             </div>
+
+            {isMobile && mobileTab === 'edit' && (
+                <div className="lg:hidden fixed bottom-[88px] left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 flex items-center justify-between gap-3 z-40 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900/95 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300">
+                    <button 
+                        onClick={() => {
+                            if (activeStep > 1) {
+                                setActiveStep(prev => prev - 1);
+                                if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        }}
+                        disabled={activeStep === 1}
+                        className={`flex-1 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${activeStep === 1 ? 'opacity-0 pointer-events-none' : 'bg-slate-100 text-slate-600 border-2 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}`}
+                    >
+                        <ArrowLeft className="w-5 h-5" /> 上一步
+                    </button>
+
+                    <button 
+                        onClick={saveDraft}
+                        className="w-14 h-14 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-lg active:scale-90 transition-all border-4 border-white dark:border-slate-700 dark:bg-slate-700"
+                        aria-label="Save Draft"
+                    >
+                        <Save className="w-6 h-6" />
+                    </button>
+
+                    <button 
+                        onClick={() => {
+                            if (activeStep < stepsToShow) {
+                                setActiveStep(prev => prev + 1);
+                                if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                            } else {
+                                setMobileTab('preview');
+                            }
+                        }}
+                        className={`flex-1 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-b-4 active:border-b-0 active:translate-y-[2px] ${activeStep === stepsToShow ? 'bg-emerald-600 text-white border-emerald-800' : 'bg-sky-600 text-white border-sky-800'}`}
+                    >
+                        {activeStep === stepsToShow ? (
+                            <>預覽匯出 <FileText className="w-5 h-5" /></>
+                        ) : (
+                            <>下一步 <ChevronRight className="w-5 h-5" /></>
+                        )}
+                    </button>
+                </div>
+            )}
 
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 flex justify-around items-center pb-safe pt-2 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
                 <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-4 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
