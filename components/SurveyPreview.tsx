@@ -1015,17 +1015,8 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
 // --- MAIN PREVIEW COMPONENT ---
 
 export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, exporting, previewScale, previewPage, setPreviewPage, page1Ref, page2Ref, page3Ref, isMobile = false }) => {
-    const [viewMode, setViewMode] = useState<'a4' | 'mobile'>('a4');
-
-    useEffect(() => {
-        if (isMobile) {
-            setViewMode('mobile');
-        } else {
-            setViewMode('a4');
-        }
-    }, [isMobile]);
-
-    const activeMode = exporting ? 'a4' : viewMode;
+    // Removed viewMode state as we are defaulting to A4 view for consistency
+    const activeMode = 'a4';
 
     // Detect if we need page 3 (All factory types now use 3 pages)
     const hasPage3 = type === 'factory';
@@ -1127,14 +1118,6 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {isMobile ? (
                 <div className="w-full max-w-[210mm] flex flex-col gap-4 mb-6 no-print">
                     <div className="mb-0 animate-in fade-in slide-in-from-top-2"><p className="text-slate-600 font-bold text-base bg-amber-100/80 border-2 border-amber-200 py-3 px-4 rounded-xl text-center shadow-sm dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-200">💡 手機版：可左右拖曳，亦可雙指放大縮小檢視</p></div>
-                    <div className="flex bg-white p-2 rounded-2xl shadow-sm border border-slate-200 w-full dark:bg-slate-800 dark:border-slate-700">
-                        <button onClick={() => setViewMode('mobile')} className={`flex-1 py-3 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 ${viewMode === 'mobile' ? 'bg-orange-500 text-white shadow-md dark:bg-orange-600' : 'text-slate-400 dark:text-slate-500'}`}>
-                            <Smartphone className="w-5 h-5" /> 手機好讀版
-                        </button>
-                        <button onClick={() => setViewMode('a4')} className={`flex-1 py-3 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 ${viewMode === 'a4' ? 'bg-slate-800 text-white shadow-md dark:bg-slate-700' : 'text-slate-400 dark:text-slate-500'}`}>
-                            <FileText className="w-5 h-5" /> A4 列印版
-                        </button>
-                    </div>
                     <PageSwitcher />
                 </div>
             ) : (<div className="w-full max-w-[210mm] mb-8 no-print"><PageSwitcher /></div>)}
