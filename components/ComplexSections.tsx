@@ -7,7 +7,7 @@ import {
     PROTECTION_OPTS_PUBLIC, PROTECTION_OPTS_PRIVATE,
     GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A, WATER_BOOSTER_ITEMS_B,
     FACILITIES_GROUP_A, FACILITY_OPTIONS, FACILITIES_LAND_BASE, FACILITIES_LAND_FARM_EXTRA, FACILITIES_LAND_BUILD_IND_EXTRA,
-    LAND_WATER_BOOSTER_ITEMS,
+    LAND_WATER_BOOSTER_ITEMS, RESISTANCE_FACILITIES_OPTIONS,
     ACCESS_STATUS_OPTIONS, BUILDING_LINE_OPTIONS, DRAINAGE_OPTIONS
 } from '../constants';
 import { 
@@ -511,6 +511,45 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                     </div>
                 ))}
             </div>
+
+            {/* New Section for Resistance Facilities */}
+            <div className="mt-12 pt-8 border-t-2 border-slate-200">
+                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">常見環境抗性設施</p>
+                <div className="mb-6">
+                    <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
+                        <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
+                            ※未在重大環境設施內，但仍會影響房價的設施
+                        </p>
+                    </div>
+                </div>
+                
+                <div className="mb-8">
+                    <CheckBox checked={data?.q16_2_noFacilities || false} label="無常見環境抗性設施" onClick={() => { if (!data.q16_2_noFacilities) { update('q16_2_items', []); update('q16_2_hasOther', false); update('q16_2_other', ''); } update('q16_2_noFacilities', !data.q16_2_noFacilities); }} />
+                </div>
+
+                <div className={`grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 transition-all duration-500 ${data?.q16_2_noFacilities ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                    {RESISTANCE_FACILITIES_OPTIONS.map((i: string) => (
+                        <CheckBox key={i} checked={data?.q16_2_items?.includes(i) || false} label={i} onClick={() => toggleArr('q16_2_items', i)} disabled={data?.q16_2_noFacilities} />
+                    ))}
+                    <div className="col-span-1 lg:col-span-2">
+                        <CheckBox 
+                            checked={data?.q16_2_hasOther || false} 
+                            label="其他未列項目" 
+                            onClick={() => update('q16_2_hasOther', !data.q16_2_hasOther)} 
+                            disabled={data?.q16_2_noFacilities} 
+                        />
+                        {data?.q16_2_hasOther && (
+                            <SubItemHighlight>
+                                <DetailInput 
+                                    value={data.q16_2_other || ''} 
+                                    onChange={v => update('q16_2_other', v)} 
+                                    placeholder="說明現況" 
+                                />
+                            </SubItemHighlight>
+                        )}
+                    </div>
+                </div>
+            </div>
         </SurveySection>
     );
 };
@@ -554,22 +593,22 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
             <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} status={statusQ3}>
                 <div className="space-y-8">
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">土地鑑界與界標現況</p>
+                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">近兩年內土地鑑界與界標現況</p>
                         <RadioGroup 
-                            options={['已鑑界 (標完好)', '待查證', '標位不明 (需重測)', '從未鑑界']} 
+                            options={['近期已鑑界 (附土地複丈成果圖)', '待查證 (標位不明／須重測)', '否 (或年代久遠)']} 
                             value={
-                                data?.land_q3_survey === '否' ? '從未鑑界' : 
-                                (data?.land_q3_survey === '是' ? '已鑑界 (標完好)' : 
-                                (data?.land_q3_survey === '須重新鑑界' ? '標位不明 (需重測)' : 
+                                data?.land_q3_survey === '否' ? '否 (或年代久遠)' : 
+                                (data?.land_q3_survey === '是' ? '近期已鑑界 (附土地複丈成果圖)' : 
+                                (data?.land_q3_survey === '待查證' ? '待查證 (標位不明／須重測)' : 
                                 (data?.land_q3_survey || '')))
                             } 
                             onChange={v => { 
-                                const val = v === '從未鑑界' ? '否' : (v === '已鑑界 (標完好)' ? '是' : (v === '標位不明 (需重測)' ? '須重新鑑界' : v)); 
+                                const val = v === '否 (或年代久遠)' ? '否' : (v === '近期已鑑界 (附土地複丈成果圖)' ? '是' : (v === '待查證 (標位不明／須重測)' ? '待查證' : v)); 
                                 setData((prev: any) => ({...prev, land_q3_survey: val})); 
                             }} 
-                            layout="grid" cols={2}
+                            layout="grid" cols={1}
                         />
-                        {(data?.land_q3_survey === '是' || data?.land_q3_survey === '已鑑界 (標完好)') && (
+                        {data?.land_q3_survey === '是' && (
                             <SubItemHighlight>
                                 <div className="space-y-4">
                                     <DetailInput value={data.land_q3_survey_detail || ''} onChange={v => update('land_q3_survey_detail', v)} placeholder="如：界標完整" />
@@ -638,6 +677,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
     const abnormalDescKey = isHouse ? 'q14_abnormalDesc' : 'land_q2_access_desc';
     const ownerKey = isHouse ? 'q14_ownership' : 'land_q2_owner';
     const protectionKey = isHouse ? 'q14_protection' : 'land_q2_protection';
+    const protectionDescKey = isHouse ? 'q14_protectionDesc' : 'land_q2_protectionDesc';
     const materialKey = isHouse ? 'q14_roadMaterial' : 'land_q2_material';
     const materialOtherKey = isHouse ? 'q14_roadMaterialOther' : 'land_q2_material_other';
     const roadWidthKey = isHouse ? 'q14_roadWidth' : 'land_q2_roadWidth';
@@ -697,13 +737,28 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                             <RadioGroup 
                                                 options={PROTECTION_OPTS_PRIVATE} 
                                                 value={data[protectionKey] || ''} 
-                                                onChange={v => update(protectionKey, v)} 
+                                                onChange={v => {
+                                                    update(protectionKey, v);
+                                                    update(protectionDescKey, ''); // Reset desc on change
+                                                }} 
                                                 layout="grid" cols={2}
                                             />
-                                            {/* For Land Q2, if private, ask for owner description if needed, or re-use existing field? 
-                                                The types say `land_q2_owner_desc`.
-                                            */}
-                                            {!isHouse && <DetailInput value={data.land_q2_owner_desc || ''} onChange={v => update('land_q2_owner_desc', v)} placeholder="說明歸屬人" />}
+                                            
+                                            {/* Conditional Explanation Boxes */}
+                                            {['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路'].includes(data[protectionKey]) && (
+                                                <DetailInput 
+                                                    value={data[protectionDescKey] || ''} 
+                                                    onChange={v => update(protectionDescKey, v)} 
+                                                    placeholder="是否已取得相關書面證明文件 / 判決書" 
+                                                />
+                                            )}
+                                            {['現況未明／無保障'].includes(data[protectionKey]) && (
+                                                <DetailInput 
+                                                    value={data[protectionDescKey] || ''} 
+                                                    onChange={v => update(protectionDescKey, v)} 
+                                                    placeholder="填寫目前的通行狀況" 
+                                                />
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -723,11 +778,6 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                     <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                          <p className="font-bold text-lg mb-2 text-slate-600">現況路寬</p>
                                          <UnitInput unit="米" value={data[roadWidthKey] || ''} onChange={v => update(roadWidthKey, v)} placeholder="輸入寬度" />
-                                    </div>
-                                    <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
-                                         <p className="font-bold text-lg mb-2 text-slate-600">路名</p>
-                                         <FormInput id="field-roadName" label="" value={data[isHouse ? 'q14_roadName' : 'land_q2_roadName'] || ''} onChange={v => update(isHouse ? 'q14_roadName' : 'land_q2_roadName', v)} placeholder="輸入路名" className="!p-0 !m-0" />
-                                         <div className="mt-2"><InlineWarning>※若為私設道路或既成巷道請備註</InlineWarning></div>
                                     </div>
                                     {!hideBuildingLine && (
                                         <div className="bg-white p-4 rounded-xl border-2 border-slate-200">

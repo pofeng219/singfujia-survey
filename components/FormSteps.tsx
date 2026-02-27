@@ -186,12 +186,6 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         return 'complete';
     };
 
-    const getGarbageStatus = (): SectionStatus => {
-        if (!data.garbageTreatment) return 'incomplete';
-        if (data.garbageTreatment === '其他未列項目' && !data.garbageTreatmentOther) return 'incomplete';
-        return 'complete';
-    };
-
     const getLandQ1Status = (): SectionStatus => {
         if (!data.land_q1_elec) return 'incomplete';
         if (data.land_q1_elec === '其他未列項目' && !data.land_q1_elec_other) return 'incomplete';
@@ -393,7 +387,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">發生位置：</p>
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">{LEAK_LOCATIONS.map(i => <CheckBox key={i} checked={data?.q3_locations?.includes(i) || false} label={i} onClick={() => toggleArr('q3_locations', i)} />)}</div>
                                             </div>
-                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 space-y-4 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="說明位置與現況" />}</div>
+                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 space-y-4 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" />}</div>
                                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 space-y-4 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => update('q3_suspected', !data.q3_suspected)} />{data?.q3_suspected && <DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" />}</div>
                                         </div>
                                     )}
@@ -566,20 +560,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                  </div>
                             </SurveySection>
 
-                            {/* NEW: Garbage Treatment Section - Moved to Step 2 Q6 */}
-                            <SurveySection id="section-garbage" highlighted={highlightedField === 'section-garbage'} title="6. 垃圾處理方式" status={getGarbageStatus()}>
-                                <RadioGroup 
-                                    options={['社區統一處理 (有環保室)', '自行處理 (需等垃圾車)', '其他未列項目']} 
-                                    value={data.garbageTreatment || ''} 
-                                    onChange={v => setData(p => ({ ...p, garbageTreatment: v, garbageTreatmentOther: v === '其他未列項目' ? p.garbageTreatmentOther : '' }))} 
-                                    layout="grid" 
-                                />
-                                {data.garbageTreatment === '其他未列項目' && (
-                                    <SubItemHighlight>
-                                        <DetailInput value={data.garbageTreatmentOther || ''} onChange={v => update('garbageTreatmentOther', v)} placeholder="說明現況" />
-                                    </SubItemHighlight>
-                                )}
-                            </SurveySection>
+                            {/* Garbage Treatment Section Removed */}
                         </>
                     )}
                 </div>
@@ -594,8 +575,9 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     // --- Status Logic Helpers for Step 3 ---
     const getEnvStatus = (): SectionStatus => {
-        if (data.q16_noFacilities) return 'complete';
-        if (data.q16_items && data.q16_items.length > 0) return 'complete';
+        const q16Complete = data.q16_noFacilities || (data.q16_items && data.q16_items.length > 0);
+        const q16_2Complete = data.q16_2_noFacilities || (data.q16_2_items && data.q16_2_items.length > 0) || (data.q16_2_hasOther && !!data.q16_2_other);
+        if (q16Complete && q16_2Complete) return 'complete';
         return 'incomplete';
     };
 
@@ -733,7 +715,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         return (
             <StepContainer title="第三步：環境與其他" type={type} themeText={themeText}>
                 <EnvironmentSection 
-                    data={data} update={update} toggleArr={toggleArr} id="section-q16" title="2. 重要環境設施" highlightedId={highlightedField} 
+                    data={data} update={update} toggleArr={toggleArr} id="section-q16" title="2. 重大環境設施／常見環境抗性設施" highlightedId={highlightedField} 
                     warningText="※內政部於 104 年 10 月新版不動產說明書中，房仲業者須對於受託銷售之不動產，應調查周邊半徑 300 公尺範圍內之重要環境設施"
                     status={getEnvStatus()}
                 />
@@ -775,7 +757,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                      </BooleanReveal>
                 </SurveySection>
-                <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="9. 本案或本社區須注意的設施" status={getFacilityStatus()}>
+                <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="9. 物件與社區內須注意的社區" status={getFacilityStatus()}>
                      <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
@@ -1134,7 +1116,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
         const getFactoryHardwareStatus = (): SectionStatus => {
             if (!data.factory_elevator) return 'incomplete';
-            if (data.factory_elevator === '有') {
+            if (data.factory_elevator !== '無') {
                 if (!data.factory_elevator_status || !data.factory_elevator_capacity || !data.factory_elevator_dim) return 'incomplete';
             }
             if (!data.factory_crane) return 'incomplete';
@@ -1246,8 +1228,8 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <div className="space-y-8">
                         <QuestionBlock>
                             <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">貨梯設施</p>
-                            <RadioGroup options={['無', '有']} value={data.factory_elevator || ''} onChange={v => setData(p => ({...p, factory_elevator: v}))} />
-                            {data.factory_elevator === '有' && (
+                            <RadioGroup options={['無', '純貨梯', '客貨兩用梯']} value={data.factory_elevator || ''} onChange={v => setData(p => ({...p, factory_elevator: v}))} />
+                            {(data.factory_elevator === '純貨梯' || data.factory_elevator === '客貨兩用梯') && (
                                 <SubItemHighlight>
                                     <div className="space-y-6">
                                         <RadioGroup options={['可運作', '故障／停用']} value={data.factory_elevator_status || ''} onChange={v => update('factory_elevator_status', v)} />
@@ -1443,8 +1425,9 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     };
 
     const getEnvStatus = (): SectionStatus => {
-        if (data.q16_noFacilities) return 'complete';
-        if (data.q16_items && data.q16_items.length > 0) return 'complete';
+        const q16Complete = data.q16_noFacilities || (data.q16_items && data.q16_items.length > 0);
+        const q16_2Complete = data.q16_2_noFacilities || (data.q16_2_items && data.q16_2_items.length > 0) || (data.q16_2_hasOther && !!data.q16_2_other);
+        if (q16Complete && q16_2Complete) return 'complete';
         return 'incomplete';
     };
 
@@ -1501,7 +1484,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {/* Environment */}
             <EnvironmentSection 
                 data={data} update={update} toggleArr={toggleArr} id="section-q16" 
-                title={type === 'house' ? "12. 重要環境設施" : (type === 'land' ? "10. 重要環境設施" : `${envNum}. 重要環境設施`)} 
+                title={type === 'house' ? "12. 重大環境設施／常見環境抗性設施" : (type === 'land' ? "10. 重大環境設施／常見環境抗性設施" : `${envNum}. 重大環境設施／常見環境抗性設施`)} 
                 highlightedId={highlightedField} 
                 warningText="※內政部於 104 年 10 月新版不動產說明書中，房仲業者須對於受託銷售之不動產，應調查周邊半徑 300 公尺範圍內之重要環境設施"
                 status={getEnvStatus()}

@@ -101,10 +101,6 @@ export interface SurveyData {
     publicFacilities: string;
     publicFacilitiesReason: string;
     
-    // New: Garbage Treatment (Phase 3)
-    garbageTreatment: string;
-    garbageTreatmentOther: string;
-
     // Parking (House)
     q10_noParking: boolean;
     q10_parkTypes: string[];
@@ -157,10 +153,10 @@ export interface SurveyData {
     q14_roadMaterial: string;
     q14_roadMaterialOther: string;
     q14_roadWidth: string; // New: Road width
-    q14_roadName: string; // New: Road name
     q14_buildingLine: string; // New: Building line designation
     q14_ditch: string;
     q14_ditchOther: string;
+    q14_protectionDesc: string; // New: Protection description
 
     q15_occupy: string;
     q15_section: string;
@@ -170,6 +166,12 @@ export interface SurveyData {
     q16_items: string[];
     q16_hasOther: boolean;
     q16_other: string;
+    // New: Common Environmental Resistance Facilities (Q16-2)
+    q16_2_noFacilities: boolean;
+    q16_2_items: string[];
+    q16_2_hasOther: boolean;
+    q16_2_other: string;
+    
     q17_issue: string;
     q17_desc: string;
     q17_homicide: string; // New: Homicide question
@@ -269,16 +271,15 @@ export interface SurveyData {
     land_q2_access_number: string;
 
     land_q2_owner: string;
-    land_q2_owner_desc: string;
     land_q2_protection: string; // New: Protection Type (Easement/Lease etc)
 
     land_q2_material: string;
     land_q2_material_other: string;
     land_q2_roadWidth: string; // New: Road width for land
-    land_q2_roadName: string; // New: Road name for land
     land_q2_buildingLine: string; // New: Building line designation
     land_q2_ditch: string;
     land_q2_ditch_other: string;
+    land_q2_protectionDesc: string; // New: Protection description
 
     land_q3_survey: string;
     land_q3_survey_detail: string;

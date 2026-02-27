@@ -34,7 +34,6 @@ export const INITIAL_STATE: SurveyData = {
     q9_hasIssue: '', q9_items: [], q9_hasOther: false, q9_otherDesc: '', q9_solar_maintenance: '', q9_water_booster_opt: '', q9_water_booster_items: [],
     publicFacilities: '', publicFacilitiesReason: '',
     
-    garbageTreatment: '', garbageTreatmentOther: '', // New garbage fields
 
     q10_noParking: false, q10_parkTypes: [], q10_rampMechLoc: '', q10_liftMechLoc: '', q10_hasParkTypeOther: false, q10_parkTypeOther: '',
     q10_ownership: '',
@@ -49,12 +48,13 @@ export const INITIAL_STATE: SurveyData = {
     q11_hasIssue: '', q11_items: [], q11_hasOther: false, q11_other: '',
     q12_hasNote: '', q12_note: '',
     isNotFirstFloor: false,
-    q14_access: '', q14_ownership: '', q14_protection: '', q14_abnormalDesc: '', 
+    q14_access: '', q14_ownership: '', q14_protection: '', q14_protectionDesc: '', q14_abnormalDesc: '', 
     q14_section: '', q14_subSection: '', q14_number: '',
-    q14_roadMaterial: '', q14_roadMaterialOther: '', q14_roadWidth: '', q14_roadName: '', q14_buildingLine: '', q14_ditch: '', q14_ditchOther: '',
+    q14_roadMaterial: '', q14_roadMaterialOther: '', q14_roadWidth: '', q14_buildingLine: '', q14_ditch: '', q14_ditchOther: '',
     
     q15_occupy: '', q15_section: '', q15_subSection: '', q15_number: '',
     q16_noFacilities: false, q16_items: [], q16_hasOther: false, q16_other: '',
+    q16_2_noFacilities: false, q16_2_items: [], q16_2_hasOther: false, q16_2_other: '',
     q17_issue: '', q17_desc: '', q17_homicide: '',
 
     // Factory Init
@@ -91,8 +91,8 @@ export const INITIAL_STATE: SurveyData = {
     land_q1_other_new: '', land_q1_other_desc: '',
     land_q2_access: '', land_q2_access_desc: '', 
     land_q2_access_section: '', land_q2_access_subSection: '', land_q2_access_number: '',
-    land_q2_owner: '', land_q2_owner_desc: '', land_q2_protection: '',
-    land_q2_material: '', land_q2_material_other: '', land_q2_roadWidth: '', land_q2_roadName: '', land_q2_buildingLine: '', land_q2_ditch: '', land_q2_ditch_other: '',
+    land_q2_owner: '', land_q2_protection: '', land_q2_protectionDesc: '',
+    land_q2_material: '', land_q2_material_other: '', land_q2_roadWidth: '', land_q2_buildingLine: '', land_q2_ditch: '', land_q2_ditch_other: '',
     land_q3_survey: '', land_q3_survey_detail: '', land_q3_survey_other: '', land_q3_survey_date: '',
     land_q3_dispute: '', land_q3_dispute_desc: '', land_q3_dispute_other: '',
     land_q4_expro: '', land_q4_expro_other: '', land_q4_resurvey: '', land_q4_resurvey_other: '',
@@ -182,7 +182,15 @@ export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '水利溝渠
 
 // Protection Options (Access)
 export const PROTECTION_OPTS_PUBLIC = ['現狀通行', '已向政府承租', '計畫道路'];
-export const PROTECTION_OPTS_PRIVATE = ['現狀通行／既成道路', '設定不動產役權', '取得地主同意書', '分管協議約定', '法院判決通行', '現況未明／無保障'];
+export const PROTECTION_OPTS_PRIVATE = [
+    '私設道路（具路權持分）',
+    '設定不動產役權',
+    '分管協議約定',
+    '取得地主同意書',
+    '法院判決通行',
+    '現狀通行／既成道路',
+    '現況未明／無保障'
+];
 
 // Factory Specific Option Lists
 export const FACTORY_FLOOR_OPTS = ["一般水泥", "環氧樹脂(Epoxy)", "硬化地坪", "磨石子", "其他未列項目"];
@@ -204,9 +212,6 @@ export const ENV_CATEGORIES: EnvCategory[] = [
 export const FACILITIES_GROUP_A = [
     "變電箱／桶", 
     "基地台", 
-    "鄰近光電設施", 
-    "回收廠", 
-    "抽水站", 
     "門前／車輛出入有消防栓", 
     "門前／車輛出入有電線杆"
 ];
@@ -215,8 +220,21 @@ export const FACILITIES_GROUP_A = [
 export const FACILITIES_LAND_BASE = [
     "變電箱／桶", 
     "基地台", 
-    "鄰近光電設施", 
-    "回收場"
+];
+
+export const RESISTANCE_FACILITIES_OPTIONS = [
+    "光電太陽能板（光電場）",
+    "資源回收廠",
+    "鐵路軌道",
+    "高鐵高架橋",
+    "快速／高速道路高架橋",
+    "污水處理廠／水資源回收中心",
+    "抽水站",
+    "八大行業",
+    "工廠",
+    "養豬／雞／鴨／牛場",
+    "屠宰場",
+    "動物繁殖場"
 ];
 
 export const FACILITIES_LAND_FARM_EXTRA = ["鄰近工業區"];

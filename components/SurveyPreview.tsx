@@ -31,7 +31,7 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
     <tr className="text-black">
         <td className="w-28 text-center bg-gray-50 font-black text-black">{checked ? 'V' : ''}</td>
         <td colSpan={9} className="py-1 px-4 text-left text-black">
-            <div className="pl-4 text-black">
+            <div className="text-black">
                 {children}
             </div>
         </td>
@@ -187,6 +187,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
     const access = data?.land_q2_access;
     const ownership = data?.land_q2_owner;
     const protection = data?.land_q2_protection;
+    const protectionDesc = data?.land_q2_protectionDesc;
     const abnormalDesc = data?.land_q2_access_desc;
     
     const roadMat = data?.land_q2_material;
@@ -204,7 +205,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
         <>
             <SectionHeader title={title} />
             <CheckRow checked={isNormal}>
-                <PreviewResult checked={isNormal} label={`通行順暢 [${ownership || ''}${protection ? `/${protection}` : ''}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`} />
+                <PreviewResult checked={isNormal} label={`通行順暢 [${ownership || ''}${protection ? `/${protection}` : ''}${protectionDesc ? ` (${protectionDesc})` : ''}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`} />
                 <PreviewResult checked={isAbnormal} label={`通行受限 (${abnormalDesc})`} />
                 <PreviewResult checked={isLandlocked} label="袋地" />
             </CheckRow>
@@ -258,9 +259,17 @@ const Footer = ({ showSignature, hideBranding = false, signatureImage }: { showS
 // --- LOGIC EXTRACTORS ---
 
 const getEnvFacilitiesLabel = (data: SurveyData) => {
-    if (data?.q16_noFacilities) return "無重要環境設施";
-    const labels = [...(data?.q16_items || [])];
-    return labels.join('、');
+    const major = data?.q16_noFacilities ? "無重大環境設施" : (data?.q16_items || []).join('、');
+    
+    const resistanceItems = [...(data?.q16_2_items || [])];
+    if (data?.q16_2_hasOther && data.q16_2_other) {
+        resistanceItems.push(`其他: ${data.q16_2_other}`);
+    }
+    
+    const resistance = data?.q16_2_noFacilities ? "無常見環境抗性設施" : resistanceItems.join('、');
+    
+    if (major && resistance) return `${major}；${resistance}`;
+    return major || resistance || '';
 };
 
 const getHouseLabels = (data: SurveyData) => {
@@ -386,7 +395,7 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
                 <SectionHeader title={`${startIdx}. 進出通行與臨路現況`} />
                 <CheckRow checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')}>
                     <span className="font-black mr-2">進出現況</span>
-                    <PreviewResult checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')} label={`通行順暢 [${data.q14_ownership || ''}${data.q14_protection ? `/${data.q14_protection}` : ''}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`} />
+                    <PreviewResult checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')} label={`通行順暢 [${data.q14_ownership || ''}${data.q14_protection ? `/${data.q14_protection}` : ''}${data.q14_protectionDesc ? ` (${data.q14_protectionDesc})` : ''}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`} />
                     <PreviewResult checked={data?.q14_access === '通行受限' || data?.q14_access?.includes('受限')} label={`通行受限 (${data.q14_abnormalDesc})`} />
                     <PreviewResult checked={data?.q14_access === '袋地' || data?.q14_access?.includes('袋地')} label="袋地" />
                 </CheckRow>
@@ -404,19 +413,19 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
             </>
         )}
         
-        <SectionHeader title={type === 'house' ? `${startIdx + 1}. 重要環境設施` : `${type === 'factory' ? startIdx : startIdx + 1}. 重要環境設施`} />
-        <CheckRow checked={data?.q16_noFacilities}>
-             <span className="font-black mr-2">重要環境設施</span>
-             {!data?.q16_noFacilities && <span className="font-medium">{getEnvFacilitiesLabel(data)}</span>}
+        <SectionHeader title={type === 'house' ? `${startIdx + 1}. 重大環境設施／常見環境抗性設施` : `${type === 'factory' ? startIdx : startIdx + 1}. 重大環境設施／常見環境抗性設施`} />
+        <CheckRow checked={data?.q16_noFacilities && data?.q16_2_noFacilities}>
+             <span className="font-black mr-2">重大環境設施／常見環境抗性設施</span>
+             <span className="font-medium">{getEnvFacilitiesLabel(data)}</span>
         </CheckRow>
 
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案或本社區須注意的事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案或本區須注意的事項`} />
         <tr className="text-black">
-            <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide ? 'V' : ''}</td>
+            <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide === '無' ? 'V' : ''}</td>
             <td colSpan={9} className="py-1 px-4 text-left text-black">
                 <div className="flex flex-wrap items-center">
                     <span className="font-black mr-2">是否曾發生非自然死亡情事：</span>
-                    <span className="font-medium">{data?.q17_homicide || '未填寫'}</span>
+                    <span className="font-medium">{data?.q17_homicide || ''}</span>
                 </div>
             </td>
         </tr>
@@ -510,11 +519,10 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                 </CheckRow>
             )}
 
-            <SectionHeader title="6. 垃圾處理方式" />
-            <CheckRow checked={!!data?.garbageTreatment}>
-                 <PreviewResult checked={data?.garbageTreatment === '社區統一處理 (有環保室)'} label="社區統一處理 (有環保室)" />
-                 <PreviewResult checked={data?.garbageTreatment === '自行處理 (需等垃圾車)'} label="自行處理 (需等垃圾車)" />
-                 <PreviewResult checked={data?.garbageTreatment === '其他未列項目'} label={`其他 (${data.garbageTreatmentOther})`} />
+            <SectionHeader title="6. 大樓／社區公共設施 (可否進入／使用)" />
+            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
+                <span className="font-black mr-2">公共設施</span>
+                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 (${data.publicFacilitiesReason})`} />
             </CheckRow>
         </>
     );
@@ -524,25 +532,19 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
     const labels = getHouseLabels(data);
     return (
         <>
-            <SectionHeader title="7. 大樓／社區公共設施 (可否進入／使用)" />
-            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
-                <span className="font-black mr-2">公共設施</span>
-                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 (${data.publicFacilitiesReason})`} />
-            </CheckRow>
-
-            <SectionHeader title="8. 公設空間（梯間/地下室）現況" />
+            <SectionHeader title="7. 公設空間（梯間/地下室）現況" />
             <CheckRow checked={data?.q8_stairIssue === '否' || data?.q8_stairIssue === '無異常'}>
                 <span className="font-black mr-2">梯間／地下室異常</span>
                 <PreviewResult checked={data?.q8_stairIssue === '是' || data?.q8_stairIssue === '有異常'} label={labels.q6()} />
             </CheckRow>
             
-            <SectionHeader title="9. 本案或本社區須注意的設施" />
+            <SectionHeader title="8. 物件與社區內須注意的社區" />
             <CheckRow checked={data?.q9_hasIssue === '否'}>
-                 <span className="font-black mr-2">須注意設施</span>
+                 <span className="font-black mr-2">須注意社區</span>
                 <PreviewResult checked={data?.q9_hasIssue === '是'} label={labels.q9()} />
             </CheckRow>
 
-            <SectionHeader title="10. 車位資訊" />
+            <SectionHeader title="9. 車位資訊" />
             <tr className="text-black">
                 <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q10_noParking ? 'V' : ''}</td>
                 <td colSpan={9} className="py-1 px-4 text-left text-black">
@@ -569,7 +571,7 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
                 </td>
             </tr>
             
-            <CommonExtraQuestions data={data} startIdx={11} type="house" />
+            <CommonExtraQuestions data={data} startIdx={10} type="house" />
         </>
     );
 };
@@ -761,12 +763,21 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
                 <PreviewResult checked={data?.soil_q1_status === '不確定' || data?.soil_q1_status === '待查證'} label="待查證" />
             </CheckRow>
 
-            <SectionHeader title="10. 重要環境設施" />
-            <CheckRow checked={data?.q16_noFacilities}>
+            <SectionHeader title="10. 重大環境設施／常見環境抗性設施" />
+            <CheckRow checked={data?.q16_noFacilities && data?.q16_2_noFacilities}>
                 <span className="font-medium">{getEnvFacilitiesLabel(data)}</span>
             </CheckRow>
 
             <SectionHeader title="11. 本案或周圍須注意的事項" />
+            <tr className="text-black">
+                <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide === '無' ? 'V' : ''}</td>
+                <td colSpan={9} className="py-1 px-4 text-left text-black">
+                    <div className="flex flex-wrap items-center">
+                        <span className="font-black mr-2">是否曾發生非自然死亡情事：</span>
+                        <span className="font-medium">{data?.q17_homicide || ''}</span>
+                    </div>
+                </td>
+            </tr>
             <CheckRow checked={data?.land_q8_special === '否'}>
                 <PreviewResult checked={data?.land_q8_special === '是'} label={data?.land_q8_special_desc} />
             </CheckRow>
@@ -792,7 +803,8 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode, hasPage3 = false 
         if (!data.factory_elevator) return '';
         if (data.factory_elevator === '無') return '無';
         const status = data.factory_elevator_working ? '可運作' : '故障';
-        let s = `有 (${status}`;
+        // Use the actual value (純貨梯/客貨兩用梯) instead of hardcoded "有"
+        let s = `${data.factory_elevator} (${status}`;
         if (data.factory_elevator_separate) s += '/客貨分';
         s += ')';
         const parts = [];
@@ -1187,11 +1199,11 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                     </CheckRow>
                                     <SectionHeader title="3. 本案或本社區須注意的事項" />
                                     <tr className="text-black">
-                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide ? 'V' : ''}</td>
+                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide === '無' ? 'V' : ''}</td>
                                         <td colSpan={9} className="py-1 px-4 text-left text-black">
                                             <div className="flex flex-wrap items-center">
                                                 <span className="font-black mr-2">是否曾發生非自然死亡情事：</span>
-                                                <span className="font-medium">{data?.q17_homicide || '未填寫'}</span>
+                                                <span className="font-medium">{data?.q17_homicide || ''}</span>
                                             </div>
                                         </td>
                                     </tr>
