@@ -136,9 +136,9 @@ export const ACCESS_SUB_OPTIONS_PARKING = ["塔式車位", "其他未列項目"]
 export const PARK_TYPES = ["坡道平面", "坡道機械", "升降平面", "一樓平面", "法定空地／自家門前", "塔式車位", "升降機械"];
 export const CAR_USAGE_OPTS = ["固定位置使用", "須承租", "須排隊等候", "每日先到先停"];
 export const Q11_OPTS = ["機械式車位故障", "車位不易駛入或停放"];
-export const PROPERTY_TYPE_OPTIONS = ["透天獨棟廠房", "立體化廠辦大樓", "標準廠房(工業園區內)", "倉儲物流廠房", "其他未列項目"];
-export const HOUSE_PROPERTY_TYPE_OPTIONS = ["透天別墅", "透天店面", "大樓華廈 (10樓以下有電梯)", "公寓 (5樓以下無電梯)"];
-export const LAND_PROPERTY_TYPE_OPTIONS = ["農地", "建地", "工業地", "其他(道路用地／公設地)"];
+export const PROPERTY_TYPE_OPTIONS = ["透天獨棟廠房", "立體化廠辦大樓", "標準廠房（工業園區內）", "倉儲物流廠房", "其他未列項目"];
+export const HOUSE_PROPERTY_TYPE_OPTIONS = ["透天別墅", "透天店面", "大樓（10樓以上有電梯）", "華廈", "公寓（5樓以下無電梯）", "其他未列項目"];
+export const LAND_PROPERTY_TYPE_OPTIONS = ["農地", "建地", "工業地", "其他（道路用地／公設地）"];
 // New Factory Property Type Options
 export const FACTORY_PROPERTY_TYPE_OPTIONS = ["獨棟自建廠房", "立體化廠辦大樓", "園區標準廠房（集合式／分租型）", "倉儲物流廠房", "其他特殊工業設施"];
 
@@ -146,10 +146,10 @@ export const FACTORY_PROPERTY_TYPE_OPTIONS = ["獨棟自建廠房", "立體化�
 export const GROUP_A_TYPES = [
     '透天別墅', '透天店面', '農地', '建地', '工業地', 
     '獨棟自建廠房', '倉儲物流廠房', '其他特殊工業設施',
-    '其他(道路用地／公設地)'
+    '其他（道路用地／公設地）'
 ];
 export const GROUP_B_TYPES = [
-    '大樓華廈 (10樓以下有電梯)', '公寓 (5樓以下無電梯)', '立體化廠辦大樓', 
+    '大樓（10樓以上有電梯）', '華廈', '公寓（5樓以下無電梯）', '立體化廠辦大樓', 
     '園區標準廠房（集合式／分租型）'
 ];
 
@@ -171,14 +171,14 @@ export const WATER_BOOSTER_ITEMS_B = [
     "地下蓄水池",
     "配水機房",
     "揚水馬達",
-    "中繼水箱(含加壓泵)",
+    "中繼水箱（含加壓泵）",
     "屋頂水塔"
 ];
 
 export const ACCESS_STATUS_OPTIONS = ['通行順暢', '通行受限（如狹窄、有障礙物）', '袋地（無合法出入口）'];
-export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯 (無天然瓦斯)', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
+export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯（無天然瓦斯）', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
 export const BUILDING_LINE_OPTIONS = ['已核定', '未核定', '申請中', '須申請'];
-export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '水利溝渠 (灌溉溝渠)', '無排水系統'];
+export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '水利溝渠（灌溉溝渠）', '無排水系統'];
 
 // Protection Options (Access)
 export const PROTECTION_OPTS_PUBLIC = ['現狀通行', '已向政府承租', '計畫道路'];
@@ -193,10 +193,10 @@ export const PROTECTION_OPTS_PRIVATE = [
 ];
 
 // Factory Specific Option Lists
-export const FACTORY_FLOOR_OPTS = ["一般水泥", "環氧樹脂(Epoxy)", "硬化地坪", "磨石子", "其他未列項目"];
+export const FACTORY_FLOOR_OPTS = ["一般水泥", "環氧樹脂（Epoxy）", "硬化地坪", "磨石子", "其他未列項目"];
 export const FACTORY_FIRE_OPTS = ["自動灑水設備", "室內消防栓", "火警探測器", "滅火器", "排煙設備", "泡沫滅火設備"];
-export const FACTORY_WASTE_OPTS = ["無", "有(已納管)", "工業區統一汙水處理", "有(自有處理設備)", "其他未列項目"];
-export const FACTORY_DOCK_OPTS = ["無", "有(一般月台)", "有(附油壓升降板)"];
+export const FACTORY_WASTE_OPTS = ["無", "有（已納管）", "工業區統一汙水處理", "有（自有處理設備）", "其他未列項目"];
+export const FACTORY_DOCK_OPTS = ["無", "有（一般月台）", "有（附油壓升降板）"];
 export const FACTORY_TRUCK_OPTS = ["40呎貨櫃車", "20呎貨櫃車", "僅3.5噸貨車", "機車／小客車"];
 export const STAIR_ISSUES = ["龜裂", "鋼筋外露", "水泥塊剝落"];
 

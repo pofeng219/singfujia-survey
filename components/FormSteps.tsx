@@ -109,7 +109,12 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 {type === 'house' && (
                      <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <RadioGroup options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                        <RadioGroup options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '' })); }} />
+                        {data?.propertyType === '其他未列項目' && (
+                             <SubItemHighlight>
+                                 <DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明現況" />
+                             </SubItemHighlight>
+                        )}
                     </div>
                 )}
                 {type === 'land' && (
@@ -266,14 +271,14 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
                     <LandQuestionsGroup 
                         data={data} setData={setData} update={update}
-                        titles={{ q2: '', q3: '2. 土地鑑界與界標現況／產權與使用糾紛現況', q4: '3. 土地徵收與保留地現況／重劃與區段徵收現況' }}
+                        titles={{ q2: '', q3: '2. 土地鑑界與界標現況與產權與使用糾紛現況', q4: '3. 土地徵收與保留地現況與重劃與區段徵收現況' }}
                         ids={{ q2: 'section-land-q2-hidden', q3: 'section-land-q3', q4: 'section-land-q4' }}
                         highlightedId={highlightedField}
                         hideQ2={true}
                         statusQ3={getLandQ3Status()}
                         statusQ4={getLandQ4Status()}
                     />
-                    <SurveySection id="section-land-q5" highlighted={highlightedField === 'section-land-q5'} title="4. 被越界占用／占用鄰地現況？" status={data.land_q5_encroached && data.land_q5_encroaching ? 'complete' : 'incomplete'}>
+                    <SurveySection id="section-land-q5" highlighted={highlightedField === 'section-land-q5'} title="4. 被越界占用與占用鄰地現況" status={data.land_q5_encroached && data.land_q5_encroaching ? 'complete' : 'incomplete'}>
                         <div className="space-y-8">
                             <QuestionBlock>
                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal"><span className="text-red-600">遭</span>他人<span className="text-red-600">占用</span>現況</p>
@@ -289,12 +294,12 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             )}
             {(type === 'house' || type === 'factory') && (
                 <div className="space-y-8 md:space-y-12">
-                    <SurveySection id="section-q1" highlighted={highlightedField === 'section-q1'} title="1. 增建與占用／被占用現況" status={getQ1Status()}>
+                    <SurveySection id="section-q1" highlighted={highlightedField === 'section-q1'} title="1. 增建、占用與被占用現況" status={getQ1Status()}>
                         <div className="space-y-8 md:space-y-10 pl-0 md:pl-2">
                             <BooleanReveal 
                                 label={
                                     <>
-                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">增建 (含違建)現況</p>
+                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">增建（含違建）現況</p>
                                         <InlineWarning>※如有增建請繪製格局圖時，標示增建現況及位置</InlineWarning>
                                     </>
                                 }
@@ -341,8 +346,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對／建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對／建物面積現況評估'}</p>} status={getQ6Status()}>
-                        <InlineWarning>※可簡易測量最長／短／寬／窄之距離 (因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內)</InlineWarning>
+                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對與建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對與建物面積現況評估'}</p>} status={getQ6Status()}>
+                        <InlineWarning>※可簡易測量最長／短／寬／窄之距離（因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內）</InlineWarning>
                         <RadioGroup 
                             options={['實測相符', '實測不符', '無法測量']} 
                             value={data?.q6_hasIssue === '相符 (無明顯差異)' ? '實測相符' : (data?.q6_hasIssue === '不符 (有明顯差異)' ? '實測不符' : (data?.q6_hasIssue === '無法測量／其他' || data?.q6_hasIssue === '無法測量／現況說明' ? '無法測量' : (data?.q6_hasIssue || '')))} 
@@ -356,13 +361,13 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
                         <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
                         <RadioGroup 
-                            options={['無 (現況乾燥)', '有 (含壁癌/水漬/修繕痕跡)', '全屋天花板包覆 (無法檢查)']} 
-                            value={data.q3_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q3_hasLeak === '否' ? '無 (現況乾燥)' : (data?.q3_hasLeak === '是' ? '有 (含壁癌/水漬/修繕痕跡)' : (data?.q3_hasLeak ? '' : '')))} 
+                            options={['無（現況乾燥）', '有（含壁癌／水漬／修繕痕跡）', '全屋天花板包覆（無法檢查）']} 
+                            value={data.q3_ceilingWrapped ? '全屋天花板包覆（無法檢查）' : (data?.q3_hasLeak === '否' ? '無（現況乾燥）' : (data?.q3_hasLeak === '是' ? '有（含壁癌／水漬／修繕痕跡）' : (data?.q3_hasLeak ? '' : '')))} 
                             onChange={(v) => { 
-                                if (v === '全屋天花板包覆 (無法檢查)') {
-                                    setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆 (無法檢查)', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '因裝潢包覆無法檢視內部，需特別留意', q3_suspected: false, q3_suspectedDesc: '' })); 
+                                if (v === '全屋天花板包覆（無法檢查）') {
+                                    setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆（無法檢查）', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '因裝潢包覆無法檢視內部，需特別留意', q3_suspected: false, q3_suspectedDesc: '' })); 
                                 } else {
-                                    const val = v === '無 (現況乾燥)' ? '否' : (v === '有 (含壁癌/水漬/修繕痕跡)' ? '是' : v);
+                                    const val = v === '無（現況乾燥）' ? '否' : (v === '有（含壁癌／水漬／修繕痕跡）' ? '是' : v);
                                     setData(prev => ({ ...prev, q3_hasLeak: val, q3_leakType: val === '是' ? prev.q3_leakType : '', q3_ceilingWrapped: false, q3_locations: val === '是' ? prev.q3_locations : [], q3_hasOther: val === '是' ? prev.q3_hasOther : false, q3_other: val === '是' ? prev.q3_other : '', q3_suspected: val === '是' ? prev.q3_suspected : false, q3_suspectedDesc: val === '是' ? prev.q3_suspectedDesc : '' })); 
                                 }
                             }} 
@@ -372,7 +377,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <SubItemHighlight>
                                 <div className="space-y-6 md:space-y-8">
                                     <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200">
-                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-500 block md:inline md:ml-2">(請確認現場狀況)</span></p>
+                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-500 block md:inline md:ml-2">（請確認現場狀況）</span></p>
                                         <RadioGroup 
                                             options={['滲漏水', '壁癌', '兩者皆有']} 
                                             value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' ? '' : (data.q3_leakType || '')} 
@@ -381,7 +386,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                         />
                                     </div>
                                     
-                                    {(data.q3_leakType && data.q3_leakType !== '全屋天花板包覆' && data.q3_leakType !== '全屋天花板包覆 (無法檢查)') && (
+                                    {(data.q3_leakType && data.q3_leakType !== '全屋天花板包覆' && data.q3_leakType !== '全屋天花板包覆（無法檢查）') && (
                                         <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 md:space-y-8">
                                             <div>
                                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">發生位置：</p>
@@ -412,19 +417,19 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q4" highlighted={highlightedField === 'section-q4'} title={type === 'factory' ? '4. 建物結構現況' : '4. 建物結構現況'} status={getQ4Status()}>
+                    <SurveySection id="section-q4" highlighted={highlightedField === 'section-q4'} title={type === 'factory' ? '4. 建物結構安全評估（含瑕疵與傾斜）' : '4. 建物結構安全評估（含瑕疵與傾斜）'} status={getQ4Status()}>
                         <div className="space-y-8 md:space-y-10">
                             <QuestionBlock>
                                 <div className="mb-6">
                                     <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-1 leading-normal">結構牆面與樑柱現況</p>
-                                    <p className="text-xl text-slate-500 font-bold mb-6">(非單純壁癌或油漆剝落)</p>
+                                    <p className="text-xl text-slate-500 font-bold mb-6">（非單純壁癌或油漆剝落）</p>
                                     <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
                                 </div>
                                 <RadioGroup 
-                                    options={['無', '有', '全屋天花板包覆 (無法檢查)']} 
-                                    value={data.q4_ceilingWrapped ? '全屋天花板包覆 (無法檢查)' : (data?.q4_hasIssue === '否' ? '無' : (data?.q4_hasIssue === '是' ? '有' : (data?.q4_hasIssue ? '' : '')))} 
+                                    options={['無', '有', '全屋天花板包覆（無法檢查）']} 
+                                    value={data.q4_ceilingWrapped ? '全屋天花板包覆（無法檢查）' : (data?.q4_hasIssue === '否' ? '無' : (data?.q4_hasIssue === '是' ? '有' : (data?.q4_hasIssue ? '' : '')))} 
                                     onChange={(v) => { 
-                                        if (v === '全屋天花板包覆 (無法檢查)') {
+                                        if (v === '全屋天花板包覆（無法檢查）') {
                                             setData(prev => ({ ...prev, q4_hasIssue: '是', q4_ceilingWrapped: true, q4_items: [], q4_hasOther: false, q4_otherDesc: '因裝潢包覆無法檢視內部，需特別留意', q4_suspected: false, q4_suspectedDesc: '' })); 
                                         } else {
                                             const val = v === '無' ? '否' : (v === '有' ? '是' : v);
@@ -449,9 +454,9 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-2 leading-normal">建物傾斜現況</p>
                                 <div className="mb-4"><InlineWarning>※僅依目視觀察，精確數據須由專業技師鑑定</InlineWarning></div>
                                 <RadioGroup 
-                                    options={['無', '有', '待查證 (待測量)']} 
-                                    value={data?.q5_hasTilt === '否' ? '無' : (data?.q5_hasTilt === '是' ? '有' : (data?.q5_hasTilt === '待查證' || data?.q5_hasTilt === '疑似' ? '待查證 (待測量)' : (data?.q5_hasTilt || '')))} 
-                                    onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v === '待查證 (待測量)' ? '待查證' : v); setData(prev => ({ ...prev, q5_hasTilt: val, q5_desc: val === '是' ? prev.q5_desc : '', q5_suspectedDesc: val === '待查證' ? prev.q5_suspectedDesc : '' })); }} 
+                                    options={['無', '有', '待查證（待測量）']} 
+                                    value={data?.q5_hasTilt === '否' ? '無' : (data?.q5_hasTilt === '是' ? '有' : (data?.q5_hasTilt === '待查證' || data?.q5_hasTilt === '疑似' ? '待查證（待測量）' : (data?.q5_hasTilt || '')))} 
+                                    onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v === '待查證（待測量）' ? '待查證' : v); setData(prev => ({ ...prev, q5_hasTilt: val, q5_desc: val === '是' ? prev.q5_desc : '', q5_suspectedDesc: val === '待查證' ? prev.q5_suspectedDesc : '' })); }} 
                                     cols={2} layout="grid" 
                                 />
                                 {data?.q5_hasTilt === '是' && <SubItemHighlight><DetailInput value={data.q5_desc || ''} onChange={v => update('q5_desc', v)} placeholder="如：經單位檢測提供報告書" /></SubItemHighlight>}
@@ -757,7 +762,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                      </BooleanReveal>
                 </SurveySection>
-                <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="9. 物件與社區內須注意的社區" status={getFacilityStatus()}>
+                <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="9. 物件與社區內須注意的設施" status={getFacilityStatus()}>
                      <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
@@ -1044,7 +1049,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </QuestionBlock>
                         )}
 
-                        {data.propertyType === '其他(道路用地／公設地)' && (
+                        {data.propertyType === '其他（道路用地／公設地）' && (
                             <QuestionBlock>
                                 <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">計畫道路開闢現況</p>
                                 <RadioGroup 
@@ -1456,7 +1461,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {type === 'factory' && !hideLandDetails && (
                  <LandQuestionsGroup 
                     data={data} setData={setData} update={update}
-                    titles={{ q3: `${landQ3Num}. 土地鑑界與界標現況／產權與使用糾紛現況`, q4: `${landQ4Num}. 土地徵收與保留地現況／重劃與區段徵收現況` }}
+                    titles={{ q3: `${landQ3Num}. 土地鑑界與界標現況與產權與使用糾紛現況`, q4: `${landQ4Num}. 土地徵收與保留地現況與重劃與區段徵收現況` }}
                     ids={{ q3: "section-land-q3", q4: "section-land-q4" }}
                     highlightedId={highlightedField}
                     hideQ2={true}
@@ -1484,42 +1489,43 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {/* Environment */}
             <EnvironmentSection 
                 data={data} update={update} toggleArr={toggleArr} id="section-q16" 
-                title={type === 'house' ? "12. 重大環境設施／常見環境抗性設施" : (type === 'land' ? "10. 重大環境設施／常見環境抗性設施" : `${envNum}. 重大環境設施／常見環境抗性設施`)} 
+                title={type === 'house' ? "12. 重大環境設施與常見環境抗性設施" : (type === 'land' ? "10. 重大環境設施與常見環境抗性設施" : `${envNum}. 重大環境設施與常見環境抗性設施`)} 
                 highlightedId={highlightedField} 
                 warningText="※內政部於 104 年 10 月新版不動產說明書中，房仲業者須對於受託銷售之不動產，應調查周邊半徑 300 公尺範圍內之重要環境設施"
                 status={getEnvStatus()}
             />
 
             {/* Notes */}
-            {/* Notes */}
             <SurveySection 
                 id="section-q17" 
                 highlighted={highlightedField === 'section-q17'} 
-                title={type === 'house' ? "13. 本案或本社區須注意的事項" : (type === 'land' ? "11. 本案或周圍須注意的事項" : `${noteNum}. 本案或本社區須注意的事項`)} 
+                title={type === 'house' ? "13. 本案與社區特殊或影響交易事項" : (type === 'land' ? "11. 本案或周圍特殊或影響交易事項" : `${noteNum}. 本案與社區特殊或影響交易事項`)} 
                 status={getNotesStatus()}
             >
                 <div className="space-y-10">
                     {/* Sub-question 1: Homicide */}
-                    <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">特殊事故紀錄</p>
-                        <div className="mb-4">
-                             <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
-                                 <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
-                                     ※兇殺、自殺、一氧化碳中毒或其他非自然死亡之情事
-                                 </p>
-                             </div>
-                        </div>
-                        <RadioGroup 
-                            options={['無', '有', '待查證']} 
-                            value={data.q17_homicide || ''} 
-                            onChange={v => update('q17_homicide', v)} 
-                            layout="grid" cols={3}
-                        />
-                    </QuestionBlock>
+                    {type !== 'land' && (
+                        <QuestionBlock>
+                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">重大事故與非自然身故紀錄</p>
+                            <div className="mb-4">
+                                 <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
+                                     <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
+                                         ※兇殺、自殺、一氧化碳中毒或其他非自然死亡之情事
+                                     </p>
+                                 </div>
+                            </div>
+                            <RadioGroup 
+                                options={['無', '有', '待查證']} 
+                                value={data.q17_homicide || ''} 
+                                onChange={v => update('q17_homicide', v)} 
+                                layout="grid" cols={3}
+                            />
+                        </QuestionBlock>
+                    )}
 
                     {/* Sub-question 2: Other Notes */}
                     <QuestionBlock>
-                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">其他應注意事項</p>
+                         {type !== 'land' && <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">其他特殊或影響交易狀況補充</p>}
                          <div className="mb-4">
                              <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
                                  <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
@@ -1536,11 +1542,9 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             onChange={v => {
                                 const val = v === '無' ? '否' : (v === '有' ? '是' : '');
                                 if (type === 'land') {
-                                    update('land_q8_special', val);
-                                    if (val === '否') update('land_q8_special_desc', '');
+                                    setData(prev => ({ ...prev, land_q8_special: val, land_q8_special_desc: val === '否' ? '' : prev.land_q8_special_desc }));
                                 } else {
-                                    update('q17_issue', val);
-                                    if (val === '否') update('q17_desc', '');
+                                    setData(prev => ({ ...prev, q17_issue: val, q17_desc: val === '否' ? '' : prev.q17_desc }));
                                 }
                             }} 
                             layout="grid" cols={2}
