@@ -30,11 +30,11 @@ const formatAccessLandAddress = (section?: string, subSection?: string, number?:
 const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string }> = ({ checked, label, suffix }) => {
     if (!checked) return null;
     return (
-        <div className="flex items-start gap-2 mr-6 my-1">
-            <div className="w-6 h-6 mt-0.5 rounded-md border-2 border-[#009FE3] bg-[#009FE3] flex items-center justify-center shrink-0 shadow-sm">
-                <Check size={16} strokeWidth={4} className="text-white" />
+        <div className="flex items-start gap-2 mr-4 my-0.5">
+            <div className="w-5 h-5 mt-0.5 rounded-md border-2 border-[#009FE3] bg-[#009FE3] flex items-center justify-center shrink-0 shadow-sm">
+                <Check size={14} strokeWidth={4} className="text-white" />
             </div>
-            <span className="text-[17px] font-bold text-black leading-tight tracking-wide">
+            <span className="text-[16px] font-bold text-black leading-tight tracking-wide">
                 {label}{suffix}
             </span>
         </div>
@@ -43,14 +43,14 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 
 // Modernized CheckRow: Clean, high readability
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
-    <tr className="border-b border-gray-300 last:border-0">
-        <td className="w-14 text-center py-1 align-top">
-            <div className={`w-5 h-5 mx-auto rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-gray-300'}`}>
-                {checked && <Check size={14} strokeWidth={4} className="text-white" />}
+    <tr className="border-b border-slate-400 last:border-0">
+        <td className="w-14 text-center py-[2px] align-top">
+            <div className={`w-[18px] h-[18px] mx-auto rounded-full border-2 flex items-center justify-center transition-all mt-[3px] ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-slate-400'}`}>
+                {checked && <Check size={12} strokeWidth={4} className="text-white" />}
             </div>
         </td>
-        <td colSpan={9} className="py-1 px-2 text-left text-[15px]">
-            <div className="flex flex-wrap items-start gap-x-4 gap-y-1">
+        <td colSpan={9} className="py-[2px] px-2 text-left text-[15px]">
+            <div className="flex flex-wrap items-start gap-x-4 gap-y-0.5">
                 {children}
             </div>
         </td>
@@ -60,10 +60,10 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
 // Professional Section Header: High contrast, no background color
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
     <tr>
-        <td colSpan={10} className="pt-4 pb-1 px-2">
+        <td colSpan={10} className="pt-3 pb-0.5 px-2">
             <div className="flex items-center gap-3 border-b-2 border-black pb-1">
                 <div className="w-2 h-6 bg-[#009FE3]"></div>
-                <span className="font-black text-black text-[18px] tracking-widest">{title}</span>
+                <span className="font-black text-black text-[18px] tracking-widest leading-none pt-0.5">{title}</span>
             </div>
         </td>
     </tr>
@@ -72,8 +72,8 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
 // Clean Table Header
 const TableHeaderRow: React.FC = () => (
     <tr className="border-b-2 border-black bg-gray-50">
-        <td className="w-14 text-center font-black text-black py-2 text-[15px] whitespace-nowrap">確認無誤</td>
-        <td colSpan={9} className="py-2 px-4 font-black text-left text-black text-[15px] tracking-widest">說明／檢查項目</td>
+        <td className="w-14 text-center font-black text-black py-2 text-[15px] whitespace-nowrap tracking-wider">確認無誤</td>
+        <td colSpan={9} className="py-2 px-4 font-black text-left text-black text-[15px] tracking-[0.2em]">說明／檢查項目</td>
     </tr>
 );
 
@@ -561,9 +561,12 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
     return (
         <>
             <SectionHeader title="7. 公設空間（梯間／地下室）現況" />
-            <CheckRow checked={data?.q8_stairIssue === '否' || data?.q8_stairIssue === '無異常'}>
+            <CheckRow checked={!!data?.q8_stairIssue}>
                 <span className="font-black mr-2">公設空間（梯間／地下室現況）</span>
                 <PreviewResult checked={data?.q8_stairIssue === '是' || data?.q8_stairIssue === '有異常'} label={labels.q6()} />
+                <PreviewResult checked={data?.q8_stairIssue === '無公共設施'} label="無公共設施" />
+                <PreviewResult checked={data?.q8_stairIssue === '有公共設施'} label="有公共設施" />
+                <PreviewResult checked={data?.q8_stairIssue === '否' || data?.q8_stairIssue === '無異常'} label="無異常" />
             </CheckRow>
             
             <SectionHeader title="8. 物件與社區內須注意的設施" />
@@ -1143,7 +1146,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             <ScaledA4Wrapper pageNum={1}>
                 <div className="flex-grow flex flex-col h-full text-black">
                     <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                        <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-1">幸福家不動產－業務版現況調查表</h1>
+                        <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                         <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【正面】{data?.version}</div>
                     </div>
                     <table className="excel-table mb-3 w-full text-black border-collapse border-2 border-gray-300">
@@ -1216,7 +1219,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                 <ScaledA4Wrapper pageNum={2}>
                     <div className="flex-grow flex flex-col h-full text-black">
                         <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-1">幸福家不動產－業務版現況調查表</h1>
+                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                             <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【背面】</div>
                         </div>
                         <table className="excel-table mb-2 w-full text-black">
@@ -1236,7 +1239,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                 <ScaledA4Wrapper pageNum={3}>
                     <div className="flex-grow flex flex-col h-full text-black">
                          <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-1">幸福家不動產－業務版現況調查表</h1>
+                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                             <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【附件】</div>
                         </div>
                         <table className="excel-table mb-2 w-full text-black">

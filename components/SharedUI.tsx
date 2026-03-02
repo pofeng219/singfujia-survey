@@ -29,7 +29,7 @@ export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, dis
                 onClick();
             }
         }} 
-        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-black text-2xl md:text-4xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] relative overflow-hidden
+        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-bold tracking-wide text-2xl md:text-4xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] relative overflow-hidden
         ${getButtonColorClass(checked, label, disabled)}`}
     >
         <span className="relative z-10 flex items-center justify-center gap-2">
@@ -103,7 +103,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                                 onChange(value === v ? '' : v);
                             }
                         }}
-                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-2xl md:text-3xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
+                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-bold tracking-wide text-2xl md:text-3xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
                         ${getButtonColorClass(isSelected, v, disabled)}`}
                     >
                         {renderLabel(v, isSelected)}
@@ -142,7 +142,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
                                 onChange(value === opt ? '' : opt);
                             }} 
-                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-black text-2xl md:text-4xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
+                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-bold tracking-wide text-2xl md:text-4xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
                             ${getButtonColorClass(isSelected, opt, disabled)}`}
                         >
                             <span className="flex items-center gap-2">
@@ -228,15 +228,15 @@ export const SurveySection: React.FC<{
 
     // Determine styles based on status
     const getStatusStyles = () => {
-        if (highlighted) return 'error-highlight-anim border-3 border-slate-200'; // Error takes precedence
+        if (highlighted) return 'error-highlight-anim border-2 border-slate-200'; // Error takes precedence
         
         switch (status) {
             case 'complete':
-                return 'bg-[#ECFDF5] border-3 border-[#A7F3D0] dark:bg-emerald-900/30 dark:border-emerald-800'; // Soft bean paste green
+                return 'bg-[#ECFDF5] border-2 border-[#A7F3D0] dark:bg-emerald-900/30 dark:border-emerald-800'; // Soft bean paste green
             case 'incomplete':
-                return 'bg-[#FFF1F2] border-3 border-[#FECDD3] dark:bg-rose-900/30 dark:border-rose-800'; // Low saturation warm red
+                return 'bg-[#FFF1F2] border-2 border-[#FECDD3] dark:bg-rose-900/30 dark:border-rose-800'; // Low saturation warm red
             default:
-                return 'bg-white border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700';
+                return 'bg-white border-2 border-slate-200 dark:bg-slate-800 dark:border-slate-700';
         }
     };
 
@@ -248,7 +248,7 @@ export const SurveySection: React.FC<{
     return (
         <div 
             id={id} 
-            className={`warm-card rounded-[2rem] md:rounded-[2.5rem] shadow-sm transition-all duration-500 ${getStatusStyles()} overflow-hidden ${className.replace(/space-y-\d+/g, '')}`} 
+            className={`warm-card rounded-[2rem] md:rounded-[2.5rem] shadow-sm hover:shadow-md transition-all duration-500 ${getStatusStyles()} overflow-hidden ${className.replace(/space-y-\d+/g, '')}`} 
         >
             {title ? (
                 <div 
@@ -307,7 +307,7 @@ export const SurveySection: React.FC<{
 
 // Standard visual block for questions (Gray bg, rounded)
 export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <div className={`bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left hover:border-slate-300 transition-colors dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600 ${className}`}>
+    <div className={`bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-2 border-slate-200 text-left hover:border-slate-300 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600 ${className}`}>
         {children}
     </div>
 );
@@ -372,7 +372,7 @@ export const FormInput: React.FC<{
         <label className="block text-slate-800 font-black mb-3 text-[1.5rem] md:text-[1.75rem] text-left dark:text-slate-100">{label}</label>
         <input 
             type="text" 
-            className="full-width-input !text-xl border-2 border-slate-500 focus:border-slate-800 focus:bg-yellow-50 dark:focus:bg-yellow-900/20" 
+            className="full-width-input !text-xl border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20" 
             value={value || ''} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -388,7 +388,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
             type="number" 
             inputMode="decimal"
             disabled={disabled}
-            className={`full-width-input !text-xl pr-16 border-2 border-slate-500 focus:border-slate-800 focus:bg-yellow-50 dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
+            className={`full-width-input !text-xl pr-16 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
             value={value} 
             onChange={e => onChange(e.target.value)} 
             placeholder={placeholder} 
@@ -412,7 +412,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center">
             <input 
                 type="text" 
-                className="border-b-[6px] border-slate-500 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-slate-900 focus:bg-yellow-50 dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-[4px] border-slate-300 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={section || ''} 
                 onChange={e => onChangeSection(e.target.value)} 
                 placeholder="段" 
@@ -423,7 +423,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center">
             <input 
                 type="text" 
-                className="border-b-[6px] border-slate-500 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-slate-900 focus:bg-yellow-50 dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-[4px] border-slate-300 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={subSection || ''} 
                 onChange={e => onChangeSubSection(e.target.value)} 
                 placeholder="小段" 
@@ -434,7 +434,7 @@ export const LandNumberInputs: React.FC<{
         <div className="flex items-center flex-grow md:flex-grow-0">
             <input 
                 type="text" 
-                className="border-b-[6px] border-slate-500 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-slate-900 focus:bg-yellow-50 dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
+                className="border-b-[4px] border-slate-300 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
                 value={number || ''} 
                 onChange={e => onChangeNumber(e.target.value)} 
                 placeholder="地號" 
@@ -453,7 +453,7 @@ export const Select: React.FC<{
 }> = ({ value, onChange, options, placeholder = "請選擇", className = '' }) => (
     <div className={`relative ${className}`}>
         <select
-            className="w-full appearance-none bg-white border-2 border-slate-300 text-slate-900 text-xl rounded-xl px-4 py-4 pr-10 focus:outline-none focus:border-slate-800 focus:ring-4 focus:ring-slate-100 transition-all cursor-pointer dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30"
+            className="w-full appearance-none bg-white border-2 border-slate-300 text-slate-900 text-xl rounded-xl px-4 py-4 pr-10 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] transition-all cursor-pointer dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30"
             value={value}
             onChange={(e) => onChange(e.target.value)}
         >
@@ -683,7 +683,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input !text-xl !mt-0 !bg-white focus:!bg-yellow-50 dark:!bg-slate-900 dark:focus:!bg-yellow-900/20 pr-24 border-2 border-slate-500 focus:border-slate-800" 
+                className="full-width-input !text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-yellow-900/20 pr-24 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE]" 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 
