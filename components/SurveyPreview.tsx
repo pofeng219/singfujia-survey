@@ -44,12 +44,12 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 // Modernized CheckRow: Clean, high readability
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
     <tr className="border-b border-gray-300 last:border-0">
-        <td className="w-14 text-center py-2 align-top">
-            <div className={`w-7 h-7 mx-auto rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-gray-300'}`}>
-                {checked && <Check size={18} strokeWidth={4} className="text-white" />}
+        <td className="w-14 text-center py-1 align-top">
+            <div className={`w-5 h-5 mx-auto rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-gray-300'}`}>
+                {checked && <Check size={14} strokeWidth={4} className="text-white" />}
             </div>
         </td>
-        <td colSpan={9} className="py-1 px-2 text-left">
+        <td colSpan={9} className="py-1 px-2 text-left text-[15px]">
             <div className="flex flex-wrap items-start gap-x-4 gap-y-1">
                 {children}
             </div>
@@ -441,35 +441,20 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         )}
         
         <SectionHeader title={type === 'house' ? `${startIdx + 1}. 重大環境設施與常見環境抗性設施` : `${type === 'factory' ? startIdx : startIdx + 1}. 重大環境設施與常見環境抗性設施`} />
-        <tr className="text-black text-[12px] leading-tight">
-            <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q16_noFacilities ? 'V' : ''}</td>
-            <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                <div className="flex items-start">
-                    <span className="font-black mr-2 shrink-0">重大環境設施</span>
-                    <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
-                </div>
-            </td>
-        </tr>
-        <tr className="text-black text-[12px] leading-tight border-t border-black">
-            <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q16_2_noFacilities ? 'V' : ''}</td>
-            <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                <div className="flex items-start">
-                    <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
-                    <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
-                </div>
-            </td>
-        </tr>
+        <CheckRow checked={!!data?.q16_noFacilities}>
+            <span className="font-black mr-2 shrink-0">重大環境設施</span>
+            <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
+        </CheckRow>
+        <CheckRow checked={!!data?.q16_2_noFacilities}>
+            <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+            <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
+        </CheckRow>
 
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案與社區特殊或影響交易事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`} />
-        <tr className="text-black text-[12px] leading-tight">
-            <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q17_homicide === '無' ? 'V' : ''}</td>
-            <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                <div className="flex flex-wrap items-center">
-                    <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
-                    <span className="font-medium">{data?.q17_homicide || ''}</span>
-                </div>
-            </td>
-        </tr>
+        <CheckRow checked={data?.q17_homicide === '無'}>
+            <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
+            <span className="font-medium">{data?.q17_homicide || ''}</span>
+        </CheckRow>
         <CheckRow checked={data?.q17_issue === '否'}>
              <span className="font-black mr-2">其他特殊或影響交易狀況補充</span>
             <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
@@ -559,6 +544,14 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                     <PreviewResult checked={data?.water_booster === '無' || data?.water_booster === '無設置'} label="無" />
                 </CheckRow>
             )}
+
+            <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
+            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
+                <span className="font-black mr-2">公共設施</span>
+                <PreviewResult checked={data?.publicFacilities === '有公共設施'} label="有公共設施" />
+                <PreviewResult checked={data?.publicFacilities === '無公共設施'} label="無公共設施" />
+                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
+            </CheckRow>
         </>
     );
 };
@@ -567,12 +560,6 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
     const labels = getHouseLabels(data);
     return (
         <>
-            <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
-            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
-                <span className="font-black mr-2">公共設施</span>
-                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
-            </CheckRow>
-
             <SectionHeader title="7. 公設空間（梯間／地下室）現況" />
             <CheckRow checked={data?.q8_stairIssue === '否' || data?.q8_stairIssue === '無異常'}>
                 <span className="font-black mr-2">公設空間（梯間／地下室現況）</span>
@@ -586,31 +573,18 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
             </CheckRow>
 
             <SectionHeader title="9. 車位資訊" />
-            <tr className="text-black text-[12px] leading-tight">
-                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q10_noParking ? 'V' : ''}</td>
-                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                    <span className="font-bold mr-2">車位資訊</span>
-                    {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
-                </td>
-            </tr>
-            <tr className="text-black text-[12px] leading-tight">
-                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')) ? 'V' : ''}</td>
-                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                    <div className="flex flex-wrap items-center">
-                        <span className="font-black mr-2">車位使用現況</span>
-                        <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他: ${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
-                    </div>
-                </td>
-            </tr>
-            <tr className="text-black text-[12px] leading-tight">
-                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && data?.q12_hasNote === '否') ? 'V' : ''}</td>
-                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                    <div className="flex flex-wrap items-center">
-                        <span className="font-black mr-2">車位與車道其他備註</span>
-                        <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
-                    </div>
-                </td>
-            </tr>
+            <CheckRow checked={!!data?.q10_noParking}>
+                <span className="font-bold mr-2">車位資訊</span>
+                {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
+            </CheckRow>
+            <CheckRow checked={!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')}>
+                <span className="font-black mr-2">車位使用現況</span>
+                <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他: ${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
+            </CheckRow>
+            <CheckRow checked={!data?.q10_noParking && data?.q12_hasNote === '否'}>
+                <span className="font-black mr-2">車位與車道其他備註</span>
+                <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
+            </CheckRow>
             
             <CommonExtraQuestions data={data} startIdx={10} type="house" />
         </>
@@ -805,24 +779,14 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
             </CheckRow>
 
             <SectionHeader title="10. 重大環境設施與常見環境抗性設施" />
-            <tr className="text-black text-[12px] leading-tight">
-                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]"></td>
-                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                    <div className="flex items-start">
-                        <span className="font-black mr-2 shrink-0">重大環境設施</span>
-                        <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
-                    </div>
-                </td>
-            </tr>
-            <tr className="text-black text-[12px] leading-tight border-t-2 border-slate-300">
-                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q16_2_noFacilities ? 'V' : ''}</td>
-                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                    <div className="flex items-start">
-                        <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
-                        <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
-                    </div>
-                </td>
-            </tr>
+            <CheckRow checked={!!data?.q16_noFacilities}>
+                <span className="font-black mr-2 shrink-0">重大環境設施</span>
+                <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
+            </CheckRow>
+            <CheckRow checked={!!data?.q16_2_noFacilities}>
+                <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+                <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
+            </CheckRow>
 
             <SectionHeader title="11. 本案與社區特殊或影響交易事項" />
             <CheckRow checked={data?.land_q8_special === '否'}>
@@ -992,10 +956,9 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode, hasPage3 = false 
             </CheckRow>
             
             <SectionHeader title="9. 車位資訊" />
-            <tr className="text-black text-[12px] leading-tight">
-                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q10_noParking ? 'V' : ''}</td>
-                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words"><ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} isFactory={true} /></td>
-            </tr>
+            <CheckRow checked={!!data?.q10_noParking}>
+                <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} isFactory={true} />
+            </CheckRow>
         </>
     );
 };
@@ -1210,57 +1173,32 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                 <>
                                     <TableHeaderRow />
                                     <SectionHeader title="1. 車位資訊" />
-                                    <tr className="text-black text-[12px] leading-tight">
-                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q10_noParking ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                                            <span className="font-bold mr-2">車位資訊</span>
-                                            {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
-                                        </td>
-                                    </tr>
-                                    <tr className="text-black text-[12px] leading-tight">
-                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')) ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                                            <div className="flex flex-wrap items-center">
-                                                <span className="font-black mr-2">車位使用現況</span>
-                                                <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他：${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className="text-black text-[12px] leading-tight">
-                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && data?.q12_hasNote === '否') ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                                            <div className="flex flex-wrap items-center">
-                                                <span className="font-black mr-2">車位與車道其他備註</span>
-                                                <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <CheckRow checked={!!data?.q10_noParking}>
+                                        <span className="font-bold mr-2">車位資訊</span>
+                                        {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
+                                    </CheckRow>
+                                    <CheckRow checked={!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')}>
+                                        <span className="font-black mr-2">車位使用現況</span>
+                                        <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他：${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
+                                    </CheckRow>
+                                    <CheckRow checked={!data?.q10_noParking && data?.q12_hasNote === '否'}>
+                                        <span className="font-black mr-2">車位與車道其他備註</span>
+                                        <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
+                                    </CheckRow>
                                     <SectionHeader title="2. 重大環境設施與常見環境抗性設施" />
-                                    <tr className="text-black text-[12px] leading-tight">
-                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]"></td>
-                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-start">
-                                                    <span className="font-black mr-2 shrink-0">重大環境設施</span>
-                                                    <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
-                                                </div>
-                                                <div className="flex items-start">
-                                                    <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
-                                                    <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <CheckRow checked={!!data?.q16_noFacilities}>
+                                        <span className="font-black mr-2 shrink-0">重大環境設施</span>
+                                        <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
+                                    </CheckRow>
+                                    <CheckRow checked={!!data?.q16_2_noFacilities}>
+                                        <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+                                        <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
+                                    </CheckRow>
                                     <SectionHeader title="3. 本案或本社區須注意的事項" />
-                                    <tr className="text-black text-[12px] leading-tight">
-                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q17_homicide === '無' ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
-                                            <div className="flex flex-wrap items-center">
-                                                <span className="font-black mr-2">是否曾發生非自然死亡情事</span>
-                                                <span className="font-medium">{data?.q17_homicide || ''}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <CheckRow checked={data?.q17_homicide === '無'}>
+                                        <span className="font-black mr-2">是否曾發生非自然死亡情事</span>
+                                        <span className="font-medium">{data?.q17_homicide || ''}</span>
+                                    </CheckRow>
                                     <CheckRow checked={data?.q17_issue === '否'}>
                                              <span className="font-black mr-2">其他應注意事項</span>
                                             <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
