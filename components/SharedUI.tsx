@@ -241,9 +241,8 @@ export const SurveySection: React.FC<{
     };
 
     const getTitleColor = () => {
-        if (status === 'complete') return 'text-emerald-800 dark:text-emerald-300';
-        if (status === 'incomplete') return 'text-rose-800 dark:text-rose-300';
-        return hasActiveContent ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100';
+        // Prominent but gentle color suitable for elderly (Ocean Blue / Sky 700)
+        return 'text-[#0369a1] dark:text-sky-300';
     };
 
     return (
@@ -258,7 +257,7 @@ export const SurveySection: React.FC<{
                 >
                     <div className="flex-grow pt-1 flex flex-col gap-2">
                         {typeof title === 'string' 
-                            ? <p className={`text-[1.75rem] md:text-[2rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${getTitleColor()}`}>{title}</p> 
+                            ? <p className={`text-[2rem] md:text-[2.5rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${getTitleColor()}`}>{title}</p> 
                             : title
                         }
                         

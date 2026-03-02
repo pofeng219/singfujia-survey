@@ -240,8 +240,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         const s4 = 4;
         
         // Hiding Logic for Validation
-        const hideBuildingLine = ['大樓華廈', '公寓'].includes(d.propertyType);
-        const hideDitch = ['大樓華廈', '公寓'].includes(d.propertyType);
+        const hideBuildingLine = ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(d.propertyType);
+        const hideDitch = ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(d.propertyType);
 
         v.require(d.q14_access, "section-q14", "11. 進出通行與臨路未填寫", s4);
         if (d.q14_access === '通行順暢' || d.q14_access?.includes('順暢')) {

@@ -346,7 +346,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                     </SurveySection>
                     
-                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={<p className="text-[1.75rem] md:text-[2rem] font-black text-slate-800 leading-snug text-left">{type === 'factory' ? '2. 現場長寬與建物測量成果圖比對與建物面積現況評估' : '2. 現場長寬與建物測量成果圖比對與建物面積現況評估'}</p>} status={getQ6Status()}>
+                    <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={type === 'factory' ? '2. 現場長寬和建物測量成果圖比對，與建物面積現況評估' : '2. 現場長寬和建物測量成果圖比對，與建物面積現況評估'} status={getQ6Status()}>
                         <InlineWarning>※可簡易測量最長／短／寬／窄之距離（因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內）</InlineWarning>
                         <RadioGroup 
                             options={['實測相符', '實測不符', '無法測量']} 

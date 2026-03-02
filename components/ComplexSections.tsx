@@ -691,8 +691,8 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
     const numberKey = isHouse ? 'q14_number' : 'land_q2_access_number';
 
     // Hiding Logic
-    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '園區標準廠房（集合式／分租型）'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈 (10樓以下有電梯)', '公寓 (5樓以下無電梯)'].includes(data.propertyType) : false);
-    const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓華廈 (10樓以下有電梯)', '公寓 (5樓以下無電梯)'].includes(data.propertyType) : false);
+    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '園區標準廠房（集合式／分租型）'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
+    const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
 
     return (
         <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>

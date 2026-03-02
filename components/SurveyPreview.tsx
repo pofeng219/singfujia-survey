@@ -1,6 +1,5 @@
 
 import { SurveyData, SurveyType } from '../types';
-import { PreviewResult } from './SharedUI';
 import { formatDateROC } from './ROCDatePicker';
 import React, { useMemo, useState, useEffect } from 'react';
 import { FileText, Smartphone, Check } from 'lucide-react';
@@ -27,31 +26,60 @@ const formatAccessLandAddress = (section?: string, subSection?: string, number?:
     return `地號：${section || ''}段${sub} ${number || ''}號`;
 };
 
+// Local PreviewResult: High contrast, larger text, less vibrant
+const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string }> = ({ checked, label, suffix }) => {
+    if (!checked) return null;
+    return (
+        <div className="flex items-start gap-2 mr-6 my-1">
+            <div className="w-6 h-6 mt-0.5 rounded-md border-2 border-[#009FE3] bg-[#009FE3] flex items-center justify-center shrink-0 shadow-sm">
+                <Check size={16} strokeWidth={4} className="text-white" />
+            </div>
+            <span className="text-[17px] font-bold text-black leading-tight tracking-wide">
+                {label}{suffix}
+            </span>
+        </div>
+    );
+};
+
+// Modernized CheckRow: Clean, high readability
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
-    <tr className="text-black">
-        <td className="w-28 text-center bg-gray-50 font-black text-black">{checked ? 'V' : ''}</td>
-        <td colSpan={9} className="py-1 px-4 text-left text-black">
-            <div className="text-black">
+    <tr className="border-b border-gray-300 last:border-0">
+        <td className="w-14 text-center py-2 align-top">
+            <div className={`w-7 h-7 mx-auto rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-gray-300'}`}>
+                {checked && <Check size={18} strokeWidth={4} className="text-white" />}
+            </div>
+        </td>
+        <td colSpan={9} className="py-1 px-2 text-left">
+            <div className="flex flex-wrap items-start gap-x-4 gap-y-1">
                 {children}
             </div>
         </td>
     </tr>
 );
 
+// Professional Section Header: High contrast, no background color
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <tr><td colSpan={10} className="py-1 text-left font-black bg-gray-50 text-black">{title}</td></tr>
+    <tr>
+        <td colSpan={10} className="pt-4 pb-1 px-2">
+            <div className="flex items-center gap-3 border-b-2 border-black pb-1">
+                <div className="w-2 h-6 bg-[#009FE3]"></div>
+                <span className="font-black text-black text-[18px] tracking-widest">{title}</span>
+            </div>
+        </td>
+    </tr>
 );
 
+// Clean Table Header
 const TableHeaderRow: React.FC = () => (
-    <tr className="text-black">
-        <td className="w-28 text-center bg-gray-50 font-black whitespace-nowrap text-black">確認無誤</td>
-        <td colSpan={9} className="py-1 font-bold bg-gray-100 text-center text-black">說明／檢查項目</td>
+    <tr className="border-b-2 border-black bg-gray-50">
+        <td className="w-14 text-center font-black text-black py-2 text-[15px] whitespace-nowrap">確認無誤</td>
+        <td colSpan={9} className="py-2 px-4 font-black text-left text-black text-[15px] tracking-widest">說明／檢查項目</td>
     </tr>
 );
 
 const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' | 'a4' }> = ({ label, value, variant = 'a4' }) => (
-    <div className={`font-bold text-[19px] mt-0.5 flex items-start leading-tight ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
-        <span className="mr-2 shrink-0">•</span>
+    <div className={`font-bold text-[20px] mt-1 flex items-start leading-snug ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
+        <span className="mr-2 shrink-0 text-[#009FE3] text-xl">•</span>
         <span className="mr-1 shrink-0">{label}：</span>
         <span>{value || ''}</span>
     </div>
@@ -70,7 +98,7 @@ const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = 
 
 const Watermark = () => (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden">
-        <div className="transform -rotate-45 opacity-[0.05] grayscale-0">
+        <div className="transform -rotate-45 opacity-[0.03] grayscale-0">
             <SingfujiaLogo className="scale-150" textClassName="text-[100px]" subTextClassName="text-[32px] mt-4" />
         </div>
     </div>
@@ -225,37 +253,37 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
     );
 };
 
-const Footer = ({ showSignature, hideBranding = false, signatureImage }: { showSignature: boolean; hideBranding?: boolean; signatureImage?: string }) => {
-    const timestamp = new Date().toLocaleString('zh-TW', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-    
-    return (
-        <div className="mt-auto w-full pt-4 border-t-4 border-black flex justify-between items-end text-black relative z-10">
-            {showSignature ? (
-                <div className="space-y-4 font-black text-xl text-black">
-                    調查業務人員簽章：
-                    <div className="w-[200px] h-12 border-b-2 border-slate-300 flex items-end">
-                        {signatureImage ? (
-                            <img src={signatureImage} alt="Signature" className="max-h-12 max-w-full" />
-                        ) : (
-                            <div className="w-full h-full" />
-                        )}
+    const Footer = ({ showSignature, hideBranding = false, signatureImage }: { showSignature: boolean; hideBranding?: boolean; signatureImage?: string }) => {
+        const timestamp = new Date().toLocaleString('zh-TW', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        
+        return (
+            <div className="mt-auto w-full pt-2 border-t-4 border-[#009FE3] flex justify-between items-end text-black relative z-10">
+                {showSignature ? (
+                    <div className="space-y-1 font-bold text-[18px] text-black mb-2">
+                        <div className="flex flex-col items-start gap-0">
+                            <span className="text-black font-black mb-8 text-[20px]">調查業務人員簽章：</span>
+                            <div className="w-[320px] border-b-2 border-black flex items-end relative h-10">
+                                {signatureImage ? (
+                                    <img src={signatureImage} alt="Signature" className="absolute bottom-0 left-0 max-h-16 max-w-full" />
+                                ) : null}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <div></div>
-            )}
-            {!hideBranding && (
-                <div className="flex flex-col items-end flex-shrink-0 text-right max-w-[60%]">
-                    <div className="flex flex-col items-center select-none">
-                         <SingfujiaLogo className="h-16" textClassName="text-[2.2rem]" subTextClassName="text-[0.75rem]" />
+                ) : (
+                    <div></div>
+                )}
+                {!hideBranding && (
+                    <div className="flex flex-col items-end flex-shrink-0 text-right max-w-[60%]">
+                        <div className="flex flex-col items-center select-none opacity-100">
+                             <SingfujiaLogo className="h-12" textClassName="text-[1.8rem]" subTextClassName="text-[0.7rem]" />
+                        </div>
+                        <span className="text-[12px] font-bold text-black tracking-wider block leading-tight mt-1">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
+                        <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-0.5 leading-none">Exported: {timestamp}</span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 tracking-wider block leading-tight mt-[2px]">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
-                    <span className="text-[9px] text-gray-400 font-mono tracking-tighter mt-[2px] leading-none">Exported: {timestamp}</span>
-                </div>
-            )}
-        </div>
-    );
-};
+                )}
+            </div>
+        );
+    };
 
 // --- LOGIC EXTRACTORS ---
 
@@ -342,7 +370,7 @@ const HousePrintPage1Factory = ({ data, hideUtilities = false }: { data: SurveyD
                 <PreviewResult checked={data?.q2_other_occupancy !== '否' && !!data?.q2_other_occupancy} label={data?.q2_other_occupancy + (data?.q2_other_occupancy_desc ? '：' + data.q2_other_occupancy_desc : '')} />
             </CheckRow>
             
-            <SectionHeader title="2. 現場長寬與建物測量成果圖比對與建物面積現況評估" />
+            <SectionHeader title="2. 現場長寬和建物測量成果圖比對，與建物面積現況評估" />
             <CheckRow checked={data?.q6_hasIssue === '實測相符' || data?.q6_hasIssue === '相符 (無明顯差異)'}>
                 <span className="font-black mr-2">面積測量</span>
                 <PreviewResult checked={data?.q6_hasIssue === '實測不符' || data?.q6_hasIssue === '無法測量／現況說明' || data?.q6_hasIssue === '不符 (有明顯差異)'} label={data?.q6_hasIssue + (data?.q6_desc ? '：' + data.q6_desc : '')} />
@@ -413,26 +441,29 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         )}
         
         <SectionHeader title={type === 'house' ? `${startIdx + 1}. 重大環境設施與常見環境抗性設施` : `${type === 'factory' ? startIdx : startIdx + 1}. 重大環境設施與常見環境抗性設施`} />
-        <tr className="text-black">
-            <td className="w-28 text-center bg-gray-50 font-black text-black"></td>
-            <td colSpan={9} className="py-1 px-4 text-left text-black">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-start">
-                        <span className="font-black mr-2 shrink-0">重大環境設施</span>
-                        <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
-                    </div>
-                    <div className="flex items-start">
-                        <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
-                        <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
-                    </div>
+        <tr className="text-black text-[12px] leading-tight">
+            <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q16_noFacilities ? 'V' : ''}</td>
+            <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
+                <div className="flex items-start">
+                    <span className="font-black mr-2 shrink-0">重大環境設施</span>
+                    <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
+                </div>
+            </td>
+        </tr>
+        <tr className="text-black text-[12px] leading-tight border-t border-black">
+            <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q16_2_noFacilities ? 'V' : ''}</td>
+            <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
+                <div className="flex items-start">
+                    <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+                    <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
                 </div>
             </td>
         </tr>
 
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案與社區特殊或影響交易事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`} />
-        <tr className="text-black">
-            <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide === '無' ? 'V' : ''}</td>
-            <td colSpan={9} className="py-1 px-4 text-left text-black">
+        <tr className="text-black text-[12px] leading-tight">
+            <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q17_homicide === '無' ? 'V' : ''}</td>
+            <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                 <div className="flex flex-wrap items-center">
                     <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
                     <span className="font-medium">{data?.q17_homicide || ''}</span>
@@ -468,7 +499,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                 <PreviewResult checked={data?.q2_other_occupancy !== '否' && !!data?.q2_other_occupancy} label={data?.q2_other_occupancy + (data?.q2_other_occupancy_desc ? '：' + data.q2_other_occupancy_desc : '')} />
             </CheckRow>
             
-            <SectionHeader title="2. 現場長寬與建物測量成果圖比對與建物面積現況評估" />
+            <SectionHeader title="2. 現場長寬和建物測量成果圖比對，與建物面積現況評估" />
             <CheckRow checked={data?.q6_hasIssue === '實測相符' || data?.q6_hasIssue === '相符 (無明顯差異)'}>
                 <span className="font-black mr-2">面積測量</span>
                 <PreviewResult checked={data?.q6_hasIssue !== '實測相符' && data?.q6_hasIssue !== '相符 (無明顯差異)' && !!data?.q6_hasIssue} label={data?.q6_hasIssue + (data?.q6_desc ? '：' + data.q6_desc : '')} />
@@ -528,12 +559,6 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                     <PreviewResult checked={data?.water_booster === '無' || data?.water_booster === '無設置'} label="無" />
                 </CheckRow>
             )}
-
-            <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
-            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
-                <span className="font-black mr-2">公共設施</span>
-                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
-            </CheckRow>
         </>
     );
 };
@@ -542,6 +567,12 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
     const labels = getHouseLabels(data);
     return (
         <>
+            <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
+            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
+                <span className="font-black mr-2">公共設施</span>
+                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
+            </CheckRow>
+
             <SectionHeader title="7. 公設空間（梯間／地下室）現況" />
             <CheckRow checked={data?.q8_stairIssue === '否' || data?.q8_stairIssue === '無異常'}>
                 <span className="font-black mr-2">公設空間（梯間／地下室現況）</span>
@@ -555,25 +586,25 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
             </CheckRow>
 
             <SectionHeader title="9. 車位資訊" />
-            <tr className="text-black">
-                <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q10_noParking ? 'V' : ''}</td>
-                <td colSpan={9} className="py-1 px-4 text-left text-black">
+            <tr className="text-black text-[12px] leading-tight">
+                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q10_noParking ? 'V' : ''}</td>
+                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                     <span className="font-bold mr-2">車位資訊</span>
                     {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                 </td>
             </tr>
-            <tr className="text-black">
-                <td className="w-28 text-center bg-gray-50 font-black text-black">{(!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')) ? 'V' : ''}</td>
-                <td colSpan={9} className="py-1 px-4 text-left text-black">
+            <tr className="text-black text-[12px] leading-tight">
+                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')) ? 'V' : ''}</td>
+                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                     <div className="flex flex-wrap items-center">
                         <span className="font-black mr-2">車位使用現況</span>
                         <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他: ${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
                     </div>
                 </td>
             </tr>
-            <tr className="text-black">
-                <td className="w-28 text-center bg-gray-50 font-black text-black">{(!data?.q10_noParking && data?.q12_hasNote === '否') ? 'V' : ''}</td>
-                <td colSpan={9} className="py-1 px-4 text-left text-black">
+            <tr className="text-black text-[12px] leading-tight">
+                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && data?.q12_hasNote === '否') ? 'V' : ''}</td>
+                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                     <div className="flex flex-wrap items-center">
                         <span className="font-black mr-2">車位與車道其他備註</span>
                         <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
@@ -774,18 +805,18 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
             </CheckRow>
 
             <SectionHeader title="10. 重大環境設施與常見環境抗性設施" />
-            <tr className="text-black">
-                <td className="w-28 text-center bg-gray-50 font-black text-black"></td>
-                <td colSpan={9} className="py-1 px-4 text-left text-black">
+            <tr className="text-black text-[12px] leading-tight">
+                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]"></td>
+                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                     <div className="flex items-start">
                         <span className="font-black mr-2 shrink-0">重大環境設施</span>
                         <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
                     </div>
                 </td>
             </tr>
-            <tr className="text-black border-t-2 border-slate-300">
-                <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q16_2_noFacilities ? 'V' : ''}</td>
-                <td colSpan={9} className="py-1 px-4 text-left text-black">
+            <tr className="text-black text-[12px] leading-tight border-t-2 border-slate-300">
+                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q16_2_noFacilities ? 'V' : ''}</td>
+                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                     <div className="flex items-start">
                         <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
                         <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
@@ -961,9 +992,9 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode, hasPage3 = false 
             </CheckRow>
             
             <SectionHeader title="9. 車位資訊" />
-            <tr className="text-black">
-                <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q10_noParking ? 'V' : ''}</td>
-                <td colSpan={9} className="py-1 px-4 text-left text-black"><ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} isFactory={true} /></td>
+            <tr className="text-black text-[12px] leading-tight">
+                <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q10_noParking ? 'V' : ''}</td>
+                <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words"><ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} isFactory={true} /></td>
             </tr>
         </>
     );
@@ -1082,7 +1113,6 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
         ) : null
     );
 
-    // FIX: Added 'as React.RefObject<HTMLDivElement>' to resolve TS2322
     const ScaledA4Wrapper = ({ children, pageNum }: { children?: React.ReactNode, pageNum: number }) => (
         <div style={{
             width: exporting ? '210mm' : `${210 * previewScale}mm`,
@@ -1092,8 +1122,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             backgroundColor: 'white',
             marginBottom: exporting ? 0 : '2rem',
             overflow: exporting ? 'visible' : 'hidden', 
-            display: (previewPage === pageNum || exporting) ? 'block' : 'none'
-        }}>
+            display: (previewPage === pageNum || exporting) ? 'block' : 'none',
+            pageBreakAfter: exporting ? 'always' : 'auto'
+        }} className={exporting ? 'print-page' : ''}>
             <div 
                 ref={(pageNum === 1 ? page1Ref : (pageNum === 2 ? page2Ref : page3Ref)) as React.RefObject<HTMLDivElement>} 
                 className="a4-page relative" 
@@ -1102,7 +1133,8 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                     transformOrigin: 'top left',
                     width: '210mm',
                     minHeight: '297mm',
-                    margin: 0
+                    margin: 0,
+                    padding: exporting ? '10mm' : '15mm 10mm' // Reduced side padding to 10mm
                 }}
             >
                 <Watermark />
@@ -1114,29 +1146,23 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
     );
 
     const BasicInfoTable = () => (
-        <table className="excel-table mb-2 w-full text-black">
-            <tbody>
-                <tr>
-                    <td colSpan={10} className="py-2 px-4 text-left text-black">
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-black">
-                            <span className="font-black text-[15px]">{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
-                            {(type === 'factory' || type === 'house' || type === 'land') && (
-                                <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
-                            )}
-                            <PreviewResult checked={data?.access === '可進入'} label="可進入" />
-                            {data?.access === '不可進入' && (
-                                <>
-                                    <PreviewResult checked={true} label="不可進入：" />
-                                    {(data?.accessType || []).map(opt => (
-                                        <PreviewResult key={opt} checked={true} label={opt + (opt === "其他" || opt === "其他未列項目" ? '：' : '')} suffix={opt === "其他" || opt === "其他未列項目" ? data.accessOther : ""} />
-                                    ))}
-                                </>
-                            )}
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div className="mb-2 w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
+            <div className="px-3 py-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px] leading-snug text-black">
+                <span className="font-black text-black text-[16px]">{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
+                {(type === 'factory' || type === 'house' || type === 'land') && (
+                    <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
+                )}
+                <PreviewResult checked={data?.access === '可進入'} label="可進入" />
+                {data?.access === '不可進入' && (
+                    <>
+                        <PreviewResult checked={true} label="不可進入：" />
+                        {(data?.accessType || []).map(opt => (
+                            <PreviewResult key={opt} checked={true} label={opt + (opt === "其他" || opt === "其他未列項目" ? '：' : '')} suffix={opt === "其他" || opt === "其他未列項目" ? data.accessOther : ""} />
+                        ))}
+                    </>
+                )}
+            </div>
+        </div>
     );
 
     // --- RENDER ---
@@ -1153,25 +1179,25 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             <ScaledA4Wrapper pageNum={1}>
                 <div className="flex-grow flex flex-col h-full text-black">
-                    <div className="flex justify-center items-end border-b-4 border-black pb-4 mb-4 relative w-full">
-                        <h1 className="text-3xl font-black tracking-[0.2em] text-center w-full text-black">幸福家不動產－業務版現況調查表</h1>
-                        <div className="absolute right-0 bottom-0 text-[10px] font-bold text-slate-400">【正面】{data?.version}</div>
+                    <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
+                        <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-1">幸福家不動產－業務版現況調查表</h1>
+                        <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【正面】{data?.version}</div>
                     </div>
-                    <table className="excel-table mb-4 w-full text-black">
+                    <table className="excel-table mb-3 w-full text-black border-collapse border-2 border-gray-300">
                         <tbody>
-                            <tr>
-                                <td className="bg-gray-label w-[10%] text-black">案名</td><td className="w-[30%] font-black text-black">{data?.caseName}</td>
-                                <td className="bg-gray-label w-[15%] text-black">編號</td><td className="w-[20%] font-black text-black">{data?.authNumber}</td>
-                                <td className="bg-gray-label w-[8%] text-black">店名</td><td className="w-[17%] text-black">{data?.storeName}</td>
+                            <tr className="border-b border-gray-300">
+                                <td className="bg-gray-100 w-[10%] text-black font-black py-2 px-3 text-[15px]">案名</td><td className="w-[30%] font-black text-black py-2 px-3 text-[15px]">{data?.caseName}</td>
+                                <td className="bg-gray-100 w-[15%] text-black font-black py-2 px-3 text-[15px]">編號</td><td className="w-[20%] font-black text-black py-2 px-3 text-[15px]">{data?.authNumber}</td>
+                                <td className="bg-gray-100 w-[8%] text-black font-black py-2 px-3 text-[15px]">店名</td><td className="w-[17%] text-black py-2 px-3 text-[15px]">{data?.storeName}</td>
                             </tr>
-                            <tr>
-                                <td className="bg-gray-label text-black">{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className="font-bold text-black">{data?.address}</td>
-                                <td className="bg-gray-label text-black">業務</td><td className="font-bold text-black">{data?.agentName}</td>
-                                <td className="bg-gray-label text-black">日期</td><td className="text-left font-mono pl-2 text-black">{formatDateROC(data?.fillDate || '')}</td>
+                            <tr className="border-b border-gray-300">
+                                <td className="bg-gray-100 text-black font-black py-2 px-3 text-[15px]">{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className="font-black text-black py-2 px-3 text-[15px]">{data?.address}</td>
+                                <td className="bg-gray-100 text-black font-black py-2 px-3 text-[15px]">業務</td><td className="font-black text-black py-2 px-3 text-[15px]">{data?.agentName}</td>
+                                <td className="bg-gray-100 text-black font-black py-2 px-3 text-[15px]">日期</td><td className="text-left font-mono pl-3 text-black py-2 px-3 text-[15px]">{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div className="bg-black text-white px-3 py-1 text-sm font-black mb-1 self-start">【調查現況】</div>
+                    <div className="bg-[#009FE3] text-white px-5 py-1.5 text-[15px] font-black mb-2 self-start rounded-r-full shadow-md tracking-wide">【調查現況】</div>
                     
                     <BasicInfoTable />
 
@@ -1184,25 +1210,25 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                 <>
                                     <TableHeaderRow />
                                     <SectionHeader title="1. 車位資訊" />
-                                    <tr className="text-black">
-                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q10_noParking ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-1 px-4 text-left text-black">
+                                    <tr className="text-black text-[12px] leading-tight">
+                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q10_noParking ? 'V' : ''}</td>
+                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                                             <span className="font-bold mr-2">車位資訊</span>
                                             {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                                         </td>
                                     </tr>
-                                    <tr className="text-black">
-                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{(!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')) ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-1 px-4 text-left text-black">
+                                    <tr className="text-black text-[12px] leading-tight">
+                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')) ? 'V' : ''}</td>
+                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                                             <div className="flex flex-wrap items-center">
                                                 <span className="font-black mr-2">車位使用現況</span>
                                                 <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他：${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className="text-black">
-                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{(!data?.q10_noParking && data?.q12_hasNote === '否') ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-1 px-4 text-left text-black">
+                                    <tr className="text-black text-[12px] leading-tight">
+                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{(!data?.q10_noParking && data?.q12_hasNote === '否') ? 'V' : ''}</td>
+                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                                             <div className="flex flex-wrap items-center">
                                                 <span className="font-black mr-2">車位與車道其他備註</span>
                                                 <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
@@ -1210,9 +1236,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                         </td>
                                     </tr>
                                     <SectionHeader title="2. 重大環境設施與常見環境抗性設施" />
-                                    <tr className="text-black">
-                                        <td className="w-28 text-center bg-gray-50 font-black text-black"></td>
-                                        <td colSpan={9} className="py-1 px-4 text-left text-black">
+                                    <tr className="text-black text-[12px] leading-tight">
+                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]"></td>
+                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-start">
                                                     <span className="font-black mr-2 shrink-0">重大環境設施</span>
@@ -1226,9 +1252,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                         </td>
                                     </tr>
                                     <SectionHeader title="3. 本案或本社區須注意的事項" />
-                                    <tr className="text-black">
-                                        <td className="w-28 text-center bg-gray-50 font-black text-black">{data?.q17_homicide === '無' ? 'V' : ''}</td>
-                                        <td colSpan={9} className="py-1 px-4 text-left text-black">
+                                    <tr className="text-black text-[12px] leading-tight">
+                                        <td className="w-20 text-center bg-gray-50 font-black text-black py-[2px]">{data?.q17_homicide === '無' ? 'V' : ''}</td>
+                                        <td colSpan={9} className="py-[2px] px-2 text-left text-black break-words">
                                             <div className="flex flex-wrap items-center">
                                                 <span className="font-black mr-2">是否曾發生非自然死亡情事</span>
                                                 <span className="font-medium">{data?.q17_homicide || ''}</span>
@@ -1251,9 +1277,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {(type !== 'parking' || previewPage === 2) && (
                 <ScaledA4Wrapper pageNum={2}>
                     <div className="flex-grow flex flex-col h-full text-black">
-                        <div className="flex justify-center items-end border-b-4 border-black pb-4 mb-4 relative w-full">
-                            <h1 className="text-3xl font-black tracking-[0.2em] text-center w-full text-black">幸福家不動產－業務版現況調查表</h1>
-                            <div className="absolute right-0 bottom-0 text-[10px] font-bold text-slate-400">【背面】</div>
+                        <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
+                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-1">幸福家不動產－業務版現況調查表</h1>
+                            <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【背面】</div>
                         </div>
                         <table className="excel-table mb-2 w-full text-black">
                             <tbody>
@@ -1271,9 +1297,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {(hasPage3 && (previewPage === 3 || exporting)) && (
                 <ScaledA4Wrapper pageNum={3}>
                     <div className="flex-grow flex flex-col h-full text-black">
-                         <div className="flex justify-center items-end border-b-4 border-black pb-4 mb-4 relative w-full">
-                            <h1 className="text-3xl font-black tracking-[0.2em] text-center w-full text-black">幸福家不動產－業務版現況調查表</h1>
-                            <div className="absolute right-0 bottom-0 text-[10px] font-bold text-slate-400">【附件】</div>
+                         <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
+                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-1">幸福家不動產－業務版現況調查表</h1>
+                            <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【附件】</div>
                         </div>
                         <table className="excel-table mb-2 w-full text-black">
                             <tbody>
