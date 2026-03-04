@@ -1084,7 +1084,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             width: exporting ? '210mm' : `${210 * previewScale}mm`,
             height: exporting ? 'auto' : `${297 * previewScale}mm`,
             flexShrink: 0,
-            boxShadow: exporting ? 'none' : '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+            boxShadow: exporting ? 'none' : '0 25px 50px -12px rgb(0 0 0 / 0.25)',
             backgroundColor: 'white',
             marginBottom: exporting ? 0 : '2rem',
             overflow: exporting ? 'visible' : 'hidden', 
