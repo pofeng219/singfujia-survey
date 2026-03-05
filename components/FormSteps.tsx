@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, ImageIcon } from 'lucide-react';
 import { SurveyData, SurveyType } from '../types';
 import { 
     EXT_LIST, LEAK_LOCATIONS, STRUCTURAL_ISSUES, UTILITY_ISSUES, FACILITY_OPTIONS, 
@@ -14,7 +14,7 @@ import {
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
     AccordionRadio, QuestionBlock, BooleanReveal, UnitInput, FormInput, LandNumberInputs, SignaturePad,
-    SectionStatus
+    SectionStatus, ImageModal
 } from './SharedUI';
 import { UtilitiesSection, ParkingSection, EnvironmentSection, NotesSection, LandQuestionsGroup, BuildingLandAccessSection } from './ComplexSections';
 import { ROCDatePicker } from './ROCDatePicker';
@@ -147,6 +147,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     const isGroupA = GROUP_A_TYPES.includes(data.propertyType);
 
     // --- Status Logic Helpers ---
+    const [showMeasurementGuide, setShowMeasurementGuide] = useState(false);
+
     const getQ1Status = (): SectionStatus => {
         if (!data.q1_hasExt) return 'incomplete';
         if (data.q1_hasExt === '是' && (!data.q1_items || data.q1_items.length === 0)) return 'incomplete';
@@ -266,6 +268,13 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             )}
             
             {type === 'parking' && <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={1} ids={{ main: 'section-parking-main', abnormal: 'section-parking-abnormal', supplement: 'section-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={getParkingStatus()} />}
+            
+            <ImageModal 
+                isOpen={showMeasurementGuide} 
+                onClose={() => setShowMeasurementGuide(false)} 
+                imageSrc="https://drive.google.com/uc?export=view&id=1JVQ4VwR4kW1Q9olTGSj3lZjzr2csE_ZE" 
+                title="測量參考圖例" 
+            />
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
                     <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
@@ -347,7 +356,17 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     </SurveySection>
                     
                     <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={type === 'factory' ? '2. 現場長寬和建物測量成果圖比對，與建物面積現況評估' : '2. 現場長寬和建物測量成果圖比對，與建物面積現況評估'} status={getQ6Status()}>
-                        <InlineWarning>※可簡易測量最長／短／寬／窄之距離（因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內）</InlineWarning>
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                            <InlineWarning className="flex-1">※可簡易測量最長／短／寬／窄之距離（因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內）</InlineWarning>
+                            <button
+                                onClick={() => setShowMeasurementGuide(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200"
+                                type="button"
+                            >
+                                <ImageIcon size={20} />
+                                參考圖例
+                            </button>
+                        </div>
                         <RadioGroup 
                             options={['實測相符', '實測不符', '無法測量']} 
                             value={data?.q6_hasIssue === '相符 (無明顯差異)' ? '實測相符' : (data?.q6_hasIssue === '不符 (有明顯差異)' ? '實測不符' : (data?.q6_hasIssue === '無法測量／其他' || data?.q6_hasIssue === '無法測量／現況說明' ? '無法測量' : (data?.q6_hasIssue || '')))} 
