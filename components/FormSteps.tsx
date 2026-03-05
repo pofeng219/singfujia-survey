@@ -272,7 +272,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <ImageModal 
                 isOpen={showMeasurementGuide} 
                 onClose={() => setShowMeasurementGuide(false)} 
-                imageSrc="https://drive.google.com/uc?export=view&id=1JVQ4VwR4kW1Q9olTGSj3lZjzr2csE_ZE" 
+                imageSrc="https://lh3.googleusercontent.com/d/1JVQ4VwR4kW1Q9olTGSj3lZjzr2csE_ZE" 
                 title="測量參考圖例" 
             />
             {type === 'land' && (

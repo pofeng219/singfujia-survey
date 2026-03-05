@@ -969,6 +969,7 @@ export const ImageModal: React.FC<{
                         src={imageSrc} 
                         alt={title} 
                         className="max-w-full h-auto object-contain rounded-lg shadow-sm" 
+                        referrerPolicy="no-referrer"
                     />
                 </div>
             </div>
