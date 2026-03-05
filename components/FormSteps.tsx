@@ -356,11 +356,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     </SurveySection>
                     
                     <SurveySection id="section-q6" highlighted={highlightedField === 'section-q6'} title={type === 'factory' ? '2. 現場長寬和建物測量成果圖比對，與建物面積現況評估' : '2. 現場長寬和建物測量成果圖比對，與建物面積現況評估'} status={getQ6Status()}>
-                        <div className="flex items-start justify-between gap-4 mb-4">
-                            <InlineWarning className="flex-1">※可簡易測量最長／短／寬／窄之距離（因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內）</InlineWarning>
+                        <div className="flex flex-col gap-3 mb-4">
+                            <InlineWarning>※可簡易測量最長／短／寬／窄之距離（因牆面厚度，測量的長／寬，與建物成果圖尺寸落差 30 公分內為合理範圍內）</InlineWarning>
                             <button
                                 onClick={() => setShowMeasurementGuide(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200"
+                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
                                 type="button"
                             >
                                 <ImageIcon size={20} />
