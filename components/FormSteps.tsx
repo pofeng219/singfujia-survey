@@ -148,6 +148,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     // --- Status Logic Helpers ---
     const [showMeasurementGuide, setShowMeasurementGuide] = useState(false);
+    const [showLeakageGuide, setShowLeakageGuide] = useState(false);
 
     const getQ1Status = (): SectionStatus => {
         if (!data.q1_hasExt) return 'incomplete';
@@ -272,8 +273,14 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <ImageModal 
                 isOpen={showMeasurementGuide} 
                 onClose={() => setShowMeasurementGuide(false)} 
-                imageSrc="https://lh3.googleusercontent.com/d/1JVQ4VwR4kW1Q9olTGSj3lZjzr2csE_ZE" 
+                imageSrc="https://lh3.googleusercontent.com/d/1ptENQiVhKkfwvGWEbxbq2NycrJxXseJL" 
                 title="測量參考圖例" 
+            />
+            <ImageModal 
+                isOpen={showLeakageGuide} 
+                onClose={() => setShowLeakageGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1IBFxfJDMDJb3TW5nlpkXa9dUe1Rdcr2S" 
+                title="滲漏水與壁癌參考圖例" 
             />
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
@@ -378,7 +385,17 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     </SurveySection>
 
                     <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
-                        <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
+                        <div className="flex flex-col gap-3 mb-4">
+                            <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
+                            <button
+                                onClick={() => setShowLeakageGuide(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                type="button"
+                            >
+                                <ImageIcon size={20} />
+                                參考圖例
+                            </button>
+                        </div>
                         <RadioGroup 
                             options={['無（現況乾燥）', '有（含壁癌／水漬／修繕痕跡）', '全屋天花板包覆（無法檢查）']} 
                             value={data.q3_ceilingWrapped ? '全屋天花板包覆（無法檢查）' : (data?.q3_hasLeak === '否' ? '無（現況乾燥）' : (data?.q3_hasLeak === '是' ? '有（含壁癌／水漬／修繕痕跡）' : (data?.q3_hasLeak ? '' : '')))} 
