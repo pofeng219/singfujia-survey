@@ -276,9 +276,11 @@ export const SurveySection: React.FC<{
                         <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${isOpen ? 'bg-slate-100 border-slate-200 text-slate-600 rotate-0 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300' : 'bg-slate-800 border-slate-900 text-white -rotate-90 dark:bg-sky-600 dark:border-sky-500'}`}>
                             <ChevronDown className="w-6 h-6 md:w-7 md:h-7" strokeWidth={3} />
                         </div>
-                        <span className={`text-base md:text-lg font-black text-slate-400 transition-all duration-300 whitespace-nowrap dark:text-slate-500 ${isOpen ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-                            點擊收合
-                        </span>
+                        {!isOpen && (
+                            <span className="text-base md:text-lg font-black text-slate-400 transition-all duration-300 whitespace-nowrap dark:text-slate-500 animate-in fade-in">
+                                點擊展開
+                            </span>
+                        )}
                     </div>
                 </div>
             ) : (
@@ -295,6 +297,26 @@ export const SurveySection: React.FC<{
                         {/* Content */}
                         <div className={className.includes('space-y') ? className : `space-y-8 md:space-y-10 ${className}`}>
                             {children}
+                        </div>
+
+                        {/* Bottom Collapse Button */}
+                        <div className="mt-8 md:mt-10 flex justify-center">
+                            <button 
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsOpen(false);
+                                    // Optional: Scroll back to header slightly if needed, but usually not required if just collapsing
+                                    const el = document.getElementById(id || '');
+                                    if (el) {
+                                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }
+                                }}
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 hover:text-slate-700 transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                            >
+                                <ChevronDown className="w-5 h-5 rotate-180" />
+                                <span>收合此區塊</span>
+                            </button>
                         </div>
                     </div>
                 </div>
