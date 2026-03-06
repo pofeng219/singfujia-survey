@@ -100,6 +100,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, 
                 <div className="w-full max-w-xl flex flex-col gap-6 md:gap-8">
                     {/* Header Card - Adjusted padding and font sizes for mobile */}
                     <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-3 md:space-y-4 animate-in slide-in-from-bottom-4 duration-700">
+                        <img 
+                            src="https://lh3.googleusercontent.com/d/1kibsmrcTX_fDtniNVqWDQXkVP3ZNwGwI" 
+                            alt="幸福家不動產 Logo" 
+                            className="w-24 h-24 md:w-32 md:h-32 object-contain mx-auto mb-2" 
+                            referrerPolicy="no-referrer"
+                        />
                         <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                             幸福家不動產
                         </h1>

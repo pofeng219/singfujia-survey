@@ -149,6 +149,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     // --- Status Logic Helpers ---
     const [showMeasurementGuide, setShowMeasurementGuide] = useState(false);
     const [showLeakageGuide, setShowLeakageGuide] = useState(false);
+    const [showLeakageGuide1, setShowLeakageGuide1] = useState(false);
+    const [showStructureGuide, setShowStructureGuide] = useState(false);
 
     const getQ1Status = (): SectionStatus => {
         if (!data.q1_hasExt) return 'incomplete';
@@ -282,6 +284,18 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 imageSrc="https://lh3.googleusercontent.com/d/1IBFxfJDMDJb3TW5nlpkXa9dUe1Rdcr2S" 
                 title="滲漏水與壁癌參考圖例" 
             />
+            <ImageModal 
+                isOpen={showLeakageGuide1} 
+                onClose={() => setShowLeakageGuide1(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1307yNKkGX2UJXEcx0MuW63pYUMb-0HDA" 
+                title="滲漏水與壁癌參考圖例 (1)" 
+            />
+            <ImageModal 
+                isOpen={showStructureGuide} 
+                onClose={() => setShowStructureGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1CzKWXqCMjdHCJ4cKQ1v68lDdsm7F13YP" 
+                title="建物結構安全評估參考圖例" 
+            />
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
                     <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
@@ -387,14 +401,24 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-q3" highlighted={highlightedField === 'section-q3'} title={type === 'factory' ? '3. 滲漏水與壁癌現況' : '3. 滲漏水與壁癌現況'} className="border-red-400 ring-4 ring-red-50" status={getQ3Status()}>
                         <div className="flex flex-col gap-3 mb-4">
                             <InlineWarning>※檢查窗框角落、陽台天花板與頂樓狀況</InlineWarning>
-                            <button
-                                onClick={() => setShowLeakageGuide(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
-                                type="button"
-                            >
-                                <ImageIcon size={20} />
-                                參考圖例
-                            </button>
+                            <div className="flex gap-2 flex-wrap">
+                                <button
+                                    onClick={() => setShowLeakageGuide(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                    type="button"
+                                >
+                                    <ImageIcon size={20} />
+                                    參考圖例
+                                </button>
+                                <button
+                                    onClick={() => setShowLeakageGuide1(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                    type="button"
+                                >
+                                    <ImageIcon size={20} />
+                                    參考圖例 1
+                                </button>
+                            </div>
                         </div>
                         <RadioGroup 
                             options={['無（現況乾燥）', '有（含壁癌／水漬／修繕痕跡）', '全屋天花板包覆（無法檢查）']} 
@@ -459,7 +483,17 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 <div className="mb-6">
                                     <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-1 leading-normal">結構牆面與樑柱現況</p>
                                     <p className="text-xl text-slate-500 font-bold mb-6">（非單純壁癌或油漆剝落）</p>
-                                    <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
+                                    <div className="flex flex-col gap-3">
+                                        <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
+                                        <button
+                                            onClick={() => setShowStructureGuide(true)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                            type="button"
+                                        >
+                                            <ImageIcon size={20} />
+                                            參考圖例
+                                        </button>
+                                    </div>
                                 </div>
                                 <RadioGroup 
                                     options={['無', '有', '全屋天花板包覆（無法檢查）']} 

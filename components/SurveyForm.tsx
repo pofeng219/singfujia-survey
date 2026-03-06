@@ -570,14 +570,14 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 </div>
             )}
 
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 flex justify-around items-center pb-safe pt-2 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
-                <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-4 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
-                    <Edit3 className={`w-8 h-8 mb-1 ${mobileTab === 'edit' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'edit' ? 2.5 : 2} />
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 flex justify-around items-center pb-safe pt-1 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
+                <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
+                    <Edit3 className={`w-6 h-6 mb-1 ${mobileTab === 'edit' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'edit' ? 2.5 : 2} />
                     <span className="text-lg font-black">填寫資料</span>
                 </button>
-                <div className="w-[2px] h-12 bg-slate-100 dark:bg-slate-800"></div>
-                <button onClick={() => setMobileTab('preview')} className={`flex flex-col items-center justify-center w-full py-4 transition-colors duration-200 ${mobileTab === 'preview' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
-                    <Eye className={`w-8 h-8 mb-1 ${mobileTab === 'preview' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'preview' ? 2.5 : 2} />
+                <div className="w-[2px] h-10 bg-slate-100 dark:bg-slate-800"></div>
+                <button onClick={() => setMobileTab('preview')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'preview' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
+                    <Eye className={`w-6 h-6 mb-1 ${mobileTab === 'preview' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'preview' ? 2.5 : 2} />
                     <span className="text-lg font-black">預覽/匯出</span>
                 </button>
             </div>
