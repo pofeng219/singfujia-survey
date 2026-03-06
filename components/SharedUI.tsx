@@ -277,8 +277,8 @@ export const SurveySection: React.FC<{
                             <ChevronDown className="w-6 h-6 md:w-7 md:h-7" strokeWidth={3} />
                         </div>
                         {!isOpen && (
-                            <span className="text-base md:text-lg font-black text-slate-400 transition-all duration-300 whitespace-nowrap dark:text-slate-500 animate-in fade-in">
-                                點擊展開
+                            <span className="text-lg md:text-xl font-black text-emerald-600 transition-all duration-300 whitespace-nowrap dark:text-emerald-400 animate-in fade-in bg-emerald-50 px-4 py-2 rounded-xl dark:bg-emerald-900/30 border-2 border-emerald-100 dark:border-emerald-800">
+                                點我展開
                             </span>
                         )}
                     </div>
@@ -312,10 +312,10 @@ export const SurveySection: React.FC<{
                                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                     }
                                 }}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 hover:text-slate-700 transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-orange-100 text-orange-800 font-black text-xl hover:bg-orange-200 transition-colors shadow-sm border-2 border-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-800 dark:hover:bg-orange-900/60"
                             >
-                                <ChevronDown className="w-5 h-5 rotate-180" />
-                                <span>收合此區塊</span>
+                                <ChevronDown className="w-6 h-6 rotate-180" strokeWidth={3} />
+                                <span>點我縮小</span>
                             </button>
                         </div>
                     </div>
