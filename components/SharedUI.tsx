@@ -33,10 +33,10 @@ interface CheckBoxProps {
 export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'p-3 md:p-4' : 'p-4 md:p-6';
-    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const paddingClass = isStandard ? 'py-2 px-3 md:py-2.5 md:px-4' : 'p-4 md:p-6';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
     const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-4xl';
-    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+    const iconSize = isStandard ? 'w-4 h-4 md:w-5 md:h-5' : 'w-6 h-6 md:w-8 md:h-8';
 
     return (
         <div 
@@ -70,11 +70,11 @@ interface RadioGroupProps {
 export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-3 px-3 md:py-4 md:px-4' : 'py-4 px-3 md:py-5 md:px-4';
-    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
+    const paddingClass = isStandard ? 'py-2 px-3 md:py-2.5 md:px-4' : 'py-4 px-3 md:py-5 md:px-4';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
     const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-3xl';
-    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
-    const subTextSize = isStandard ? 'text-xs md:text-sm' : 'text-lg';
+    const iconSize = isStandard ? 'w-4 h-4 md:w-5 md:h-5' : 'w-6 h-6 md:w-8 md:h-8';
+    const subTextSize = isStandard ? 'text-xs' : 'text-lg';
 
     // Stage 2: Intelligent Layout Detection
     // Default force vertical (1 column). Only switch to horizontal (2 columns) if:
@@ -93,12 +93,12 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
 
         if (subText) {
             return (
-                <div className="flex flex-col items-center justify-center w-full py-3 min-h-[5rem]">
-                    <div className="mb-4 flex items-center gap-2">
+                <div className={`flex flex-col items-center justify-center w-full ${isStandard ? 'py-1.5 min-h-[3.5rem]' : 'py-3 min-h-[5rem]'}`}>
+                    <div className={`${isStandard ? 'mb-2' : 'mb-4'} flex items-center gap-2`}>
                         {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
                         {mainContent}
                     </div>
-                    <div className={`${isStandard && isSelected ? 'bg-sky-500 dark:bg-sky-700' : 'bg-orange-100 dark:bg-orange-900/40'} px-3 py-2 rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center`}>
+                    <div className={`${isStandard && isSelected ? 'bg-sky-500 dark:bg-sky-700' : 'bg-orange-100 dark:bg-orange-900/40'} ${isStandard ? 'px-2 py-1' : 'px-3 py-2'} rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center`}>
                         <span className={`${subTextSize} font-bold ${isStandard && isSelected ? 'text-white' : 'text-slate-700 dark:text-slate-200'} block leading-normal break-words whitespace-normal`}>
                             {subText}
                         </span>
@@ -152,10 +152,10 @@ interface AccordionRadioProps {
 export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-3 px-3 md:py-4 md:px-4' : 'py-4 px-3 md:py-6 md:px-6';
-    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
+    const paddingClass = isStandard ? 'py-2 px-3 md:py-2.5 md:px-4' : 'py-4 px-3 md:py-6 md:px-6';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
     const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-4xl';
-    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+    const iconSize = isStandard ? 'w-4 h-4 md:w-5 md:h-5' : 'w-6 h-6 md:w-8 md:h-8';
 
     // Stage 2: Intelligent Layout Detection
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
@@ -207,8 +207,8 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const titleSize = isStandard ? 'text-sm md:text-base' : 'text-xl';
-    const subSize = isStandard ? 'text-xs md:text-sm' : 'text-lg';
-    const minHeight = isStandard ? 'min-h-[50px]' : 'min-h-[65px]';
+    const subSize = isStandard ? 'text-xs' : 'text-lg';
+    const minHeight = isStandard ? 'min-h-[40px]' : 'min-h-[65px]';
 
     return (
         <div
@@ -216,7 +216,7 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
                 onClick();
             }}
-            className={`w-[90%] mx-auto ${minHeight} flex items-center justify-between px-5 py-3 rounded-xl transition-all duration-200 cursor-pointer select-none mb-3
+            className={`w-[90%] mx-auto ${minHeight} flex items-center justify-between ${isStandard ? 'px-4 py-2' : 'px-5 py-3'} rounded-xl transition-all duration-200 cursor-pointer select-none mb-3
             ${isStandard 
                 ? (checked 
                     ? 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-600 dark:border-sky-800 dark:text-white' 
