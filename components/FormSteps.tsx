@@ -437,7 +437,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <SubItemHighlight>
                                 <div className="space-y-6 md:space-y-8">
                                     <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200">
-                                        <p className="dynamic-text-h2 font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-500 block md:inline md:ml-2">（請確認現場狀況）</span></p>
+                                        <p className="dynamic-text-h2 font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-600 block md:inline md:ml-2 dark:text-slate-300">（請確認現場狀況）</span></p>
                                         <RadioGroup 
                                             options={['滲漏水', '壁癌', '兩者皆有']} 
                                             value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' ? '' : (data.q3_leakType || '')} 
@@ -482,7 +482,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <QuestionBlock>
                                 <div className="mb-6">
                                     <p className="dynamic-text-h2 font-black mb-1 leading-normal">結構牆面與樑柱現況</p>
-                                    <p className="text-xl text-slate-500 font-bold mb-6">（非單純壁癌或油漆剝落）</p>
+                                    <p className="text-xl text-slate-600 font-bold mb-6 dark:text-slate-300">（非單純壁癌或油漆剝落）</p>
                                     <div className="flex flex-col gap-3">
                                         <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
                                         <button

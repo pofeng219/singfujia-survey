@@ -52,51 +52,52 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
          !label.includes('有設置'));
     
     return (
-        <div className="flex items-start gap-2 mr-4 my-0.5">
-            <div className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-red-600 bg-red-600' : 'border-[#009FE3] bg-[#009FE3]'}`}>
+        <div className="flex items-start gap-2 mr-4 my-1">
+            <div className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-rose-500 bg-rose-500' : 'border-sky-600 bg-sky-600'}`}>
                 <Check size={14} strokeWidth={4} className="text-white" />
             </div>
-            <span className={`text-[16px] font-bold leading-tight tracking-wide ${isWarningOption ? 'text-red-600' : 'text-black'}`}>
+            <span className={`text-[17px] font-black leading-tight tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
                 {label}{suffix}
             </span>
         </div>
     );
 };
 
-// Modernized CheckRow: Clean, high readability
+// Modernized CheckRow: Clean, high readability with card-like row
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
-    <tr className="border-b border-slate-600 last:border-0">
-        <td className="w-14 text-center py-[2px] align-top">
-            <div className={`w-[18px] h-[18px] mx-auto rounded-full border-2 flex items-center justify-center transition-all mt-[3px] ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-slate-500'}`}>
-                {checked && <Check size={12} strokeWidth={4} className="text-white" />}
+    <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
+        <div className="w-14 shrink-0 flex justify-center pt-3 border-r border-slate-100 bg-slate-50/50">
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
+                {checked && <Check size={14} strokeWidth={4} className="text-white" />}
             </div>
-        </td>
-        <td colSpan={9} className="py-[2px] px-2 text-left text-[15px]">
-            <div className="flex flex-wrap items-start gap-x-4 gap-y-0.5">
-                {children}
+        </div>
+        <div className="flex-grow py-2.5 px-4 text-left text-[15px]">
+            <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-4 gap-y-1">
+                {/* Apply small gray question style to the first span child if it's the question label */}
+                <div className="[&>span:first-child]:text-[14px] [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-1 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-4 gap-y-1 w-full">
+                    {children}
+                </div>
             </div>
-        </td>
-    </tr>
+        </div>
+    </div>
 );
 
-// Professional Section Header: High contrast, no background color
+// Professional Section Header: Card Header Style
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <tr>
-        <td colSpan={10} className="pt-3 pb-0.5 px-2">
-            <div className="flex items-center gap-3 border-b-2 border-slate-800 pb-1">
-                <div className="w-2 h-6 bg-[#009FE3]"></div>
-                <span className="font-black text-slate-900 text-[18px] tracking-widest leading-none pt-0.5">{title}</span>
-            </div>
-        </td>
-    </tr>
+    <div className="mt-4 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
+        <div className="px-4 py-3 flex items-center gap-3">
+            <div className="w-1.5 h-5 bg-sky-500 rounded-full"></div>
+            <span className="font-black text-slate-800 text-[18px] tracking-widest leading-none pt-0.5">{title}</span>
+        </div>
+    </div>
 );
 
 // Clean Table Header
 const TableHeaderRow: React.FC = () => (
-    <tr className="border-b-2 border-slate-800 bg-gray-50">
-        <td className="w-14 text-center font-black text-slate-900 py-2 text-[15px] whitespace-nowrap tracking-wider">確認無誤</td>
-        <td colSpan={9} className="py-2 px-4 font-black text-left text-slate-900 text-[15px] tracking-[0.2em]">說明／檢查項目</td>
-    </tr>
+    <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
+        <div className="w-14 shrink-0 text-center font-black text-slate-700 py-2.5 text-[14px] whitespace-nowrap tracking-wider border-r border-slate-300/50">確認<br/>無誤</div>
+        <div className="flex-grow py-2.5 px-4 font-black text-left text-slate-700 text-[15px] tracking-[0.2em] flex items-center">說明／檢查項目</div>
+    </div>
 );
 
 const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' | 'a4' }> = ({ label, value, variant = 'a4' }) => (
@@ -1189,8 +1190,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                     
                     <BasicInfoTable />
 
-                    <table className="excel-table mb-2 w-full text-black">
-                        <tbody>
+                    <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
                             {type === 'house' && <HousePrintPage1 data={data} />}
                             {type === 'land' && <LandPrintPage1 data={data} />}
                             {type === 'factory' && <FactoryPrintPage1 data={data} />}
@@ -1230,8 +1230,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                     </CheckRow>
                                 </>
                             )}
-                        </tbody>
-                    </table>
+                    </div>
                     
                     <Footer showSignature={type === 'parking'} signatureImage={data.signatureImage} />
                 </div>
@@ -1244,14 +1243,12 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                             <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                             <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【背面】</div>
                         </div>
-                        <table className="excel-table mb-2 w-full text-black">
-                            <tbody>
+                        <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
                                 <TableHeaderRow />
                                 {type === 'house' && <HousePrintPage2 data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                                 {type === 'land' && <LandPrintPage2 data={data} />}
                                 {type === 'factory' && <FactoryPrintPage2 data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
-                            </tbody>
-                        </table>
+                        </div>
                         <Footer showSignature={type !== 'factory'} signatureImage={data.signatureImage} />
                     </div>
                 </ScaledA4Wrapper>
@@ -1264,12 +1261,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                             <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                             <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【附件】</div>
                         </div>
-                        <table className="excel-table mb-2 w-full text-black">
-                            <tbody>
+                        <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
                                 <TableHeaderRow />
                                 <FactoryPrintPage3 data={data} />
-                            </tbody>
-                        </table>
+                        </div>
                         <Footer showSignature={true} signatureImage={data.signatureImage} />
                     </div>
                 </ScaledA4Wrapper>

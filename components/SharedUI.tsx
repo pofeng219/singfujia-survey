@@ -779,7 +779,7 @@ export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: 
     const borderClass = isStandard ? 'border-l-[4px] md:border-l-[6px]' : 'border-l-[8px] md:border-l-[12px]';
 
     return (
-        <div className={`mt-4 mb-6 ${paddingClass} bg-orange-50/80 ${roundedClass} ${borderClass} border-orange-400 shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 dark:bg-orange-900/20 dark:border-orange-500 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+        <div className={`mt-4 mb-6 ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
             <div className="pl-1 md:pl-2">{children}</div>
         </div>
     );
