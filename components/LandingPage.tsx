@@ -103,14 +103,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, 
                         <img 
                             src="https://lh3.googleusercontent.com/d/1kibsmrcTX_fDtniNVqWDQXkVP3ZNwGwI" 
                             alt="幸福家不動產 Logo" 
-                            className="w-24 h-24 md:w-32 md:h-32 object-contain mx-auto mb-2" 
+                            className="w-24 h-24 md:w-32 md:h-32 object-contain mx-auto mb-4" 
                             referrerPolicy="no-referrer"
                         />
                         <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                             幸福家不動產
                         </h1>
-                        <div className="w-12 h-1.5 bg-sky-500 mx-auto rounded-full"></div>
-                        <p className="text-slate-500 dark:text-slate-400 font-bold text-lg md:text-xl tracking-wider">
+                        <div className="w-12 h-1.5 bg-sky-500 mx-auto rounded-full my-6"></div>
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-lg md:text-xl tracking-[0.2em] uppercase">
                             物件現況調查系統
                         </p>
                     </div>

@@ -312,7 +312,7 @@ export const SurveySection: React.FC<{
                                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                     }
                                 }}
-                                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-orange-100 text-orange-800 font-black text-xl hover:bg-orange-200 transition-colors shadow-sm border-2 border-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-800 dark:hover:bg-orange-900/60"
+                                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-orange-50 text-orange-600 font-black text-xl hover:bg-orange-100 transition-colors shadow-sm border-2 border-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-800 dark:hover:bg-orange-900/60"
                             >
                                 <ChevronDown className="w-6 h-6 rotate-180" strokeWidth={3} />
                                 <span>點我縮小</span>
@@ -791,6 +791,12 @@ export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, su
         ? `w-7 h-7 border-[3px] flex items-center justify-center font-black text-xl mr-2 shrink-0 ${checked ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900 dark:border-white' : 'bg-transparent border-slate-800 text-slate-800 dark:border-white dark:text-white'}`
         : `preview-checkbox-box translate-y-[2px]`; // Added translate-y to align visually
 
+    // Highlight "有" (Yes/Has issue) options in red for quick scanning
+    const isWarningOption = checked && (label.includes('有') || label.includes('是'));
+    const labelClass = isWarningOption 
+        ? `preview-checkbox-label font-bold text-red-600 dark:text-red-400`
+        : `preview-checkbox-label ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`;
+
     return (
         <div className="preview-checkbox-wrapper inline-flex items-center">
             {variant === 'mobile' ? (
@@ -799,10 +805,10 @@ export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, su
                 </div>
             ) : (
                 <div className={boxClass}>
-                    {checked ? <Check className="w-5 h-5 text-black" strokeWidth={3} /> : ''}
+                    {checked ? <Check className={`w-5 h-5 ${isWarningOption ? 'text-red-600' : 'text-black'}`} strokeWidth={3} /> : ''}
                 </div>
             )}
-            <span className={`preview-checkbox-label ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
+            <span className={labelClass}>
                 {label}{suffix}
             </span>
         </div>
