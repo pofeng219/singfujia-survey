@@ -27,14 +27,36 @@ const formatAccessLandAddress = (section?: string, subSection?: string, number?:
 };
 
 // Local PreviewResult: High contrast, larger text, less vibrant
-const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string }> = ({ checked, label, suffix }) => {
+const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string; isWarning?: boolean }> = ({ checked, label, suffix, isWarning }) => {
     if (!checked) return null;
+    
+    // Highlight "有" (Yes/Has issue) or "是" options in red for quick scanning
+    // Also include common issue keywords to ensure they are caught even without "有/是" prefix
+    const warningKeywords = [
+        '滲漏水', '壁癌', '瑕疵', '異常', '不符', '占用', '剝落', '外露', '龜裂', 
+        '傾斜', '待查證', '受限', '袋地', '糾紛', '越界', '海砂', '輻射', '非自然', 
+        '事故', '違建', '私下', '不明', '不確定', '無法', '外推', '加蓋', '夾層', 
+        '增建', '改建', '損壞', '危險', '破壞', '漏水', '阻塞', '不通'
+    ];
+    const hasWarningKeyword = warningKeywords.some(kw => label.includes(kw));
+    const isWarningOption = isWarning || hasWarningKeyword || 
+        ((label.includes('有') || label.includes('是')) && 
+         !label.includes('有保存登記') && 
+         !label.includes('有車位編號') && 
+         !label.includes('有公共設施') && 
+         !label.includes('所有權人自用') && 
+         !label.includes('合法') && 
+         !label.includes('正常') &&
+         !label.includes('有農作物') &&
+         !label.includes('有建築物') &&
+         !label.includes('有設置'));
+    
     return (
         <div className="flex items-start gap-2 mr-4 my-0.5">
-            <div className="w-5 h-5 mt-0.5 rounded-md border-2 border-[#009FE3] bg-[#009FE3] flex items-center justify-center shrink-0 shadow-sm">
+            <div className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-red-600 bg-red-600' : 'border-[#009FE3] bg-[#009FE3]'}`}>
                 <Check size={14} strokeWidth={4} className="text-white" />
             </div>
-            <span className="text-[16px] font-bold text-black leading-tight tracking-wide">
+            <span className={`text-[16px] font-bold leading-tight tracking-wide ${isWarningOption ? 'text-red-600' : 'text-black'}`}>
                 {label}{suffix}
             </span>
         </div>
@@ -43,9 +65,9 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 
 // Modernized CheckRow: Clean, high readability
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
-    <tr className="border-b border-slate-400 last:border-0">
+    <tr className="border-b border-slate-600 last:border-0">
         <td className="w-14 text-center py-[2px] align-top">
-            <div className={`w-[18px] h-[18px] mx-auto rounded-full border-2 flex items-center justify-center transition-all mt-[3px] ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-slate-400'}`}>
+            <div className={`w-[18px] h-[18px] mx-auto rounded-full border-2 flex items-center justify-center transition-all mt-[3px] ${checked ? 'border-[#009FE3] bg-[#009FE3]' : 'border-slate-500'}`}>
                 {checked && <Check size={12} strokeWidth={4} className="text-white" />}
             </div>
         </td>
@@ -61,9 +83,9 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
     <tr>
         <td colSpan={10} className="pt-3 pb-0.5 px-2">
-            <div className="flex items-center gap-3 border-b-2 border-black pb-1">
+            <div className="flex items-center gap-3 border-b-2 border-slate-800 pb-1">
                 <div className="w-2 h-6 bg-[#009FE3]"></div>
-                <span className="font-black text-black text-[18px] tracking-widest leading-none pt-0.5">{title}</span>
+                <span className="font-black text-slate-900 text-[18px] tracking-widest leading-none pt-0.5">{title}</span>
             </div>
         </td>
     </tr>
@@ -71,9 +93,9 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
 
 // Clean Table Header
 const TableHeaderRow: React.FC = () => (
-    <tr className="border-b-2 border-black bg-gray-50">
-        <td className="w-14 text-center font-black text-black py-2 text-[15px] whitespace-nowrap tracking-wider">確認無誤</td>
-        <td colSpan={9} className="py-2 px-4 font-black text-left text-black text-[15px] tracking-[0.2em]">說明／檢查項目</td>
+    <tr className="border-b-2 border-slate-800 bg-gray-50">
+        <td className="w-14 text-center font-black text-slate-900 py-2 text-[15px] whitespace-nowrap tracking-wider">確認無誤</td>
+        <td colSpan={9} className="py-2 px-4 font-black text-left text-slate-900 text-[15px] tracking-[0.2em]">說明／檢查項目</td>
     </tr>
 );
 
@@ -257,14 +279,14 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
         const timestamp = new Date().toLocaleString('zh-TW', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
         
         return (
-            <div className="mt-auto w-full pt-2 border-t-4 border-[#009FE3] flex justify-between items-end text-black relative z-10">
+            <div className="mt-auto w-full pt-2 border-t-4 border-[#009FE3] flex justify-between items-end text-slate-900 relative z-10">
                 {showSignature ? (
-                    <div className="space-y-1 font-bold text-[18px] text-black mb-2">
+                    <div className="space-y-1 font-bold text-[18px] text-slate-900 mb-2">
                         <div className="flex flex-col items-start gap-0">
-                            <span className="text-black font-black mb-8 text-[20px]">調查業務人員簽章：</span>
-                            <div className="w-[320px] border-b-2 border-black flex items-end relative h-10">
+                            <span className="text-slate-900 font-black mb-10 text-[22px]">調查業務人員簽章：</span>
+                            <div className="w-[380px] border-b-2 border-slate-800 flex items-end relative h-12">
                                 {signatureImage ? (
-                                    <img src={signatureImage} alt="Signature" className="absolute bottom-0 left-0 max-h-16 max-w-full" />
+                                    <img src={signatureImage} alt="Signature" className="absolute bottom-0 left-0 max-h-20 max-w-full" />
                                 ) : null}
                             </div>
                         </div>
@@ -383,7 +405,7 @@ const HousePrintPage1Factory = ({ data, hideUtilities = false }: { data: SurveyD
                 <PreviewResult checked={data?.q3_hasLeak === '否'} label="無" />
                 <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
                 {data?.q3_repairHistory === '有修繕紀錄' && (
-                    <span className="font-bold ml-2 text-slate-600">
+                    <span className="font-bold ml-2 text-red-600">
                         （曾有修繕：{data.q3_repairDesc}）
                     </span>
                 )}
@@ -453,7 +475,7 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案與社區特殊或影響交易事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`} />
         <CheckRow checked={data?.q17_homicide === '無'}>
             <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
-            <span className="font-medium">{data?.q17_homicide || ''}</span>
+            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-bold' : ''}`}>{data?.q17_homicide || ''}</span>
         </CheckRow>
         <CheckRow checked={data?.q17_issue === '否'}>
              <span className="font-black mr-2">其他特殊或影響交易狀況補充</span>
@@ -496,7 +518,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                 <PreviewResult checked={data?.q3_hasLeak === '是'} label={labels.q3()} />
                 <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
                 {data?.q3_repairHistory === '有修繕紀錄' && (
-                    <span className="font-bold ml-2 text-slate-600">
+                    <span className="font-bold ml-2 text-red-600">
                         （曾有修繕：{data.q3_repairDesc}）
                     </span>
                 )}

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { useInterface } from './InterfaceContext';
 
 export const formatDateROC = (dateString: string) => {
     if (!dateString) return '';
@@ -21,6 +22,13 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
     const containerRef = useRef<HTMLDivElement>(null);
     const dateValue = value ? new Date(value) : new Date();
     const [viewDate, setViewDate] = useState(dateValue);
+    
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const textSize = isStandard ? 'text-base md:text-lg' : 'text-3xl';
+    const iconSize = isStandard ? 'w-5 h-5' : 'w-8 h-8';
+    const paddingClass = isStandard ? 'p-2' : 'p-3';
+    const roundedClass = isStandard ? 'rounded-xl' : 'rounded-2xl';
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -69,11 +77,11 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
                 onClick={() => setShow(!show)} 
                 className={`full-width-input cursor-pointer flex items-center justify-between bg-white transition-all duration-300 ${show ? 'ring-4 ring-sky-200 border-sky-400' : ''}`}
             >
-                <span className={`font-black text-3xl ${value ? 'text-slate-800' : 'text-slate-400'}`}>
+                <span className={`font-black ${textSize} ${value ? 'text-slate-800' : 'text-slate-400'}`}>
                     {displayValue}
                 </span>
-                <div className={`p-3 rounded-xl transition-colors ${show ? 'bg-sky-100 text-sky-600' : 'bg-slate-100 text-slate-500'}`}>
-                    <Calendar className="w-8 h-8" strokeWidth={2.5} />
+                <div className={`${paddingClass} ${roundedClass} transition-colors ${show ? 'bg-sky-100 text-sky-600' : 'bg-slate-100 text-slate-500'}`}>
+                    <Calendar className={iconSize} strokeWidth={2.5} />
                 </div>
             </div>
             

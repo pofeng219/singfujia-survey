@@ -32,6 +32,19 @@
 
         #root { height: 100%; overflow: hidden; display: flex; flex-direction: column; }
 
+        /* Dynamic Text Sizes for Interface Modes */
+        .mode-standard .dynamic-text-h1 { font-size: 1.125rem; line-height: 1.75rem; } /* text-lg */
+        @media (min-width: 768px) { .mode-standard .dynamic-text-h1 { font-size: 1.25rem; line-height: 1.75rem; } } /* md:text-xl */
+        
+        .mode-friendly .dynamic-text-h1 { font-size: 1.75rem; line-height: 2.25rem; } /* text-[1.75rem] */
+        @media (min-width: 768px) { .mode-friendly .dynamic-text-h1 { font-size: 2rem; line-height: 2.5rem; } } /* md:text-[2rem] */
+
+        .mode-standard .dynamic-text-h2 { font-size: 1rem; line-height: 1.5rem; } /* text-base */
+        @media (min-width: 768px) { .mode-standard .dynamic-text-h2 { font-size: 1.125rem; line-height: 1.75rem; } } /* md:text-lg */
+        
+        .mode-friendly .dynamic-text-h2 { font-size: 1.5rem; line-height: 2rem; } /* text-[1.5rem] */
+        @media (min-width: 768px) { .mode-friendly .dynamic-text-h2 { font-size: 1.75rem; line-height: 2.25rem; } } /* md:text-[1.75rem] */
+
         /* A4 Page Styling - Always White for Print representation */
         .a4-page {
             width: 210mm; min-width: 210mm; min-height: 297mm; height: auto;
@@ -75,6 +88,15 @@
             background: #f8fafc; 
             font-weight: 700;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* Standard Mode Overrides for Input */
+        .mode-standard .full-width-input {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-width: 2px;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
         }
         
         /* Dark Mode Input */

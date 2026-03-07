@@ -63,7 +63,7 @@ export const UtilitiesSection = ({
         <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             <div className="space-y-8">
                 <QuestionBlock>
-                    <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-2 text-slate-800 dark:text-slate-100 leading-normal">
+                    <p className="dynamic-text-h2 font-black mb-2 text-slate-800 dark:text-slate-100 leading-normal">
                         {type === 'factory' ? '供電類型' : '電力供應現況'}
                     </p>
                     {type === 'factory' ? (
@@ -103,19 +103,19 @@ export const UtilitiesSection = ({
                                     <SubItemHighlight>
                                         <div className="space-y-8">
                                             <div>
-                                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電錶型態？</p>
+                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電錶型態？</p>
                                                 <RadioGroup options={['獨立電錶', '共用電錶']} value={data.land_q1_elec_meter || ''} onChange={v => update('land_q1_elec_meter', v)} />
                                             </div>
                                             
                                             {(data.land_q1_elec?.includes('動力用電') || data.land_q1_elec === '高壓電供電') && (
                                                 <div>
-                                                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電壓規格</p>
+                                                    <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電壓規格</p>
                                                     <RadioGroup options={['三相 220V', '三相 380V／三相四線式', '高壓電供電', '其他/待查證']} value={data.land_q1_elec_voltage || ''} onChange={v => update('land_q1_elec_voltage', v)} layout="grid" cols={2} />
                                                 </div>
                                             )}
 
                                             <div>
-                                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-2 dark:text-slate-200 leading-normal">契約容量 (馬力數)</p>
+                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-2 dark:text-slate-200 leading-normal">契約容量 (馬力數)</p>
                                                 <p className="text-slate-500 text-xl font-bold mb-4 dark:text-slate-400">提示：若看到變壓器通常為高壓電；若電錶有倍數標示通常為大馬力</p>
                                                 <RadioGroup options={['一般用電(無契約容量)', '99馬力(HP)以下(無須設置配電室)', '100馬力(HP)以上(可能需設置高壓變電站)', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} value={data.land_q1_elec_capacity || ''} onChange={v => update('land_q1_elec_capacity', v)} layout="grid" cols={1} />
                                             </div>
@@ -149,7 +149,7 @@ export const UtilitiesSection = ({
                 </QuestionBlock>
                 
                 <QuestionBlock>
-                    <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">水源供應現況</p>
+                    <p className="dynamic-text-h2 font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">水源供應現況</p>
                     <AccordionRadio 
                         options={['無', '有', '其他未列項目']} 
                         value={data?.land_q1_water === '否' ? '無' : (data?.land_q1_water === '是' ? '有' : (data?.land_q1_water || ''))} 
@@ -192,7 +192,7 @@ export const UtilitiesSection = ({
                 {/* Solar Equipment for Factory - New Requirement */}
                 {type === 'factory' && (
                      <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
+                        <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                         <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
                         <RadioGroup 
                             options={['無設置', '合法設置', '私下設置']} 
@@ -205,7 +205,7 @@ export const UtilitiesSection = ({
 
                 {showWaterBooster && (
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">加壓受水設備</p>
+                        <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">加壓受水設備</p>
                         <div className="mb-6">
                             <InlineWarning>※本項由使用者自行管理維護，若物件型態為道路用地／公設地，確認是否為自來水公司之公共設施，或鄰地非法佔用</InlineWarning>
                         </div>
@@ -242,7 +242,7 @@ export const UtilitiesSection = ({
                 )}
                 
                 <QuestionBlock>
-                    <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">其他設施現況</p>
+                    <p className="dynamic-text-h2 font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">其他設施現況</p>
                     <AccordionRadio 
                         options={['無', '有']} 
                         value={data?.land_q1_other_new === '否' ? '無' : (data?.land_q1_other_new === '是' ? '有' : '')} 
@@ -300,13 +300,13 @@ export const ParkingSection = ({
     return (
         <SurveySection id={ids.main} highlighted={highlightedId === ids.main} status={status}>
             <div className="flex justify-between items-center border-b-2 pb-6 mb-2 dark:border-slate-700">
-                <p className="text-[1.5rem] md:text-[2rem] font-black text-slate-800 text-left dark:text-slate-100 leading-normal">{isHouseOrFactory ? `${startNum}. 車位資訊` : `${startNum}. 車位資訊`}</p>
+                <p className="dynamic-text-h1 font-black text-slate-800 text-left dark:text-slate-100 leading-normal">{isHouseOrFactory ? `${startNum}. 車位資訊` : `${startNum}. 車位資訊`}</p>
             </div>
             {startNum !== 1 && <div className="mb-8"><CheckBox checked={data?.q10_noParking || false} label="無車位" onClick={() => update('q10_noParking', !data.q10_noParking)} /></div>}
             
             <div className="space-y-12">
                 <QuestionBlock className={parkingLogic.disableMethod ? 'opacity-40 grayscale pointer-events-none' : ''}>
-                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">停車方式 (單選)：</p>
+                    <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">停車方式 (單選)：</p>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                         {PARK_TYPES.map(pt => (
                             <div key={pt} className={`relative overflow-hidden transition-all duration-300 ${data?.q10_parkTypes?.[0] === pt ? 'bg-sky-50 rounded-[2rem] transform scale-[1.01] dark:bg-sky-900/30' : 'bg-white rounded-[2rem] dark:bg-slate-800'}`}>
@@ -358,7 +358,7 @@ export const ParkingSection = ({
                 {hasCarMethod && (
                     <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-12">
                         <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableNumber ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">車位編號：</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">車位編號：</p>
                             <RadioGroup 
                                 options={['無車位編號', '有車位編號']} 
                                 value={data?.q10_parkingNumberType === 'number' ? '有車位編號' : (data?.q10_parkingNumberType === 'none' ? '無車位編號' : '')} 
@@ -373,7 +373,7 @@ export const ParkingSection = ({
                         </QuestionBlock>
 
                         <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableCarStatus ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">汽車車位使用現況：</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">汽車車位使用現況：</p>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                 {CAR_USAGE_OPTS.map(u => <div key={u} className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes(u) || false} label={u} onClick={() => handleCarUsageToggle(u)} disabled={parkingLogic.disableCarStatus} /></div>)}
                                 <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes("須固定抽籤") || false} label="須固定抽籤" onClick={() => handleCarUsageToggle("須固定抽籤")} disabled={parkingLogic.disableCarStatus} />{data?.q10_carUsage?.includes("須固定抽籤") && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><div className="ml-0 md:ml-4 flex items-center justify-center gap-4 mt-2 font-black text-xl md:text-2xl text-slate-700 dark:text-slate-200">每 <input type="number" inputMode="numeric" disabled={parkingLogic.disableCarStatus} className="w-20 md:w-28 border-3 rounded-2xl p-2 md:p-4 text-center bg-white shadow-inner dark:bg-slate-900 dark:border-slate-600" value={data.q10_carLotteryMonth || ''} onChange={e => update('q10_carLotteryMonth', e.target.value)} /> 月抽籤一次</div></SubItemHighlight>)}</div>
@@ -382,7 +382,7 @@ export const ParkingSection = ({
                         </QuestionBlock>
 
                         <div className={`bg-blue-50 p-6 md:p-10 rounded-[2.5rem] space-y-8 border-4 border-blue-100 transition-all duration-500 shadow-sm dark:bg-blue-900/20 dark:border-blue-800 ${parkingLogic.disableCarSize ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-                            <p className="font-black text-[1.5rem] md:text-[1.75rem] text-slate-800 text-left dark:text-blue-100 leading-normal">汽車車位尺寸 (公尺)</p>
+                            <p className="font-black dynamic-text-h2 text-slate-800 text-left dark:text-blue-100 leading-normal">汽車車位尺寸 (公尺)</p>
                             
                             <div className="mb-4">
                                 <RadioGroup 
@@ -406,25 +406,25 @@ export const ParkingSection = ({
 
                             {!isFactory && !parkingLogic.disableWeight && (
                                 <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
-                                    <p className="font-black text-[1.5rem] md:text-[1.75rem] text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">機械載重 (公斤)</p>
+                                    <p className="font-black dynamic-text-h2 text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">機械載重 (公斤)</p>
                                     <UnitInput unit="kg" value={data?.q10_mechWeight || ''} onChange={v => update('q10_mechWeight', v)} placeholder={"若無標示填『無』"} />
                                 </div>
                             )}
                             <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
-                                <p className="font-black text-[1.5rem] md:text-[1.75rem] text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">車道出入口高度 (公尺)</p>
+                                <p className="font-black dynamic-text-h2 text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">車道出入口高度 (公尺)</p>
                                 <UnitInput unit="米" value={data?.q10_entryHeight || ''} onChange={v => update('q10_entryHeight', v)} disabled={parkingLogic.disableHeight} placeholder={parkingLogic.disableHeight ? "無須填寫" : "輸入高度"} />
                             </div>
                         </div>
 
                         <QuestionBlock className="bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left hover:border-slate-300 transition-colors space-y-6 dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600">
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">車道經過地號</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">車道經過地號</p>
                             <LandNumberInputs section={data.q10_laneSection || ''} subSection={data.q10_laneSubSection || ''} number={data.q10_laneNumber || ''} onChangeSection={v => update('q10_laneSection', v)} onChangeSubSection={v => update('q10_laneSubSection', v)} onChangeNumber={v => update('q10_laneNumber', v)} />
                         </QuestionBlock>
                     </div>
                 )}
 
                 <div className="bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left hover:border-slate-300 transition-colors space-y-6 dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600">
-                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">機車車位使用現況</p>
+                    <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">機車車位使用現況</p>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                         <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_motoUsage?.includes("固定位置使用") || false} label="固定位置使用" onClick={() => toggleArr('q10_motoUsage', "固定位置使用")} /></div>
                         <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_motoUsage?.includes("無機車車位") || false} label="無機車車位" onClick={() => toggleArr('q10_motoUsage', "無機車車位")} /></div>
@@ -434,7 +434,7 @@ export const ParkingSection = ({
                 
                 <div className={`space-y-10 ${parkingLogic.disableCharging ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-8 dark:text-slate-200 leading-normal">車位充電設備配置</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 mb-8 dark:text-slate-200 leading-normal">車位充電設備配置</p>
                         <RadioGroup options={['無', '有', '僅預留管線／孔位', '須經管委會同意']} value={data?.q10_charging === '否' ? '無' : (data?.q10_charging === '是' ? '有' : (data?.q10_charging || ''))} onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); if (val === '僅預留管線／孔位' || val === '須經管委會同意') { update('q10_charging', val); update('q10_chargingOther', ''); } else { setData(p => ({ ...p, q10_charging: val, q10_chargingOther: '' })); } }} cols={2} layout="grid" disabled={parkingLogic.disableCharging} />
                     </QuestionBlock>
                 </div>
@@ -469,7 +469,7 @@ export const ParkingSection = ({
                             <BooleanReveal 
                                 label={
                                     <>
-                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-800 mb-6 text-left dark:text-slate-200 leading-normal">車位與車道其他備註</p>
+                                        <p className="dynamic-text-h2 font-black text-slate-800 mb-6 text-left dark:text-slate-200 leading-normal">車位與車道其他備註</p>
                                         <div className="mb-6"><InlineWarning>※如車格位置有其他孔蓋、排風機、消防管道、租期租金、車道出入外通道狹窄等</InlineWarning></div>
                                     </>
                                 }
@@ -506,7 +506,7 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
             <div className={`space-y-12 transition-all duration-500 ${data?.q16_noFacilities ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
                 {ENV_CATEGORIES.map((cat: any) => (
                     <div key={cat.title}>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 dark:text-slate-200 leading-normal">{cat.title}</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 mb-6 dark:text-slate-200 leading-normal">{cat.title}</p>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{cat.items.map((i: string) => <CheckBox key={i} checked={data?.q16_items?.includes(i) || false} label={i} onClick={() => toggleArr('q16_items', i)} disabled={data?.q16_noFacilities} />)}</div>
                     </div>
                 ))}
@@ -514,7 +514,7 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
 
             {/* New Section for Resistance Facilities */}
             <div className="mt-12 pt-8 border-t-2 border-slate-200">
-                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">常見環境抗性設施</p>
+                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">常見環境抗性設施</p>
                 <div className="mb-6">
                     <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
                         <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
@@ -593,7 +593,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
             <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} status={statusQ3}>
                 <div className="space-y-8">
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">近兩年內土地鑑界與界標現況</p>
+                        <p className="dynamic-text-h2 font-black mb-6 leading-normal">近兩年內土地鑑界與界標現況</p>
                         <RadioGroup 
                             options={['近期已鑑界 (附土地複丈成果圖)', '待查證 (標位不明／須重測)', '否 (或年代久遠)']} 
                             value={
@@ -629,7 +629,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                     </QuestionBlock>
 
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">產權與使用糾紛現況</p>
+                        <p className="dynamic-text-h2 font-black mb-6 leading-normal">產權與使用糾紛現況</p>
                         <RadioGroup 
                             options={['無', '有', '待查證']} 
                             value={data?.land_q3_dispute === '否' ? '無' : (data?.land_q3_dispute === '是' ? '有' : (data?.land_q3_dispute || ''))} 
@@ -645,7 +645,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
             <SurveySection id={ids.q4} highlighted={highlightedId === ids.q4} title={titles.q4} status={statusQ4}>
                 <div className="space-y-8">
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">徵收預定地現況</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">徵收預定地現況</p>
                         <RadioGroup 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_expro === '否' ? '非範圍內' : (data?.land_q4_expro === '是' ? '屬範圍內' : (data?.land_q4_expro || ''))} 
@@ -656,7 +656,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                     </QuestionBlock>
 
                     <QuestionBlock>
-                         <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">重劃與區段徵收現況</p>
+                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">重劃與區段徵收現況</p>
                         <RadioGroup 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_resurvey === '否' ? '非範圍內' : (data?.land_q4_resurvey === '是' ? '屬範圍內' : (data?.land_q4_resurvey || ''))} 
@@ -698,7 +698,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
         <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             <div className="space-y-10">
                 <QuestionBlock>
-                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">{isHouse ? '進出現況' : '進出通行現況'}</p>
+                    <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">{isHouse ? '進出現況' : '進出通行現況'}</p>
                     <RadioGroup 
                         options={ACCESS_STATUS_OPTIONS} 
                         value={data[accessKey]?.includes('順暢') ? '通行順暢' : (data[accessKey]?.includes('受限') ? '通行受限（如狹窄、有障礙物）' : (data[accessKey]?.includes('袋地') ? '袋地（無合法出入口）' : ''))} 
@@ -764,12 +764,12 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
                                 </div>
                                 
                                 <div className="pt-6 border-t-2 border-slate-200">
-                                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路地號</p>
+                                    <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路地號</p>
                                     <LandNumberInputs section={data[sectionKey] || ''} subSection={data[subSectionKey] || ''} number={data[numberKey] || ''} onChangeSection={v => update(sectionKey, v)} onChangeSubSection={v => update(subSectionKey, v)} onChangeNumber={v => update(numberKey, v)} />
                                 </div>
 
                                 <div className="pt-6 border-t-2 border-slate-200">
-                                    <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
+                                    <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
                                     <RadioGroup options={['柏油', '水泥', '泥土/石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} layout="grid" cols={2} />
                                     {data[materialKey] === '其他未列項目' && <div className="mt-4"><DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /></div>}
                                 </div>
@@ -789,7 +789,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, prefix, title
 
                                 {!hideDitch && (
                                     <div className="pt-6 border-t-2 border-slate-200">
-                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路排水溝現況</p>
+                                        <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路排水溝現況</p>
                                         <RadioGroup options={DRAINAGE_OPTIONS} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} layout="grid" cols={1} />
                                         {data[ditchKey] === '其他未列項目' && <div className="mt-4"><DetailInput value={data[ditchOtherKey] || ''} onChange={v => update(ditchOtherKey, v)} placeholder="說明現況" /></div>}
                                     </div>

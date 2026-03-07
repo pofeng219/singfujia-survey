@@ -47,7 +47,7 @@ const StepContainer: React.FC<{
     
     return (
         <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-right duration-300 pb-10">
-            <h3 className={`text-[1.75rem] md:text-[2rem] font-black ${themeText} border-l-8 ${borderColor} pl-4 md:pl-6 text-left`}>
+            <h3 className={`dynamic-text-h1 font-black ${themeText} border-l-8 ${borderColor} pl-4 md:pl-6 text-left`}>
                 {title}
             </h3>
             {children}
@@ -80,14 +80,14 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <FormInput id="field-storeName" label="所屬店名" value={data?.storeName || ''} onChange={v => update('storeName', v)} placeholder="輸入店名" highlighted={highlightedField === 'field-storeName'} />
                     <FormInput id="field-agentName" label="調查業務" value={data?.agentName || ''} onChange={v => update('agentName', v)} placeholder="輸入姓名" highlighted={highlightedField === 'field-agentName'} />
                 </div>
-                <div className="space-y-3"><label className="block text-slate-800 font-black mb-2 text-[1.5rem] md:text-[1.75rem] text-left leading-normal">填寫日期</label><div className="mt-1"><ROCDatePicker value={data?.fillDate || ''} onChange={(d) => update('fillDate', d)} /></div></div>
+                <div className="space-y-3"><label className="block text-slate-800 font-black mb-2 dynamic-text-h2 text-left leading-normal">填寫日期</label><div className="mt-1"><ROCDatePicker value={data?.fillDate || ''} onChange={(d) => update('fillDate', d)} /></div></div>
                 <FormInput id="field-address" label={type === 'land' ? '坐落位置' : (type === 'parking' ? '標的位置' : '標的地址')} value={data?.address || ''} onChange={v => update('address', v)} placeholder={type === 'land' ? "輸入坐落位置或相關位置" : "輸入地址／位置"} highlighted={highlightedField === 'field-address'} />
             </div>
             <SurveySection id="section-access" highlighted={highlightedField === 'section-access'} title={type === 'factory' || type === 'house' || type === 'land' ? "本物件型態與現況" : "本物件現況"} className={themeBorder} status={getAccessStatus()}>
                 {type === 'factory' && (
                     <>
                         <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
                             <RadioGroup options={FACTORY_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他特殊工業設施' ? prev.propertyTypeOther : '' })); }} />
                             {data?.propertyType === '其他特殊工業設施' && (<SubItemHighlight><DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明物件型態" /></SubItemHighlight>)}
                         </div>
@@ -108,7 +108,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 )}
                 {type === 'house' && (
                      <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
                         <RadioGroup options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '' })); }} />
                         {data?.propertyType === '其他未列項目' && (
                              <SubItemHighlight>
@@ -119,7 +119,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 )}
                 {type === 'land' && (
                      <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 text-left leading-normal">本物件型態</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
                         <RadioGroup options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
                     </div>
                 )}
@@ -311,11 +311,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-land-q5" highlighted={highlightedField === 'section-land-q5'} title="4. 被越界占用與占用鄰地現況" status={data.land_q5_encroached && data.land_q5_encroaching ? 'complete' : 'incomplete'}>
                         <div className="space-y-8">
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal"><span className="text-red-600">遭</span>他人<span className="text-red-600">占用</span>現況</p>
+                                <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">遭</span>他人<span className="text-red-600">占用</span>現況</p>
                                 <AccordionRadio options={['無', '有']} value={data?.land_q5_encroached === '否' ? '無' : (data?.land_q5_encroached === '是' ? '有' : (data?.land_q5_encroached || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroached: val, land_q5_encroached_desc: val === '否' ? '' : prev.land_q5_encroached_desc })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroached_desc || ''} onChange={v => update('land_q5_encroached_desc', v)} placeholder="如：鄰居圍牆占用" /></SubItemHighlight> : null)} cols={2} />
                             </QuestionBlock>
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal"><span className="text-red-600">占用</span>鄰地現況</p>
+                                <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">占用</span>鄰地現況</p>
                                 <AccordionRadio options={['無', '有']} value={data?.land_q5_encroaching === '否' ? '無' : (data?.land_q5_encroaching === '是' ? '有' : (data?.land_q5_encroaching || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroaching: val, land_q5_encroaching_desc: val === '否' ? '' : prev.land_q5_encroaching_desc })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroaching_desc || ''} onChange={v => update('land_q5_encroaching_desc', v)} placeholder="如：增建占用水利地" /></SubItemHighlight> : null)} cols={2} />
                             </QuestionBlock>
                         </div>
@@ -329,7 +329,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <BooleanReveal 
                                 label={
                                     <>
-                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">增建（含違建）現況</p>
+                                        <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">增建（含違建）現況</p>
                                         <InlineWarning>※如有增建請繪製格局圖時，標示增建現況及位置</InlineWarning>
                                     </>
                                 }
@@ -349,7 +349,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </BooleanReveal>
 
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-2 leading-normal">
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-2 leading-normal">
                                     <span className="text-red-600 text-2xl md:text-3xl font-black">占用</span>他人土地或空間現況
                                 </p>
                                 <div className="mb-6"><InlineWarning>※如鄰地、道路用地、他戶空間</InlineWarning></div>
@@ -363,7 +363,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </QuestionBlock>
 
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4">
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4">
                                     <span className="text-red-600 text-2xl md:text-3xl font-black">遭</span>鄰房或鄰地<span className="text-red-600 text-2xl md:text-3xl font-black">占用</span>現況
                                 </p>
                                 <RadioGroup 
@@ -437,7 +437,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <SubItemHighlight>
                                 <div className="space-y-6 md:space-y-8">
                                     <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200">
-                                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-500 block md:inline md:ml-2">（請確認現場狀況）</span></p>
+                                        <p className="dynamic-text-h2 font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-500 block md:inline md:ml-2">（請確認現場狀況）</span></p>
                                         <RadioGroup 
                                             options={['滲漏水', '壁癌', '兩者皆有']} 
                                             value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' ? '' : (data.q3_leakType || '')} 
@@ -449,7 +449,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     {(data.q3_leakType && data.q3_leakType !== '全屋天花板包覆' && data.q3_leakType !== '全屋天花板包覆（無法檢查）') && (
                                         <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 md:space-y-8">
                                             <div>
-                                                <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">發生位置：</p>
+                                                <p className="dynamic-text-h2 font-black mb-6 leading-normal">發生位置：</p>
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">{LEAK_LOCATIONS.map(i => <CheckBox key={i} checked={data?.q3_locations?.includes(i) || false} label={i} onClick={() => toggleArr('q3_locations', i)} />)}</div>
                                             </div>
                                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 space-y-4 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" />}</div>
@@ -461,7 +461,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         )}
                         <div className="mt-8 pt-6 border-t-2 border-slate-100">
                              <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">確認過往滲漏水修繕紀錄</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">確認過往滲漏水修繕紀錄</p>
                                 <RadioGroup 
                                     options={['無修繕紀錄', '有修繕紀錄']} 
                                     value={data.q3_repairHistory || ''} 
@@ -481,7 +481,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         <div className="space-y-8 md:space-y-10">
                             <QuestionBlock>
                                 <div className="mb-6">
-                                    <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-1 leading-normal">結構牆面與樑柱現況</p>
+                                    <p className="dynamic-text-h2 font-black mb-1 leading-normal">結構牆面與樑柱現況</p>
                                     <p className="text-xl text-slate-500 font-bold mb-6">（非單純壁癌或油漆剝落）</p>
                                     <div className="flex flex-col gap-3">
                                         <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
@@ -521,7 +521,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </QuestionBlock>
 
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-2 leading-normal">建物傾斜現況</p>
+                                <p className="dynamic-text-h2 font-black mb-2 leading-normal">建物傾斜現況</p>
                                 <div className="mb-4"><InlineWarning>※僅依目視觀察，精確數據須由專業技師鑑定</InlineWarning></div>
                                 <RadioGroup 
                                     options={['無', '有', '待查證（待測量）']} 
@@ -541,7 +541,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                  <div className="space-y-8">
                                      {/* 1. Gas Supply Type - Top */}
                                      <QuestionBlock>
-                                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">瓦斯供應類型</p>
+                                         <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">瓦斯供應類型</p>
                                          <RadioGroup 
                                              options={GAS_SUPPLY_OPTIONS} 
                                              value={data.q7_gasType || ''} 
@@ -552,7 +552,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                                      {/* 2. Equipment Status - Moved below Gas Type */}
                                      <QuestionBlock>
-                                         <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">電、水、瓦斯與其他設施使用現況</p>
+                                         <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">電、水、瓦斯與其他設施使用現況</p>
                                          <BooleanReveal 
                                              label=""
                                              value={data.q7_hasIssue === '否' ? '無異常' : (data.q7_hasIssue === '是' ? '有異常' : '')}
@@ -585,7 +585,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                      {/* 3. Solar Photovoltaic Equipment (Group A Only) */}
                                      {isGroupA && (
                                          <QuestionBlock>
-                                            <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
+                                            <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                                             <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
                                             <RadioGroup 
                                                 options={['無設置', '合法設置', '私下設置']} 
@@ -599,7 +599,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                      {/* 4. Water Booster - Group A handled in logic, Group B not modified */}
                                      {isGroupA && (
                                          <QuestionBlock>
-                                             <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 text-left dark:text-slate-100 leading-normal">加壓受水設備</p>
+                                             <p className="dynamic-text-h2 font-black text-slate-700 mb-4 text-left dark:text-slate-100 leading-normal">加壓受水設備</p>
                                              <div className="mb-6">
                                                 <InlineWarning>※本項由使用者自行管理維護</InlineWarning>
                                              </div>
@@ -908,7 +908,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <StepContainer title="第三步：使用現況-2" type={type} themeText={themeText}>
                 <SurveySection id="section-land-q6" highlighted={highlightedField === 'section-land-q6'} title="5. 目前禁建與限建現況" status={getLandQ6Status()}>
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-6 leading-normal">目前禁建與限建現況</p>
+                        <p className="dynamic-text-h2 font-black mb-6 leading-normal">目前禁建與限建現況</p>
                         <RadioGroup 
                             options={['無', '有']} 
                             value={data.land_q6_limit === '否' ? '無' : (data.land_q6_limit === '是' ? '有' : '')} 
@@ -931,7 +931,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 <SurveySection id="section-land-q7" highlighted={highlightedField === 'section-land-q7'} title="6. 土地使用現況與地上物" status={getLandQ7Status()}>
                     <div className="space-y-8">
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">現況使用人</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">現況使用人</p>
                             <RadioGroup 
                                 options={['無', '所有權人自用', '非所有權人使用']} 
                                 value={data.land_q7_user === '無' ? '無' : (data.land_q7_user || '')} 
@@ -967,7 +967,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </QuestionBlock>
 
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">地上定著物-農作物</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">地上定著物-農作物</p>
                             <RadioGroup 
                                 options={['無', '有農作物／植栽']} 
                                 value={data.land_q7_crops === '無' ? '無' : (data.land_q7_crops || '')} 
@@ -1000,7 +1000,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </QuestionBlock>
 
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">地上定著物-建築物／工作物</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">地上定著物-建築物／工作物</p>
                             <RadioGroup 
                                 options={['無', '有建築物／工作物']} 
                                 value={data.land_q7_build === '無' ? '無' : (data.land_q7_build || '')} 
@@ -1043,7 +1043,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </QuestionBlock>
 
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 leading-normal">太陽能光電發電設備</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">太陽能光電發電設備</p>
                             <RadioGroup 
                                 options={['無', '合法設置', '私下設置']} 
                                 value={data.land_q7_solar === '無' ? '無' : (data.land_q7_solar || '')} 
@@ -1053,7 +1053,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </QuestionBlock>
 
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">加壓受水設備</p>
+                            <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">加壓受水設備</p>
                             <div className="mb-6">
                                 <InlineWarning>※本項由使用者自行管理維護，若物件型態為道路用地／公設地，確認是否為自來水公司之公共設施，或鄰地非法佔用</InlineWarning>
                             </div>
@@ -1087,7 +1087,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                         {data.propertyType === '農地' && (
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-2 leading-normal">土地鋪面現況</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-2 leading-normal">土地鋪面現況</p>
                                 <div className="mb-4"><InlineWarning>※私自鋪設水泥、柏油或填土，違者將面臨罰鍰並被勒令拆除、恢復原狀（如罰鍰 6 至 30 萬元或 3 至 15 萬元不等）</InlineWarning></div>
                                 <RadioGroup 
                                     options={['無', '有']} 
@@ -1104,7 +1104,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                         {data.propertyType === '工業地' && (
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-2 leading-normal">防火間隔與區劃現況</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-2 leading-normal">防火間隔與區劃現況</p>
                                 <div className="mb-4"><InlineWarning>※須符合消防法規，更直接關係到這塊地能否合法進行「工廠登記」以及未來的營運安全</InlineWarning></div>
                                 <RadioGroup 
                                     options={['無', '有']} 
@@ -1121,7 +1121,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                         {data.propertyType === '其他（道路用地／公設地）' && (
                             <QuestionBlock>
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">計畫道路開闢現況</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">計畫道路開闢現況</p>
                                 <RadioGroup 
                                     options={['無', '有']} 
                                     value={data.land_q7_road_opened === '否' ? '無' : (data.land_q7_road_opened === '是' ? '有' : '')} 
@@ -1245,7 +1245,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                  <SurveySection id="section-factory-struct" highlighted={highlightedField === 'section-factory-struct'} title="5. 廠房結構與消防安全" status={getFactoryStructStatus()}>
                     <div className="space-y-8">
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">廠房規格</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">廠房規格</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                                 <div className="w-full">
                                     <UnitInput unit="米" value={data.factory_height || ''} onChange={v => update('factory_height', v)} placeholder={getFactoryHeightLabel(data.propertyType)} />
@@ -1276,14 +1276,14 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </div>
                             
                             <div className="mt-8 space-y-4">
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 dark:text-slate-200">地坪狀況</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 dark:text-slate-200">地坪狀況</p>
                                 <RadioGroup options={FACTORY_FLOOR_OPTS} value={data.factory_floor_condition || ''} onChange={v => setData(p => ({...p, factory_floor_condition: v, factory_floor_condition_other: v === '其他未列項目' ? p.factory_floor_condition_other : ''}))} />
                                 {data.factory_floor_condition === '其他未列項目' && <DetailInput value={data.factory_floor_condition_other || ''} onChange={v => update('factory_floor_condition_other', v)} placeholder="說明現況" />}
                             </div>
                         </QuestionBlock>
 
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">消防設施</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">消防設施</p>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 {FACTORY_FIRE_OPTS.map(opt => <CheckBox key={opt} checked={data.factory_fire_safety?.includes(opt) || false} label={opt} onClick={() => toggleArr('factory_fire_safety', opt)} />)}
                             </div>
@@ -1302,7 +1302,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 <SurveySection id="section-factory-hardware" highlighted={highlightedField === 'section-factory-hardware'} title="7. 廠房硬體設施" status={getFactoryHardwareStatus()}>
                     <div className="space-y-8">
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">貨梯設施</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">貨梯設施</p>
                             <RadioGroup options={['無', '純貨梯', '客貨兩用梯']} value={data.factory_elevator || ''} onChange={v => setData(p => ({...p, factory_elevator: v}))} />
                             {(data.factory_elevator === '純貨梯' || data.factory_elevator === '客貨兩用梯') && (
                                 <SubItemHighlight>
@@ -1319,7 +1319,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </QuestionBlock>
                         
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">天車設施</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">天車設施</p>
                             <RadioGroup options={['無', '有', '僅預留牛腿', '有軌道／樑，無主機']} value={data.factory_crane || ''} onChange={v => setData(p => ({...p, factory_crane: v}))} layout="grid" cols={2} />
                             {data.factory_crane === '有' && (
                                 <SubItemHighlight>
@@ -1335,7 +1335,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </QuestionBlock>
 
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">廢水／廢氣排放</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">廢水／廢氣排放</p>
                             <RadioGroup options={FACTORY_WASTE_OPTS} value={data.factory_waste || ''} onChange={v => update('factory_waste', v)} layout="grid" cols={1} />
                             {data.factory_waste === '其他未列項目' && <SubItemHighlight><DetailInput value={data.factory_waste_desc || ''} onChange={v => update('factory_waste_desc', v)} placeholder="說明現況" /></SubItemHighlight>}
                         </QuestionBlock>
@@ -1346,14 +1346,14 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 <SurveySection id="section-factory-logistics" highlighted={highlightedField === 'section-factory-logistics'} title="8. 物流動線" status={getFactoryLogisticsStatus()}>
                     <div className="space-y-8">
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">卸貨碼頭</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">卸貨碼頭</p>
                             <RadioGroup options={FACTORY_DOCK_OPTS} value={data.factory_loading_dock || ''} onChange={v => update('factory_loading_dock', v)} layout="grid" cols={1} />
                         </QuestionBlock>
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6">大車進出</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">大車進出</p>
                             <RadioGroup options={FACTORY_TRUCK_OPTS} value={data.factory_truck_access || ''} onChange={v => update('factory_truck_access', v)} layout="grid" cols={2} />
                             <div className="mt-4">
-                                <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 dark:text-slate-200">迴轉空間／緩衝區</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200">迴轉空間／緩衝區</p>
                                 <DetailInput value={data.factory_truck_buffer || ''} onChange={v => update('factory_truck_buffer', v)} placeholder="說明狀況..." />
                             </div>
                         </QuestionBlock>
@@ -1364,7 +1364,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 {simpleParking ? (
                     <SurveySection id="section-factory-parking" highlighted={highlightedField === 'section-factory-parking'} title="9. 車位資訊" status={data.factory_parking_desc ? 'complete' : 'incomplete'}>
                          <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4">停車資訊說明</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-4">停車資訊說明</p>
                             <DetailInput value={data.factory_parking_desc || ''} onChange={v => update('factory_parking_desc', v)} placeholder="如：門口可停3台車" />
                          </QuestionBlock>
                     </SurveySection>
@@ -1544,7 +1544,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {(type === 'land' || (type === 'factory' && !hideSoil)) && (
                  <SurveySection id="section-soil" highlighted={highlightedField === 'section-soil'} title={type === 'land' ? "9. 土壤與地下埋設物" : `${soilNum}. 土壤與地下埋設物`} status={getSoilStatus()}> 
                     <QuestionBlock>
-                        <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-6 dark:text-slate-200">土壤汙染與地下掩埋物現況</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 mb-6 dark:text-slate-200">土壤汙染與地下掩埋物現況</p>
                         <RadioGroup 
                             options={['無', '有', '待查證']} 
                             value={data.soil_q1_status || ''} 
@@ -1576,7 +1576,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     {/* Sub-question 1: Homicide */}
                     {type !== 'land' && (
                         <QuestionBlock>
-                            <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">重大事故與非自然身故紀錄</p>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">重大事故與非自然身故紀錄</p>
                             <div className="mb-4">
                                  <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
                                      <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
@@ -1595,7 +1595,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                     {/* Sub-question 2: Other Notes */}
                     <QuestionBlock>
-                         {type !== 'land' && <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 mb-4 leading-normal">其他特殊或影響交易狀況補充</p>}
+                         {type !== 'land' && <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">其他特殊或影響交易狀況補充</p>}
                          <div className="mb-4">
                              <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
                                  <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">

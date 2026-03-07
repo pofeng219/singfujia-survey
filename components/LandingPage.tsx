@@ -1,12 +1,13 @@
 
 import React from 'react';
-import { Home, Map as MapIcon, Car, Factory, LucideIcon, Sun, Moon } from 'lucide-react';
+import { Home, Map as MapIcon, Car, Factory, LucideIcon, Sun, Moon, ArrowLeft } from 'lucide-react';
 import { SurveyType } from '../types';
 
 interface LandingPageProps {
     onSelect: (type: SurveyType) => void;
     isDarkMode: boolean;
     toggleTheme: () => void;
+    onBack?: () => void;
 }
 
 interface MenuOption {
@@ -69,12 +70,22 @@ const OPTIONS: MenuOption[] = [
     },
 ];
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, toggleTheme }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, toggleTheme, onBack }) => {
     return (
         // Changed container to allow scrolling: h-full, overflow-y-auto ensures content is reachable
         <div className="h-full w-full bg-slate-50 dark:bg-slate-950 overflow-y-auto overflow-x-hidden relative transition-colors duration-300">
-            {/* Theme Toggle - Top Right */}
-            <div className="absolute top-4 right-4 z-50">
+            {/* Top Bar */}
+            <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-50">
+                {onBack ? (
+                    <button 
+                        onClick={onBack}
+                        className="px-4 py-2.5 md:px-5 md:py-3 bg-amber-100/95 dark:bg-amber-900/80 backdrop-blur-md rounded-xl shadow-md border border-amber-200 dark:border-amber-700 transition-all active:scale-95 hover:bg-amber-200 dark:hover:bg-amber-800 flex items-center gap-2 text-amber-800 dark:text-amber-100 font-black text-lg md:text-xl"
+                    >
+                        <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
+                        <span>返回模式選擇</span>
+                    </button>
+                ) : <div></div>}
+                
                 <button 
                     onClick={toggleTheme}
                     className="p-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-xl shadow-md border border-slate-200 dark:border-slate-700 transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-800"

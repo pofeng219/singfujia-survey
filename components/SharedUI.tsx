@@ -2,16 +2,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Info, Save, FileInput, Trash2, AlertCircle, ChevronRight, AlertTriangle, ChevronDown, CheckCircle2, X, Eraser, Check, HelpCircle, Mic } from 'lucide-react';
 import { ValidationError } from '../types';
+import { useInterface } from './InterfaceContext';
 
 // Helper to determine color based on label content (Heuristic for Safety/Danger)
-const getButtonColorClass = (checked: boolean, label: string, disabled: boolean) => {
-    if (disabled) return 'bg-white border-slate-300 text-slate-300 opacity-50 cursor-not-allowed grayscale dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600';
+const getButtonColorClass = (checked: boolean, label: string, disabled: boolean, isStandard: boolean = false) => {
+    if (disabled) {
+        if (isStandard) return 'border-2 border-b-[4px] bg-white border-slate-300 text-slate-300 opacity-50 cursor-not-allowed grayscale dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600';
+        return 'border-4 border-b-[6px] md:border-b-[8px] bg-white border-slate-300 text-slate-300 opacity-50 cursor-not-allowed grayscale dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600';
+    }
     
+    if (isStandard) {
+        if (!checked) return 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800 dark:border-slate-500 dark:border-b-slate-600 dark:text-slate-200 dark:hover:bg-slate-700';
+        return 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-600 dark:border-sky-800 dark:text-white';
+    }
+
     // Unchecked state (Physical feel - Thick border, shadow)
-    if (!checked) return 'bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-800 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white';
+    if (!checked) return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-800 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white';
 
     // Selected State (Warm Light Blue - Replaces Traffic Light)
-    return 'bg-[#E0F2FE] border-[#7DD3FC] border-b-[#0EA5E9] text-[#0369A1] shadow-md dark:bg-sky-900/40 dark:border-sky-500 dark:border-b-sky-600 dark:text-sky-100';
+    return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-[#E0F2FE] border-[#7DD3FC] border-b-[#0EA5E9] text-[#0369A1] shadow-md dark:bg-sky-900/40 dark:border-sky-500 dark:border-b-sky-600 dark:text-sky-100';
 };
 
 // === CheckBox ===
@@ -21,23 +30,32 @@ interface CheckBoxProps {
     onClick: () => void;
     disabled?: boolean;
 }
-export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => (
-    <div 
-        onClick={() => {
-            if (!disabled) {
-                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-                onClick();
-            }
-        }} 
-        className={`w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] font-bold tracking-wide text-2xl md:text-4xl cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] relative overflow-hidden
-        ${getButtonColorClass(checked, label, disabled)}`}
-    >
-        <span className="relative z-10 flex items-center justify-center gap-2">
-            {checked && <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-500 fill-white" strokeWidth={2.5} />}
-            {label}
-        </span>
-    </div>
-);
+export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const paddingClass = isStandard ? 'p-3 md:p-4' : 'p-4 md:p-6';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-4xl';
+    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+
+    return (
+        <div 
+            onClick={() => {
+                if (!disabled) {
+                    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+                    onClick();
+                }
+            }} 
+            className={`w-full ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none relative overflow-hidden
+            ${getButtonColorClass(checked, label, disabled, isStandard)}`}
+        >
+            <span className="relative z-10 flex items-center justify-center gap-2">
+                {checked && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
+                {label}
+            </span>
+        </div>
+    );
+};
 
 // === Radio Button Group ===
 interface RadioGroupProps {
@@ -50,6 +68,14 @@ interface RadioGroupProps {
     spanFullOption?: string; // New prop: which option text should span full width
 }
 export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const paddingClass = isStandard ? 'py-3 px-3 md:py-4 md:px-4' : 'py-4 px-3 md:py-5 md:px-4';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
+    const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-3xl';
+    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+    const subTextSize = isStandard ? 'text-xs md:text-sm' : 'text-lg';
+
     // Stage 2: Intelligent Layout Detection
     // Default force vertical (1 column). Only switch to horizontal (2 columns) if:
     // 1. Exactly 2 options
@@ -69,11 +95,11 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
             return (
                 <div className="flex flex-col items-center justify-center w-full py-3 min-h-[5rem]">
                     <div className="mb-4 flex items-center gap-2">
-                        {isSelected && <CheckCircle2 className="w-6 h-6 text-emerald-500 fill-white" strokeWidth={2.5} />}
+                        {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
                         {mainContent}
                     </div>
-                    <div className="bg-orange-100 dark:bg-orange-900/40 px-3 py-2 rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center">
-                        <span className="text-lg font-bold text-slate-700 dark:text-slate-200 block leading-normal break-words whitespace-normal">
+                    <div className={`${isStandard && isSelected ? 'bg-sky-500 dark:bg-sky-700' : 'bg-orange-100 dark:bg-orange-900/40'} px-3 py-2 rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center`}>
+                        <span className={`${subTextSize} font-bold ${isStandard && isSelected ? 'text-white' : 'text-slate-700 dark:text-slate-200'} block leading-normal break-words whitespace-normal`}>
                             {subText}
                         </span>
                     </div>
@@ -83,7 +109,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
         
         return (
             <div className="flex items-center gap-2">
-                {isSelected && <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-500 fill-white" strokeWidth={2.5} />}
+                {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
                 {mainContent}
             </div>
         );
@@ -103,8 +129,8 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                                 onChange(value === v ? '' : v);
                             }
                         }}
-                        className={`flex-1 py-4 px-3 md:py-5 md:px-4 rounded-[1.5rem] md:rounded-[1.75rem] font-bold tracking-wide text-2xl md:text-3xl text-center flex items-center justify-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-3 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
-                        ${getButtonColorClass(isSelected, v, disabled)}`}
+                        className={`flex-1 ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex items-center justify-center transition-all duration-200 select-none gap-2 md:gap-3 relative overflow-hidden
+                        ${getButtonColorClass(isSelected, v, disabled, isStandard)}`}
                     >
                         {renderLabel(v, isSelected)}
                     </button>
@@ -124,6 +150,13 @@ interface AccordionRadioProps {
     cols?: number;
 }
 export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const paddingClass = isStandard ? 'py-3 px-3 md:py-4 md:px-4' : 'py-4 px-3 md:py-6 md:px-6';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
+    const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-4xl';
+    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+
     // Stage 2: Intelligent Layout Detection
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
     const gridClass = isShortAndSimple ? 'grid grid-cols-2' : 'grid grid-cols-1';
@@ -142,11 +175,11 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
                                 onChange(value === opt ? '' : opt);
                             }} 
-                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-4 px-3 md:py-6 md:px-6 rounded-[1.5rem] md:rounded-[1.75rem] font-bold tracking-wide text-2xl md:text-4xl text-center flex justify-center items-center transition-all duration-200 select-none active:scale-[0.98] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] gap-2 md:gap-4 border-4 border-b-[6px] md:border-b-[8px] relative overflow-hidden
-                            ${getButtonColorClass(isSelected, opt, disabled)}`}
+                            className={`flex-1 min-w-[100px] md:min-w-[120px] ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex justify-center items-center transition-all duration-200 select-none gap-2 md:gap-4 relative overflow-hidden
+                            ${getButtonColorClass(isSelected, opt, disabled, isStandard)}`}
                         >
                             <span className="flex items-center gap-2">
-                                {isSelected && <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-500 fill-white" strokeWidth={2.5} />}
+                                {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
                                 <span>{opt}</span>
                             </span>
                         </button>
@@ -170,39 +203,51 @@ interface AccordionOptionProps {
     onClick: () => void;
 }
 
-export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabel, checked, onClick }) => (
-    <div
-        onClick={() => {
-            if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-            onClick();
-        }}
-        className={`w-[90%] mx-auto min-h-[65px] flex items-center justify-between px-5 py-3 rounded-xl border transition-all duration-200 cursor-pointer select-none mb-3
-        ${checked
-            ? 'bg-sky-50 border-sky-200 shadow-sm dark:bg-sky-900/30 dark:border-sky-700'
-            : 'bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
-        }`}
-    >
-        <div className="flex flex-col text-left">
-            <span className={`text-xl font-bold leading-tight ${checked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
-                {label}
-            </span>
-            {subLabel && (
-                <span className="text-lg text-slate-500 mt-1 leading-normal dark:text-slate-400">
-                    {subLabel}
+export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabel, checked, onClick }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const titleSize = isStandard ? 'text-sm md:text-base' : 'text-xl';
+    const subSize = isStandard ? 'text-xs md:text-sm' : 'text-lg';
+    const minHeight = isStandard ? 'min-h-[50px]' : 'min-h-[65px]';
+
+    return (
+        <div
+            onClick={() => {
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+                onClick();
+            }}
+            className={`w-[90%] mx-auto ${minHeight} flex items-center justify-between px-5 py-3 rounded-xl transition-all duration-200 cursor-pointer select-none mb-3
+            ${isStandard 
+                ? (checked 
+                    ? 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-600 dark:border-sky-800 dark:text-white' 
+                    : 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800 dark:border-slate-500 dark:border-b-slate-600 dark:text-slate-200 dark:hover:bg-slate-700')
+                : (checked
+                    ? 'border bg-sky-50 border-sky-200 shadow-sm dark:bg-sky-900/30 dark:border-sky-700'
+                    : 'border bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700')
+            }`}
+        >
+            <div className="flex flex-col text-left">
+                <span className={`${titleSize} font-bold leading-tight ${isStandard ? (checked ? 'text-white' : 'text-slate-700 dark:text-slate-300') : (checked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300')}`}>
+                    {label}
                 </span>
-            )}
+                {subLabel && (
+                    <span className={`${subSize} mt-1 leading-normal ${isStandard ? (checked ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400') : 'text-slate-500 dark:text-slate-400'}`}>
+                        {subLabel}
+                    </span>
+                )}
+            </div>
+            
+            {/* Icon Area */}
+            <div className="flex-shrink-0 ml-4">
+                {checked && (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${isStandard ? 'bg-sky-500 border-2 border-sky-400 dark:bg-sky-700 dark:border-sky-500' : 'bg-white border-2 border-emerald-500 dark:bg-slate-800 dark:border-emerald-400'}`}>
+                        <Check className={`w-5 h-5 ${isStandard ? 'text-white' : 'text-emerald-500 dark:text-emerald-400'}`} strokeWidth={3} />
+                    </div>
+                )}
+            </div>
         </div>
-        
-        {/* Icon Area */}
-        <div className="flex-shrink-0 ml-4">
-            {checked && (
-                <div className="w-8 h-8 rounded-full bg-white border-2 border-emerald-500 flex items-center justify-center shadow-sm dark:bg-slate-800 dark:border-emerald-400">
-                    <Check className="w-5 h-5 text-emerald-500 dark:text-emerald-400" strokeWidth={3} />
-                </div>
-            )}
-        </div>
-    </div>
-);
+    );
+};
 
 // === Survey Section Wrapper (Accordion Style) ===
 export type SectionStatus = 'incomplete' | 'complete' | 'neutral';
@@ -216,6 +261,13 @@ export const SurveySection: React.FC<{
     hasActiveContent?: boolean; // Deprecated in favor of status, but kept for backward compatibility if needed
     status?: SectionStatus;
 }> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const titleSize = isStandard ? 'text-base md:text-lg' : 'text-[2.2rem] md:text-[2.75rem]';
+    const hintSize = isStandard ? 'text-xs md:text-sm' : 'text-lg md:text-xl';
+    const paddingClass = isStandard ? 'p-4 md:p-6' : 'p-6 md:p-10';
+    const roundedClass = isStandard ? 'rounded-2xl md:rounded-3xl' : 'rounded-[2rem] md:rounded-[2.5rem]';
+
     // Default open, allowing users to collapse manually
     const [isOpen, setIsOpen] = useState(true);
 
@@ -248,16 +300,16 @@ export const SurveySection: React.FC<{
     return (
         <div 
             id={id} 
-            className={`warm-card rounded-[2rem] md:rounded-[2.5rem] shadow-sm hover:shadow-md transition-all duration-500 ${getStatusStyles()} overflow-hidden ${className.replace(/space-y-\d+/g, '')}`} 
+            className={`warm-card ${roundedClass} shadow-sm hover:shadow-md transition-all duration-500 ${getStatusStyles()} overflow-hidden ${className.replace(/space-y-\d+/g, '')}`} 
         >
             {title ? (
                 <div 
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`p-6 md:p-10 flex justify-between items-start gap-4 md:gap-6 cursor-pointer select-none transition-colors duration-200 ${isOpen ? '' : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'}`}
+                    className={`${paddingClass} flex justify-between items-start gap-4 md:gap-6 cursor-pointer select-none transition-colors duration-200 ${isOpen ? '' : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'}`}
                 >
                     <div className="flex-grow pt-1 flex flex-col gap-2">
                         {typeof title === 'string' 
-                            ? <p className={`text-[2rem] md:text-[2.5rem] font-black text-left leading-tight tracking-tight transition-colors duration-300 ${getTitleColor()}`}>{title}</p> 
+                            ? <p className={`${titleSize} font-black text-left leading-tight tracking-tight transition-colors duration-300 ${getTitleColor()}`}>{title}</p> 
                             : title
                         }
                         
@@ -277,7 +329,7 @@ export const SurveySection: React.FC<{
                             <ChevronDown className="w-6 h-6 md:w-7 md:h-7" strokeWidth={3} />
                         </div>
                         {!isOpen && (
-                            <span className="text-lg md:text-xl font-black text-emerald-600 transition-all duration-300 whitespace-nowrap dark:text-emerald-400 animate-in fade-in bg-emerald-50 px-4 py-2 rounded-xl dark:bg-emerald-900/30 border-2 border-emerald-100 dark:border-emerald-800">
+                            <span className={`${hintSize} font-black text-emerald-600 transition-all duration-300 whitespace-nowrap dark:text-emerald-400 animate-in fade-in bg-emerald-50/60 px-4 py-2 rounded-xl dark:bg-emerald-900/20 border-2 border-emerald-100/50 dark:border-emerald-800/50`}>
                                 點我展開
                             </span>
                         )}
@@ -328,11 +380,19 @@ export const SurveySection: React.FC<{
 // === New Reusable Components for Phase 2 Refactor ===
 
 // Standard visual block for questions (Gray bg, rounded)
-export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <div className={`bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-2 border-slate-200 text-left hover:border-slate-300 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600 ${className}`}>
-        {children}
-    </div>
-);
+export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const paddingClass = isStandard ? 'p-4 md:p-6' : 'p-6 md:p-8';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const borderClass = isStandard ? 'border' : 'border-2';
+
+    return (
+        <div className={`bg-slate-50 ${paddingClass} ${roundedClass} ${borderClass} border-slate-200 text-left hover:border-slate-300 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600 ${className}`}>
+            {children}
+        </div>
+    );
+};
 
 // "Yes/No" style question that reveals details when a specific option is chosen
 interface BooleanRevealProps {
@@ -356,12 +416,16 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
     children,
     cols = 2
 }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const labelSize = isStandard ? 'text-sm md:text-base' : 'dynamic-text-h2';
+
     const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
     return (
         <QuestionBlock className={disabled ? 'opacity-40 grayscale pointer-events-none' : ''}>
             <div className="mb-4 md:mb-6">
-                {typeof label === 'string' ? <p className="text-[1.5rem] md:text-[1.75rem] font-black text-slate-700 dark:text-slate-200">{label}</p> : label}
+                {typeof label === 'string' ? <p className={`${labelSize} font-black text-slate-700 dark:text-slate-200`}>{label}</p> : label}
             </div>
             <RadioGroup 
                 options={options} 
@@ -389,37 +453,51 @@ export const FormInput: React.FC<{
     placeholder?: string; 
     highlighted?: boolean;
     className?: string;
-}> = ({ id, label, value, onChange, placeholder, highlighted = false, className = '' }) => (
-    <div id={id} className={`transition-all duration-500 rounded-2xl p-2 -m-2 ${highlighted ? 'error-highlight-anim' : ''} ${className}`}>
-        <label className="block text-slate-800 font-black mb-3 text-[1.5rem] md:text-[1.75rem] text-left dark:text-slate-100">{label}</label>
-        <input 
-            type="text" 
-            className="full-width-input !text-xl border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20" 
-            value={value || ''} 
-            onChange={e => onChange(e.target.value)} 
-            placeholder={placeholder} 
-            autoComplete="off" 
-        />
-    </div>
-);
+}> = ({ id, label, value, onChange, placeholder, highlighted = false, className = '' }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const labelSize = isStandard ? 'text-sm md:text-base' : 'dynamic-text-h2';
+    const inputSize = isStandard ? '!text-sm md:!text-base' : '!text-xl';
+
+    return (
+        <div id={id} className={`transition-all duration-500 rounded-2xl p-2 -m-2 ${highlighted ? 'error-highlight-anim' : ''} ${className}`}>
+            <label className={`block text-slate-800 font-black mb-3 ${labelSize} text-left dark:text-slate-100`}>{label}</label>
+            <input 
+                type="text" 
+                className={`full-width-input ${inputSize} border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20`} 
+                value={value || ''} 
+                onChange={e => onChange(e.target.value)} 
+                placeholder={placeholder} 
+                autoComplete="off" 
+            />
+        </div>
+    );
+};
 
 // Unit Input with numeric keypad support
-export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false }: { value: string, onChange: (val: string) => void, unit: string, placeholder?: string, disabled?: boolean }) => (
-    <div className="relative w-full">
-        <input 
-            type="number" 
-            inputMode="decimal"
-            disabled={disabled}
-            className={`full-width-input !text-xl pr-16 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
-            value={value} 
-            onChange={e => onChange(e.target.value)} 
-            placeholder={placeholder} 
-        />
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
-            <span className={`text-xl font-black ${disabled ? 'text-gray-400 dark:text-slate-600' : 'text-slate-400 dark:text-slate-500'}`}>{unit}</span>
+export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false }: { value: string, onChange: (val: string) => void, unit: string, placeholder?: string, disabled?: boolean }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const inputSize = isStandard ? '!text-sm md:!text-base' : '!text-xl';
+    const unitSize = isStandard ? 'text-sm md:text-base' : 'text-xl';
+
+    return (
+        <div className="relative w-full">
+            <input 
+                type="number" 
+                inputMode="decimal"
+                disabled={disabled}
+                className={`full-width-input ${inputSize} pr-16 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
+                value={value} 
+                onChange={e => onChange(e.target.value)} 
+                placeholder={placeholder} 
+            />
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                <span className={`${unitSize} font-black ${disabled ? 'text-gray-400 dark:text-slate-600' : 'text-slate-400 dark:text-slate-500'}`}>{unit}</span>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Reusable Land Number Input Group (Section/SubSection/Number)
 export const LandNumberInputs: React.FC<{
@@ -429,42 +507,48 @@ export const LandNumberInputs: React.FC<{
     onChangeSection: (val: string) => void;
     onChangeSubSection: (val: string) => void;
     onChangeNumber: (val: string) => void;
-}> = ({ section, subSection, number, onChangeSection, onChangeSubSection, onChangeNumber }) => (
-    <div className="flex flex-wrap items-end gap-3 md:gap-4 w-full dark:text-slate-200 pt-2">
-        <div className="flex items-center">
-            <input 
-                type="text" 
-                className="border-b-[4px] border-slate-300 bg-transparent text-xl md:text-2xl font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
-                value={section || ''} 
-                onChange={e => onChangeSection(e.target.value)} 
-                placeholder="段" 
-            />
-            <span className="font-black text-xl md:text-2xl ml-2 mb-1 text-slate-700 dark:text-slate-300">段</span>
+}> = ({ section, subSection, number, onChangeSection, onChangeSubSection, onChangeNumber }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const inputSize = isStandard ? 'text-sm md:text-base' : 'text-xl md:text-2xl';
+
+    return (
+        <div className="flex flex-wrap items-end gap-3 md:gap-4 w-full dark:text-slate-200 pt-2">
+            <div className="flex items-center">
+                <input 
+                    type="text" 
+                    className={`border-b-[4px] border-slate-300 bg-transparent ${inputSize} font-black w-24 md:w-32 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none`} 
+                    value={section || ''} 
+                    onChange={e => onChangeSection(e.target.value)} 
+                    placeholder="段" 
+                />
+                <span className={`font-black ${inputSize} ml-2 mb-1 text-slate-700 dark:text-slate-300`}>段</span>
+            </div>
+            
+            <div className="flex items-center">
+                <input 
+                    type="text" 
+                    className={`border-b-[4px] border-slate-300 bg-transparent ${inputSize} font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none`} 
+                    value={subSection || ''} 
+                    onChange={e => onChangeSubSection(e.target.value)} 
+                    placeholder="小段" 
+                />
+                <span className={`font-black ${inputSize} ml-2 mb-1 text-slate-700 dark:text-slate-300`}>小段</span>
+            </div>
+            
+            <div className="flex items-center flex-grow md:flex-grow-0">
+                <input 
+                    type="text" 
+                    className={`border-b-[4px] border-slate-300 bg-transparent ${inputSize} font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none`} 
+                    value={number || ''} 
+                    onChange={e => onChangeNumber(e.target.value)} 
+                    placeholder="地號" 
+                />
+                <span className={`font-black ${inputSize} ml-2 mb-1 text-slate-700 dark:text-slate-300`}>號</span>
+            </div>
         </div>
-        
-        <div className="flex items-center">
-            <input 
-                type="text" 
-                className="border-b-[4px] border-slate-300 bg-transparent text-xl md:text-2xl font-black w-20 md:w-24 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
-                value={subSection || ''} 
-                onChange={e => onChangeSubSection(e.target.value)} 
-                placeholder="小段" 
-            />
-            <span className="font-black text-xl md:text-2xl ml-2 mb-1 text-slate-700 dark:text-slate-300">小段</span>
-        </div>
-        
-        <div className="flex items-center flex-grow md:flex-grow-0">
-            <input 
-                type="text" 
-                className="border-b-[4px] border-slate-300 bg-transparent text-xl md:text-2xl font-black w-32 md:w-40 text-center px-1 pb-1 focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-[#E0F2FE] dark:focus:bg-yellow-900/20 outline-none transition-colors dark:border-slate-500 dark:text-white dark:focus:border-slate-300 placeholder-slate-400 dark:placeholder-slate-600 rounded-none" 
-                value={number || ''} 
-                onChange={e => onChangeNumber(e.target.value)} 
-                placeholder="地號" 
-            />
-            <span className="font-black text-xl md:text-2xl ml-2 mb-1 text-slate-700 dark:text-slate-300">號</span>
-        </div>
-    </div>
-);
+    );
+};
 
 export const Select: React.FC<{
     value: string;
@@ -472,23 +556,29 @@ export const Select: React.FC<{
     options: string[];
     placeholder?: string;
     className?: string;
-}> = ({ value, onChange, options, placeholder = "請選擇", className = '' }) => (
-    <div className={`relative ${className}`}>
-        <select
-            className="w-full appearance-none bg-white border-2 border-slate-300 text-slate-900 text-xl rounded-xl px-4 py-4 pr-10 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] transition-all cursor-pointer dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-        >
-            <option value="" disabled>{placeholder}</option>
-            {options.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-            ))}
-        </select>
-        <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500 dark:text-slate-400">
-            <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
+}> = ({ value, onChange, options, placeholder = "請選擇", className = '' }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const inputSize = isStandard ? 'text-sm md:text-base py-2' : 'text-xl py-4';
+
+    return (
+        <div className={`relative ${className}`}>
+            <select
+                className={`w-full appearance-none bg-white border-2 border-slate-300 text-slate-900 ${inputSize} rounded-xl px-4 pr-10 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] transition-all cursor-pointer dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30`}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            >
+                <option value="" disabled>{placeholder}</option>
+                {options.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500 dark:text-slate-400">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // === Signature Pad Component ===
 export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => void }> = ({ value, onChange }) => {
@@ -681,15 +771,26 @@ export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => 
 };
 
 // === UI Helpers ===
-export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: boolean }> = ({ children, disabled = false }) => (
-    <div className={`mt-6 mb-8 p-6 md:p-8 bg-orange-50/80 rounded-[1.5rem] md:rounded-[2rem] border-l-[8px] md:border-l-[12px] border-orange-400 shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 dark:bg-orange-900/20 dark:border-orange-500 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
-        <div className="pl-1 md:pl-2">{children}</div>
-    </div>
-);
+export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: boolean }> = ({ children, disabled = false }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const paddingClass = isStandard ? 'p-4 md:p-5' : 'p-6 md:p-8';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const borderClass = isStandard ? 'border-l-[4px] md:border-l-[6px]' : 'border-l-[8px] md:border-l-[12px]';
+
+    return (
+        <div className={`mt-4 mb-6 ${paddingClass} bg-orange-50/80 ${roundedClass} ${borderClass} border-orange-400 shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 dark:bg-orange-900/20 dark:border-orange-500 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+            <div className="pl-1 md:pl-2">{children}</div>
+        </div>
+    );
+};
 
 export const DetailInput = ({ value, onChange, placeholder = "說明現況", disabled = false, autoFocus = true }: { value: string, onChange: (val: string) => void, placeholder?: string, disabled?: boolean, autoFocus?: boolean }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [showMicHint, setShowMicHint] = useState(false);
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const inputSize = isStandard ? '!text-sm md:!text-base' : '!text-xl';
     
     useEffect(() => {
         if (!disabled && autoFocus && inputRef.current) {
@@ -705,7 +806,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
             <input 
                 ref={inputRef}
                 type="text" 
-                className="full-width-input !text-xl !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-yellow-900/20 pr-24 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE]" 
+                className={`full-width-input ${inputSize} !mt-0 !bg-white focus:!bg-white dark:!bg-slate-900 dark:focus:!bg-yellow-900/20 pr-24 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE]`} 
                 value={value} 
                 onChange={e => onChange(e.target.value)} 
                 placeholder={placeholder} 
@@ -754,23 +855,37 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
     );
 };
 
-export const WarningBox: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <div className="bg-yellow-100 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-4 border-red-500 text-center shadow-lg mb-8 md:mb-10 animate-in zoom-in-95 duration-300 dark:bg-yellow-900/30 dark:border-red-400">
-        <div className="flex flex-col items-center gap-3 md:gap-4 text-red-800 dark:text-red-300">
-            <AlertTriangle className="w-12 h-12 md:w-16 md:h-16" strokeWidth={3} />
-            <p className="text-2xl md:text-3xl font-black leading-relaxed tracking-wide">{children}</p>
-        </div>
-    </div>
-);
+export const WarningBox: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const textSize = isStandard ? 'text-base md:text-lg' : 'text-2xl md:text-3xl';
+    const iconSize = isStandard ? 'w-8 h-8 md:w-10 md:h-10' : 'w-12 h-12 md:w-16 md:h-16';
 
-export const InlineWarning: React.FC<{ children: React.ReactNode, center?: boolean, className?: string }> = ({ children, center = false, className = "" }) => (
-    <div className={`w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40 ${className}`}>
-        <AlertTriangle className="w-6 h-6 md:w-8 md:h-8 text-[#78350F] shrink-0 mt-0.5 dark:text-yellow-200" strokeWidth={2.5} />
-        <div className={`text-xl md:text-2xl text-[#78350F] font-bold leading-snug dark:text-yellow-200 ${center ? 'text-center w-full' : 'text-left'}`}>
-            {children}
+    return (
+        <div className="bg-yellow-100 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-4 border-red-500 text-center shadow-lg mb-8 md:mb-10 animate-in zoom-in-95 duration-300 dark:bg-yellow-900/30 dark:border-red-400">
+            <div className="flex flex-col items-center gap-3 md:gap-4 text-red-800 dark:text-red-300">
+                <AlertTriangle className={`${iconSize}`} strokeWidth={3} />
+                <p className={`${textSize} font-black leading-relaxed tracking-wide`}>{children}</p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
+export const InlineWarning: React.FC<{ children: React.ReactNode, center?: boolean, className?: string }> = ({ children, center = false, className = "" }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const textSize = isStandard ? 'text-base md:text-lg' : 'text-xl md:text-2xl';
+    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+
+    return (
+        <div className={`w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40 ${className}`}>
+            <AlertTriangle className={`${iconSize} text-[#78350F] shrink-0 mt-0.5 dark:text-yellow-200`} strokeWidth={2.5} />
+            <div className={`${textSize} text-[#78350F] font-bold leading-snug dark:text-yellow-200 ${center ? 'text-center w-full' : 'text-left'}`}>
+                {children}
+            </div>
+        </div>
+    );
+};
 
 // === Preview Result ===
 interface PreviewResultProps {
@@ -792,7 +907,26 @@ export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, su
         : `preview-checkbox-box translate-y-[2px]`; // Added translate-y to align visually
 
     // Highlight "有" (Yes/Has issue) options in red for quick scanning
-    const isWarningOption = checked && (label.includes('有') || label.includes('是'));
+    // Also include common issue keywords to ensure they are caught even without "有/是" prefix
+    const warningKeywords = [
+        '滲漏水', '壁癌', '瑕疵', '異常', '不符', '占用', '剝落', '外露', '龜裂', 
+        '傾斜', '待查證', '受限', '袋地', '糾紛', '越界', '海砂', '輻射', '非自然', 
+        '事故', '違建', '私下', '不明', '不確定', '無法', '外推', '加蓋', '夾層', 
+        '增建', '改建', '損壞', '危險', '破壞', '漏水', '阻塞', '不通'
+    ];
+    const hasWarningKeyword = warningKeywords.some(kw => label.includes(kw));
+    const isWarningOption = checked && (hasWarningKeyword || 
+        ((label.includes('有') || label.includes('是')) && 
+         !label.includes('有保存登記') && 
+         !label.includes('有車位編號') && 
+         !label.includes('有公共設施') && 
+         !label.includes('所有權人自用') && 
+         !label.includes('合法') && 
+         !label.includes('正常') &&
+         !label.includes('有農作物') &&
+         !label.includes('有建築物') &&
+         !label.includes('有設置')));
+    
     const labelClass = isWarningOption 
         ? `preview-checkbox-label font-bold text-red-600 dark:text-red-400`
         : `preview-checkbox-label ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`;
@@ -872,12 +1006,17 @@ export const DraftFoundModal: React.FC<{ isOpen: boolean; onLoad: () => void; on
 );
 
 // AlertModal
-export const AlertModal: React.FC<{ isOpen: boolean; errors: ValidationError[]; onClose: () => void; onJumpTo: (id: string, step: number) => void }> = ({ isOpen, errors, onClose, onJumpTo }) => (
+export const AlertModal: React.FC<{ isOpen: boolean; errors: ValidationError[]; onClose: () => void; onJumpTo: (id: string, step: number) => void }> = ({ isOpen, errors, onClose, onJumpTo }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const textSize = isStandard ? 'text-base md:text-lg' : 'text-xl md:text-2xl';
+    
+    return (
     <Modal isOpen={isOpen} onClose={onClose} title="請檢查以下欄位">
         <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
             <div className="bg-rose-50 p-4 md:p-6 rounded-2xl border-2 border-rose-100 mb-4 flex items-center gap-3 dark:bg-rose-900/20 dark:border-rose-800">
                 <AlertCircle className="w-8 h-8 md:w-10 md:h-10 text-rose-600 dark:text-rose-400" strokeWidth={3} />
-                <span className="font-black text-xl md:text-2xl text-rose-800 dark:text-rose-200">共有 {errors.length} 個項目需要修正</span>
+                <span className={`font-black ${textSize} text-rose-800 dark:text-rose-200`}>共有 {errors.length} 個項目需要修正</span>
             </div>
             {errors.map((err, idx) => (
                 <button 
@@ -889,7 +1028,7 @@ export const AlertModal: React.FC<{ isOpen: boolean; errors: ValidationError[]; 
                         <div className="bg-slate-100 text-slate-500 w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shrink-0 mt-0.5 group-hover:bg-sky-200 group-hover:text-sky-700 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:bg-sky-900 dark:group-hover:text-sky-300">
                             {idx + 1}
                         </div>
-                        <span className="font-black text-lg md:text-xl text-slate-700 group-hover:text-sky-800 dark:text-slate-300 dark:group-hover:text-sky-200">{err.message}</span>
+                        <span className={`font-black ${isStandard ? 'text-base md:text-lg' : 'text-lg md:text-xl'} text-slate-700 group-hover:text-sky-800 dark:text-slate-300 dark:group-hover:text-sky-200`}>{err.message}</span>
                     </div>
                     <ChevronRight className="w-6 h-6 text-slate-300 group-hover:text-sky-400 dark:text-slate-600" />
                 </button>
@@ -901,7 +1040,8 @@ export const AlertModal: React.FC<{ isOpen: boolean; errors: ValidationError[]; 
             </button>
         </div>
     </Modal>
-);
+    );
+};
 
 // ImagePreviewModal
 export const ImagePreviewModal: React.FC<{ isOpen: boolean; imageUrl: string; onClose: () => void }> = ({ isOpen, imageUrl, onClose }) => {
