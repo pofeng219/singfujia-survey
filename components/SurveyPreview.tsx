@@ -66,15 +66,15 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 // Modernized CheckRow: Clean, high readability with card-like row
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
     <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
-        <div className="w-10 shrink-0 flex justify-center pt-2 border-r border-slate-100 bg-slate-50/50">
+        <div className="w-10 shrink-0 flex justify-center pt-1.5 border-r border-slate-100 bg-slate-50/50">
             <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
                 {checked && <Check size={10} strokeWidth={3} className="text-white" />}
             </div>
         </div>
-        <div className="flex-grow py-1.5 px-2.5 text-left text-[13px]">
-            <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-2 gap-y-0.5">
+        <div className="flex-grow py-1 px-2 text-left text-[14px]">
+            <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-2 gap-y-0">
                 {/* Apply small gray question style to the first span child if it's the question label */}
-                <div className="[&>span:first-child]:text-[12px] [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-0.5 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-2 gap-y-0.5 w-full">
+                <div className="[&>span:first-child]:text-[13px] [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-2 gap-y-0 w-full">
                     {children}
                 </div>
             </div>
@@ -84,10 +84,10 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
 
 // Professional Section Header: Card Header Style
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <div className="mt-2 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
-        <div className="px-2.5 py-1.5 flex items-center gap-2">
+    <div className="mt-1.5 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
+        <div className="px-2 py-1 flex items-center gap-2">
             <div className="w-1.5 h-3.5 bg-sky-500 rounded-full"></div>
-            <span className="font-black text-slate-800 text-[15px] tracking-widest leading-none pt-0.5">{title}</span>
+            <span className="font-black text-slate-800 text-[16px] tracking-widest leading-none pt-0.5">{title}</span>
         </div>
     </div>
 );
@@ -95,8 +95,8 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
 // Clean Table Header
 const TableHeaderRow: React.FC = () => (
     <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
-        <div className="w-10 shrink-0 text-center font-black text-slate-700 py-1.5 text-[12px] whitespace-nowrap tracking-wider border-r border-slate-300/50">確認<br/>無誤</div>
-        <div className="flex-grow py-1.5 px-2.5 font-black text-left text-slate-700 text-[13px] tracking-[0.2em] flex items-center">說明／檢查項目</div>
+        <div className="w-10 shrink-0 text-center font-black text-slate-700 py-1 text-[13px] whitespace-nowrap tracking-wider border-r border-slate-300/50">確認<br/>無誤</div>
+        <div className="flex-grow py-1 px-2 font-black text-left text-slate-700 text-[14px] tracking-[0.2em] flex items-center">說明／檢查項目</div>
     </div>
 );
 
@@ -280,13 +280,13 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
         const timestamp = new Date().toLocaleString('zh-TW', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
         
         return (
-            <div className="absolute bottom-[10mm] left-[10mm] right-[10mm] pt-3 pb-2 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white">
+            <div className="absolute bottom-[10mm] left-[10mm] right-[10mm] pt-2 pb-1 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white">
                 {showSignature ? (
                     <div className="flex flex-col items-start shrink-0">
-                        <span className="text-slate-900 font-black mb-1 text-[16px]">調查業務人員簽章：</span>
-                        <div className="w-[200px] border-b-2 border-slate-800 flex items-end relative h-[3.5rem]">
+                        <span className="text-slate-900 font-black mb-1 text-[14px]">調查業務人員簽章：</span>
+                        <div className="w-[160px] border-b-2 border-slate-800 flex items-end relative h-[2.5rem]">
                             {signatureImage ? (
-                                <img src={signatureImage} alt="Signature" className="absolute bottom-1 left-0 max-h-[3.5rem] max-w-full object-contain" />
+                                <img src={signatureImage} alt="Signature" className="absolute bottom-1 left-0 max-h-[2.5rem] max-w-full object-contain" />
                             ) : null}
                         </div>
                     </div>
@@ -296,10 +296,10 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
                 {!hideBranding && (
                     <div className="flex flex-col items-end shrink-0 text-right max-w-[60%]">
                         <div className="flex flex-col items-center select-none opacity-100 mb-1">
-                             <SingfujiaLogo className="h-6" textClassName="text-[1.2rem]" subTextClassName="text-[0.5rem]" />
+                             <SingfujiaLogo className="h-5" textClassName="text-[1rem]" subTextClassName="text-[0.4rem]" />
                         </div>
-                        <span className="text-[11px] font-bold text-black tracking-wider block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
-                        <span className="text-[9px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
+                        <span className="text-[10px] font-bold text-black tracking-wider block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
+                        <span className="text-[8px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
                     </div>
                 )}
             </div>
