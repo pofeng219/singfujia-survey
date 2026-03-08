@@ -66,15 +66,15 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 // Modernized CheckRow: Clean, high readability with card-like row
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
     <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
-        <div className="w-14 shrink-0 flex justify-center pt-3 border-r border-slate-100 bg-slate-50/50">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
-                {checked && <Check size={14} strokeWidth={4} className="text-white" />}
+        <div className="w-10 shrink-0 flex justify-center pt-2 border-r border-slate-100 bg-slate-50/50">
+            <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
+                {checked && <Check size={10} strokeWidth={3} className="text-white" />}
             </div>
         </div>
-        <div className="flex-grow py-2.5 px-4 text-left text-[15px]">
-            <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-4 gap-y-1">
+        <div className="flex-grow py-1.5 px-2.5 text-left text-[13px]">
+            <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-2 gap-y-0.5">
                 {/* Apply small gray question style to the first span child if it's the question label */}
-                <div className="[&>span:first-child]:text-[14px] [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-1 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-4 gap-y-1 w-full">
+                <div className="[&>span:first-child]:text-[12px] [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-0.5 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-2 gap-y-0.5 w-full">
                     {children}
                 </div>
             </div>
@@ -84,10 +84,10 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
 
 // Professional Section Header: Card Header Style
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <div className="mt-4 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 flex items-center gap-3">
-            <div className="w-1.5 h-5 bg-sky-500 rounded-full"></div>
-            <span className="font-black text-slate-800 text-[18px] tracking-widest leading-none pt-0.5">{title}</span>
+    <div className="mt-2 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
+        <div className="px-2.5 py-1.5 flex items-center gap-2">
+            <div className="w-1.5 h-3.5 bg-sky-500 rounded-full"></div>
+            <span className="font-black text-slate-800 text-[15px] tracking-widest leading-none pt-0.5">{title}</span>
         </div>
     </div>
 );
@@ -95,8 +95,8 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
 // Clean Table Header
 const TableHeaderRow: React.FC = () => (
     <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
-        <div className="w-14 shrink-0 text-center font-black text-slate-700 py-2.5 text-[14px] whitespace-nowrap tracking-wider border-r border-slate-300/50">確認<br/>無誤</div>
-        <div className="flex-grow py-2.5 px-4 font-black text-left text-slate-700 text-[15px] tracking-[0.2em] flex items-center">說明／檢查項目</div>
+        <div className="w-10 shrink-0 text-center font-black text-slate-700 py-1.5 text-[12px] whitespace-nowrap tracking-wider border-r border-slate-300/50">確認<br/>無誤</div>
+        <div className="flex-grow py-1.5 px-2.5 font-black text-left text-slate-700 text-[13px] tracking-[0.2em] flex items-center">說明／檢查項目</div>
     </div>
 );
 
@@ -280,28 +280,26 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
         const timestamp = new Date().toLocaleString('zh-TW', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
         
         return (
-            <div className="mt-auto w-full pt-2 border-t-4 border-[#009FE3] flex justify-between items-end text-slate-900 relative z-10">
+            <div className="absolute bottom-[10mm] left-[10mm] right-[10mm] pt-3 pb-2 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white">
                 {showSignature ? (
-                    <div className="space-y-1 font-bold text-[18px] text-slate-900 mb-2">
-                        <div className="flex flex-col items-start gap-0">
-                            <span className="text-slate-900 font-black mb-10 text-[22px]">調查業務人員簽章：</span>
-                            <div className="w-[380px] border-b-2 border-slate-800 flex items-end relative h-12">
-                                {signatureImage ? (
-                                    <img src={signatureImage} alt="Signature" className="absolute bottom-0 left-0 max-h-20 max-w-full" />
-                                ) : null}
-                            </div>
+                    <div className="flex flex-col items-start shrink-0">
+                        <span className="text-slate-900 font-black mb-1 text-[16px]">調查業務人員簽章：</span>
+                        <div className="w-[200px] border-b-2 border-slate-800 flex items-end relative h-[3.5rem]">
+                            {signatureImage ? (
+                                <img src={signatureImage} alt="Signature" className="absolute bottom-1 left-0 max-h-[3.5rem] max-w-full object-contain" />
+                            ) : null}
                         </div>
                     </div>
                 ) : (
-                    <div></div>
+                    <div className="w-10 shrink-0"></div>
                 )}
                 {!hideBranding && (
-                    <div className="flex flex-col items-end flex-shrink-0 text-right max-w-[60%]">
-                        <div className="flex flex-col items-center select-none opacity-100">
-                             <SingfujiaLogo className="h-12" textClassName="text-[1.8rem]" subTextClassName="text-[0.7rem]" />
+                    <div className="flex flex-col items-end shrink-0 text-right max-w-[60%]">
+                        <div className="flex flex-col items-center select-none opacity-100 mb-1">
+                             <SingfujiaLogo className="h-6" textClassName="text-[1.2rem]" subTextClassName="text-[0.5rem]" />
                         </div>
-                        <span className="text-[12px] font-bold text-black tracking-wider block leading-tight mt-1">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
-                        <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-0.5 leading-none">Exported: {timestamp}</span>
+                        <span className="text-[11px] font-bold text-black tracking-wider block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
+                        <span className="text-[9px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
                     </div>
                 )}
             </div>
@@ -406,7 +404,7 @@ const HousePrintPage1Factory = ({ data, hideUtilities = false }: { data: SurveyD
                 <PreviewResult checked={data?.q3_hasLeak === '否'} label="無" />
                 <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
                 {data?.q3_repairHistory === '有修繕紀錄' && (
-                    <span className="font-bold ml-2 text-red-600">
+                    <span className="font-black underline underline-offset-4 decoration-2 ml-2 text-red-600">
                         （曾有修繕：{data.q3_repairDesc}）
                     </span>
                 )}
@@ -476,7 +474,7 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案與社區特殊或影響交易事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`} />
         <CheckRow checked={data?.q17_homicide === '無'}>
             <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
-            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-bold' : ''}`}>{data?.q17_homicide || ''}</span>
+            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-black underline underline-offset-4 decoration-2' : ''}`}>{data?.q17_homicide || ''}</span>
         </CheckRow>
         <CheckRow checked={data?.q17_issue === '否'}>
              <span className="font-black mr-2">其他特殊或影響交易狀況補充</span>
@@ -519,7 +517,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                 <PreviewResult checked={data?.q3_hasLeak === '是'} label={labels.q3()} />
                 <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
                 {data?.q3_repairHistory === '有修繕紀錄' && (
-                    <span className="font-bold ml-2 text-red-600">
+                    <span className="font-black underline underline-offset-4 decoration-2 ml-2 text-red-600">
                         （曾有修繕：{data.q3_repairDesc}）
                     </span>
                 )}
@@ -1123,7 +1121,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                     width: '210mm',
                     minHeight: '297mm',
                     margin: 0,
-                    padding: exporting ? '10mm' : '15mm 10mm' // Reduced side padding to 10mm
+                    padding: '10mm 10mm' // Use 10mm padding consistently to match export
                 }}
             >
                 <Watermark />
@@ -1135,9 +1133,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
     );
 
     const BasicInfoTable = () => (
-        <div className="mb-2 w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
-            <div className="px-3 py-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px] leading-snug text-black">
-                <span className="font-black text-black text-[16px]">{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
+        <div className="mb-1 w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
+            <div className="px-2 py-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px] leading-snug text-black">
+                <span className="font-black text-black text-[14px]">{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
                 {(type === 'factory' || type === 'house' || type === 'land') && (
                     <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
                 )}
@@ -1167,26 +1165,26 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             ) : (<div className="w-full max-w-[210mm] mb-8 no-print"><PageSwitcher /></div>)}
 
             <ScaledA4Wrapper pageNum={1}>
-                <div className="flex-grow flex flex-col h-full text-black">
+                <div className="flex-grow flex flex-col h-full text-black pb-24">
                     <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
                         <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                         <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【正面】{data?.version}</div>
                     </div>
-                    <table className="excel-table mb-3 w-full text-black border-collapse border-2 border-gray-300">
+                    <table className="excel-table mb-2 w-full text-black border-collapse border-2 border-gray-300">
                         <tbody>
                             <tr className="border-b border-gray-300">
-                                <td className="bg-gray-100 w-[10%] text-black font-black py-2 px-3 text-[15px]">案名</td><td className="w-[30%] font-black text-black py-2 px-3 text-[15px]">{data?.caseName}</td>
-                                <td className="bg-gray-100 w-[15%] text-black font-black py-2 px-3 text-[15px]">編號</td><td className="w-[20%] font-black text-black py-2 px-3 text-[15px]">{data?.authNumber}</td>
-                                <td className="bg-gray-100 w-[8%] text-black font-black py-2 px-3 text-[15px]">店名</td><td className="w-[17%] text-black py-2 px-3 text-[15px]">{data?.storeName}</td>
+                                <td className="bg-gray-100 w-[10%] text-black font-black py-1.5 px-2 text-[14px]">案名</td><td className="w-[30%] font-black text-black py-1.5 px-2 text-[14px]">{data?.caseName}</td>
+                                <td className="bg-gray-100 w-[15%] text-black font-black py-1.5 px-2 text-[14px]">編號</td><td className="w-[20%] font-black text-black py-1.5 px-2 text-[14px]">{data?.authNumber}</td>
+                                <td className="bg-gray-100 w-[8%] text-black font-black py-1.5 px-2 text-[14px]">店名</td><td className="w-[17%] text-black py-1.5 px-2 text-[14px]">{data?.storeName}</td>
                             </tr>
                             <tr className="border-b border-gray-300">
-                                <td className="bg-gray-100 text-black font-black py-2 px-3 text-[15px]">{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className="font-black text-black py-2 px-3 text-[15px]">{data?.address}</td>
-                                <td className="bg-gray-100 text-black font-black py-2 px-3 text-[15px]">業務</td><td className="font-black text-black py-2 px-3 text-[15px]">{data?.agentName}</td>
-                                <td className="bg-gray-100 text-black font-black py-2 px-3 text-[15px]">日期</td><td className="text-left font-mono pl-3 text-black py-2 px-3 text-[15px]">{formatDateROC(data?.fillDate || '')}</td>
+                                <td className="bg-gray-100 text-black font-black py-1.5 px-2 text-[14px]">{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className="font-black text-black py-1.5 px-2 text-[14px]">{data?.address}</td>
+                                <td className="bg-gray-100 text-black font-black py-1.5 px-2 text-[14px]">業務</td><td className="font-black text-black py-1.5 px-2 text-[14px]">{data?.agentName}</td>
+                                <td className="bg-gray-100 text-black font-black py-1.5 px-2 text-[14px]">日期</td><td className="text-left font-mono pl-2 text-black py-1.5 px-2 text-[14px]">{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div className="bg-[#009FE3] text-white px-5 py-1.5 text-[15px] font-black mb-2 self-start rounded-r-full shadow-md tracking-wide">【調查現況】</div>
+                    <div className="bg-[#009FE3] text-white px-4 py-1 text-[14px] font-black mb-1 self-start rounded-r-full shadow-md tracking-wide">【調查現況】</div>
                     
                     <BasicInfoTable />
 
@@ -1238,7 +1236,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             {(type !== 'parking' || previewPage === 2) && (
                 <ScaledA4Wrapper pageNum={2}>
-                    <div className="flex-grow flex flex-col h-full text-black">
+                    <div className="flex-grow flex flex-col h-full text-black pb-24">
                         <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
                             <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                             <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【背面】</div>
@@ -1256,7 +1254,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             {(hasPage3 && (previewPage === 3 || exporting)) && (
                 <ScaledA4Wrapper pageNum={3}>
-                    <div className="flex-grow flex flex-col h-full text-black">
+                    <div className="flex-grow flex flex-col h-full text-black pb-24">
                          <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
                             <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
                             <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【附件】</div>

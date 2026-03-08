@@ -713,7 +713,7 @@ export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => 
     if (value) {
         return (
             <div className="w-full flex flex-col items-center gap-4">
-                <div className="w-full h-48 md:h-64 border-4 border-slate-300 rounded-2xl bg-white overflow-hidden flex items-center justify-center relative shadow-inner dark:bg-slate-100">
+                <div className="w-full h-64 md:h-80 border-4 border-slate-300 rounded-2xl bg-white overflow-hidden flex items-center justify-center relative shadow-inner dark:bg-slate-100">
                     <img src={value} alt="Signature" className="max-w-full max-h-full" />
                 </div>
                 <button 
@@ -728,7 +728,7 @@ export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => 
 
     return (
         <div className="w-full relative">
-            <div className="w-full h-64 md:h-80 bg-white border-4 border-slate-300 rounded-[1.5rem] touch-none overflow-hidden relative shadow-inner cursor-crosshair hover:border-slate-400 transition-colors dark:border-slate-600 dark:bg-slate-100">
+            <div className="w-full h-80 md:h-96 bg-white border-4 border-slate-300 rounded-[1.5rem] touch-none overflow-hidden relative shadow-inner cursor-crosshair hover:border-slate-400 transition-colors dark:border-slate-600 dark:bg-slate-100">
                 <canvas
                     ref={canvasRef}
                     className="w-full h-full block touch-none"
@@ -928,7 +928,7 @@ export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, su
          !label.includes('有設置')));
     
     const labelClass = isWarningOption 
-        ? `preview-checkbox-label font-bold text-red-600 dark:text-red-400`
+        ? `preview-checkbox-label font-black underline underline-offset-4 decoration-2 text-red-600 dark:text-red-400`
         : `preview-checkbox-label ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`;
 
     return (
