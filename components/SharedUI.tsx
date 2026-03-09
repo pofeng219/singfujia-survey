@@ -35,7 +35,7 @@ export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, dis
     const isStandard = mode === 'standard';
     const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'p-4 md:p-6';
     const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[2rem]';
-    const textClass = isStandard ? 'text-[14px] md:text-[15px]' : 'text-2xl md:text-4xl';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-4xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     return (
@@ -72,9 +72,9 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
     const isStandard = mode === 'standard';
     const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-4 px-3 md:py-5 md:px-4';
     const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
-    const textClass = isStandard ? 'text-[14px] md:text-[15px]' : 'text-2xl md:text-3xl';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-3xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
-    const subTextSize = isStandard ? 'text-[12px]' : 'text-lg';
+    const subTextSize = isStandard ? 'text-[14px]' : 'text-lg';
 
     // Stage 2: Intelligent Layout Detection
     // Default force vertical (1 column). Only switch to horizontal (2 columns) if:
@@ -154,7 +154,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
     const isStandard = mode === 'standard';
     const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-4 px-3 md:py-6 md:px-6';
     const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
-    const textClass = isStandard ? 'text-[14px] md:text-[15px]' : 'text-2xl md:text-4xl';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-4xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     // Stage 2: Intelligent Layout Detection
@@ -206,8 +206,8 @@ interface AccordionOptionProps {
 export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabel, checked, onClick }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const titleSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl';
-    const subSize = isStandard ? 'text-[12px]' : 'text-lg';
+    const titleSize = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl';
+    const subSize = isStandard ? 'text-[14px]' : 'text-lg';
     const minHeight = isStandard ? 'min-h-[36px]' : 'min-h-[65px]';
 
     return (
@@ -263,8 +263,8 @@ export const SurveySection: React.FC<{
 }> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const titleSize = isStandard ? 'text-[16px] md:text-[18px]' : 'text-[2.2rem] md:text-[2.75rem]';
-    const hintSize = isStandard ? 'text-[13px] md:text-[14px]' : 'text-lg md:text-xl';
+    const titleSize = isStandard ? 'text-[22px] md:text-[24px]' : 'text-[2.2rem] md:text-[2.75rem]';
+    const hintSize = isStandard ? 'text-[16px] md:text-[18px]' : 'text-lg md:text-xl';
     const paddingClass = isStandard ? 'p-4 md:p-5' : 'p-6 md:p-10';
     const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[2rem] md:rounded-[2.5rem]';
 
@@ -418,7 +418,7 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
 }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const labelSize = isStandard ? 'text-[15px] md:text-[16px]' : 'dynamic-text-h2';
+    const labelSize = isStandard ? 'text-[18px] md:text-[20px]' : 'dynamic-text-h2';
 
     const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
@@ -456,8 +456,8 @@ export const FormInput: React.FC<{
 }> = ({ id, label, value, onChange, placeholder, highlighted = false, className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const labelSize = isStandard ? 'text-[14px] md:text-[15px]' : 'dynamic-text-h2';
-    const inputSize = isStandard ? '!text-[14px] md:!text-[15px]' : '!text-xl';
+    const labelSize = isStandard ? 'text-[18px] md:text-[20px]' : 'dynamic-text-h2';
+    const inputSize = isStandard ? '!text-[18px] md:!text-[20px]' : '!text-xl';
 
     return (
         <div id={id} className={`transition-all duration-500 rounded-xl p-2 -m-2 ${highlighted ? 'error-highlight-anim' : ''} ${className}`}>
@@ -478,8 +478,8 @@ export const FormInput: React.FC<{
 export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false }: { value: string, onChange: (val: string) => void, unit: string, placeholder?: string, disabled?: boolean }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? '!text-[14px] md:!text-[15px]' : '!text-xl';
-    const unitSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl';
+    const inputSize = isStandard ? '!text-[18px] md:!text-[20px]' : '!text-xl';
+    const unitSize = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl';
 
     return (
         <div className="relative w-full">
@@ -510,7 +510,7 @@ export const LandNumberInputs: React.FC<{
 }> = ({ section, subSection, number, onChangeSection, onChangeSubSection, onChangeNumber }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl md:text-2xl';
+    const inputSize = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
 
     return (
         <div className="flex flex-wrap items-end gap-3 md:gap-4 w-full dark:text-slate-200 pt-2">
@@ -559,7 +559,7 @@ export const Select: React.FC<{
 }> = ({ value, onChange, options, placeholder = "請選擇", className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? 'text-[14px] md:text-[15px] py-2' : 'text-xl py-4';
+    const inputSize = isStandard ? 'text-[18px] md:text-[20px] py-2' : 'text-xl py-4';
 
     return (
         <div className={`relative ${className}`}>
@@ -790,7 +790,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
     const [showMicHint, setShowMicHint] = useState(false);
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? '!text-[14px] md:!text-[15px]' : '!text-xl';
+    const inputSize = isStandard ? '!text-[18px] md:!text-[20px]' : '!text-xl';
     
     useEffect(() => {
         if (!disabled && autoFocus && inputRef.current) {
@@ -858,7 +858,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
 export const WarningBox: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const textSize = isStandard ? 'text-[15px] md:text-[16px]' : 'text-2xl md:text-3xl';
+    const textSize = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-3xl';
     const iconSize = isStandard ? 'w-6 h-6 md:w-8 md:h-8' : 'w-12 h-12 md:w-16 md:h-16';
 
     return (
@@ -874,7 +874,7 @@ export const WarningBox: React.FC<{ children: React.ReactNode }> = ({ children }
 export const InlineWarning: React.FC<{ children: React.ReactNode, center?: boolean, className?: string }> = ({ children, center = false, className = "" }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const textSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl md:text-2xl';
+    const textSize = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
     const iconSize = isStandard ? 'w-5 h-5' : 'w-6 h-6 md:w-8 md:h-8';
 
     return (

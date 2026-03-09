@@ -25,7 +25,7 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
     
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const textSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-3xl';
+    const textSize = isStandard ? 'text-[18px] md:text-[20px]' : 'text-3xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-8 h-8';
     const paddingClass = isStandard ? 'p-1.5' : 'p-3';
     const roundedClass = isStandard ? 'rounded-lg' : 'rounded-2xl';

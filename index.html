@@ -33,14 +33,14 @@
         #root { height: 100%; overflow: hidden; display: flex; flex-direction: column; }
 
         /* Dynamic Text Sizes for Interface Modes */
-        .mode-standard .dynamic-text-h1 { font-size: 1.125rem; line-height: 1.75rem; } /* text-lg */
-        @media (min-width: 768px) { .mode-standard .dynamic-text-h1 { font-size: 1.25rem; line-height: 1.75rem; } } /* md:text-xl */
+        .mode-standard .dynamic-text-h1 { font-size: 1.375rem; line-height: 1.75rem; } /* text-[22px] */
+        @media (min-width: 768px) { .mode-standard .dynamic-text-h1 { font-size: 1.5rem; line-height: 2rem; } } /* md:text-[24px] */
         
         .mode-friendly .dynamic-text-h1 { font-size: 1.75rem; line-height: 2.25rem; } /* text-[1.75rem] */
         @media (min-width: 768px) { .mode-friendly .dynamic-text-h1 { font-size: 2rem; line-height: 2.5rem; } } /* md:text-[2rem] */
 
-        .mode-standard .dynamic-text-h2 { font-size: 1rem; line-height: 1.5rem; } /* text-base */
-        @media (min-width: 768px) { .mode-standard .dynamic-text-h2 { font-size: 1.125rem; line-height: 1.75rem; } } /* md:text-lg */
+        .mode-standard .dynamic-text-h2 { font-size: 1.125rem; line-height: 1.75rem; } /* text-[18px] */
+        @media (min-width: 768px) { .mode-standard .dynamic-text-h2 { font-size: 1.25rem; line-height: 1.75rem; } } /* md:text-[20px] */
         
         /* Adjust spacing for standard mode */
         .mode-standard .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem !important; }
