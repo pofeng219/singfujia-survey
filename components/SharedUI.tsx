@@ -12,15 +12,15 @@ const getButtonColorClass = (checked: boolean, label: string, disabled: boolean,
     }
     
     if (isStandard) {
-        if (!checked) return 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800 dark:border-slate-500 dark:border-b-slate-600 dark:text-slate-200 dark:hover:bg-slate-700';
-        return 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-600 dark:border-sky-800 dark:text-white';
+        if (!checked) return 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800/80 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700/80';
+        return 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-700/80 dark:border-sky-800 dark:text-sky-50';
     }
 
     // Unchecked state (Physical feel - Thick border, shadow)
-    if (!checked) return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-800 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white';
+    if (!checked) return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-800 shadow-sm dark:bg-slate-800/80 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-400 dark:hover:bg-slate-700/80 dark:hover:text-slate-200';
 
     // Selected State (Warm Light Blue - Replaces Traffic Light)
-    return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-[#E0F2FE] border-[#7DD3FC] border-b-[#0EA5E9] text-[#0369A1] shadow-md dark:bg-sky-900/40 dark:border-sky-500 dark:border-b-sky-600 dark:text-sky-100';
+    return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-[#E0F2FE] border-[#7DD3FC] border-b-[#0EA5E9] text-[#0369A1] shadow-md dark:bg-sky-900/40 dark:border-sky-600 dark:border-b-sky-700 dark:text-sky-200';
 };
 
 // === CheckBox ===
@@ -33,10 +33,10 @@ interface CheckBoxProps {
 export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-2 px-3 md:py-2.5 md:px-4' : 'p-4 md:p-6';
-    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
-    const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-4xl';
-    const iconSize = isStandard ? 'w-4 h-4 md:w-5 md:h-5' : 'w-6 h-6 md:w-8 md:h-8';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'p-4 md:p-6';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const textClass = isStandard ? 'text-[14px] md:text-[15px]' : 'text-2xl md:text-4xl';
+    const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     return (
         <div 
@@ -70,11 +70,11 @@ interface RadioGroupProps {
 export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-2 px-3 md:py-2.5 md:px-4' : 'py-4 px-3 md:py-5 md:px-4';
-    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
-    const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-3xl';
-    const iconSize = isStandard ? 'w-4 h-4 md:w-5 md:h-5' : 'w-6 h-6 md:w-8 md:h-8';
-    const subTextSize = isStandard ? 'text-xs' : 'text-lg';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-4 px-3 md:py-5 md:px-4';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
+    const textClass = isStandard ? 'text-[14px] md:text-[15px]' : 'text-2xl md:text-3xl';
+    const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
+    const subTextSize = isStandard ? 'text-[12px]' : 'text-lg';
 
     // Stage 2: Intelligent Layout Detection
     // Default force vertical (1 column). Only switch to horizontal (2 columns) if:
@@ -93,12 +93,12 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
 
         if (subText) {
             return (
-                <div className={`flex flex-col items-center justify-center w-full ${isStandard ? 'py-1.5 min-h-[3.5rem]' : 'py-3 min-h-[5rem]'}`}>
-                    <div className={`${isStandard ? 'mb-2' : 'mb-4'} flex items-center gap-2`}>
+                <div className={`flex flex-col items-center justify-center w-full ${isStandard ? 'py-1 min-h-[3rem]' : 'py-3 min-h-[5rem]'}`}>
+                    <div className={`${isStandard ? 'mb-1' : 'mb-4'} flex items-center gap-2`}>
                         {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
                         {mainContent}
                     </div>
-                    <div className={`${isStandard && isSelected ? 'bg-sky-500 dark:bg-sky-700' : 'bg-orange-100 dark:bg-orange-900/40'} ${isStandard ? 'px-2 py-1' : 'px-3 py-2'} rounded-lg w-full max-w-[95%] shadow-sm flex items-center justify-center`}>
+                    <div className={`${isStandard && isSelected ? 'bg-sky-500 dark:bg-sky-700' : 'bg-orange-100 dark:bg-orange-900/40'} ${isStandard ? 'px-2 py-0.5' : 'px-3 py-2'} rounded-md w-full max-w-[95%] shadow-sm flex items-center justify-center`}>
                         <span className={`${subTextSize} font-bold ${isStandard && isSelected ? 'text-white' : 'text-slate-700 dark:text-slate-200'} block leading-normal break-words whitespace-normal`}>
                             {subText}
                         </span>
@@ -152,10 +152,10 @@ interface AccordionRadioProps {
 export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-2 px-3 md:py-2.5 md:px-4' : 'py-4 px-3 md:py-6 md:px-6';
-    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
-    const textClass = isStandard ? 'text-sm md:text-base' : 'text-2xl md:text-4xl';
-    const iconSize = isStandard ? 'w-4 h-4 md:w-5 md:h-5' : 'w-6 h-6 md:w-8 md:h-8';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-4 px-3 md:py-6 md:px-6';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
+    const textClass = isStandard ? 'text-[14px] md:text-[15px]' : 'text-2xl md:text-4xl';
+    const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     // Stage 2: Intelligent Layout Detection
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
@@ -206,9 +206,9 @@ interface AccordionOptionProps {
 export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabel, checked, onClick }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const titleSize = isStandard ? 'text-sm md:text-base' : 'text-xl';
-    const subSize = isStandard ? 'text-xs' : 'text-lg';
-    const minHeight = isStandard ? 'min-h-[40px]' : 'min-h-[65px]';
+    const titleSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl';
+    const subSize = isStandard ? 'text-[12px]' : 'text-lg';
+    const minHeight = isStandard ? 'min-h-[36px]' : 'min-h-[65px]';
 
     return (
         <div
@@ -216,22 +216,22 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
                 onClick();
             }}
-            className={`w-[90%] mx-auto ${minHeight} flex items-center justify-between ${isStandard ? 'px-4 py-2' : 'px-5 py-3'} rounded-xl transition-all duration-200 cursor-pointer select-none mb-3
+            className={`w-[90%] mx-auto ${minHeight} flex items-center justify-between ${isStandard ? 'px-3 py-1.5' : 'px-5 py-3'} rounded-lg transition-all duration-200 cursor-pointer select-none mb-2
             ${isStandard 
                 ? (checked 
-                    ? 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-600 dark:border-sky-800 dark:text-white' 
-                    : 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800 dark:border-slate-500 dark:border-b-slate-600 dark:text-slate-200 dark:hover:bg-slate-700')
+                    ? 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-700/80 dark:border-sky-800 dark:text-sky-50' 
+                    : 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800/80 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700/80')
                 : (checked
                     ? 'border bg-sky-50 border-sky-200 shadow-sm dark:bg-sky-900/30 dark:border-sky-700'
-                    : 'border bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700')
+                    : 'border bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-800/80 dark:border-slate-700 dark:hover:bg-slate-700/80')
             }`}
         >
             <div className="flex flex-col text-left">
-                <span className={`${titleSize} font-bold leading-tight ${isStandard ? (checked ? 'text-white' : 'text-slate-700 dark:text-slate-300') : (checked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300')}`}>
+                <span className={`${titleSize} font-bold leading-tight ${isStandard ? (checked ? 'text-white' : 'text-slate-700 dark:text-slate-300') : (checked ? 'text-slate-800 dark:text-slate-200' : 'text-slate-700 dark:text-slate-400')}`}>
                     {label}
                 </span>
                 {subLabel && (
-                    <span className={`${subSize} mt-1 leading-normal ${isStandard ? (checked ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400') : 'text-slate-500 dark:text-slate-400'}`}>
+                    <span className={`${subSize} mt-1 leading-normal ${isStandard ? (checked ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400') : 'text-slate-500 dark:text-slate-500'}`}>
                         {subLabel}
                     </span>
                 )}
@@ -240,8 +240,8 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
             {/* Icon Area */}
             <div className="flex-shrink-0 ml-4">
                 {checked && (
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${isStandard ? 'bg-sky-500 border-2 border-sky-400 dark:bg-sky-700 dark:border-sky-500' : 'bg-white border-2 border-emerald-500 dark:bg-slate-800 dark:border-emerald-400'}`}>
-                        <Check className={`w-5 h-5 ${isStandard ? 'text-white' : 'text-emerald-500 dark:text-emerald-400'}`} strokeWidth={3} />
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${isStandard ? 'bg-sky-500 border-2 border-sky-400 dark:bg-sky-700/80 dark:border-sky-600' : 'bg-white border-2 border-emerald-500 dark:bg-slate-800 dark:border-emerald-600'}`}>
+                        <Check className={`w-5 h-5 ${isStandard ? 'text-white' : 'text-emerald-500 dark:text-emerald-500'}`} strokeWidth={3} />
                     </div>
                 )}
             </div>
@@ -263,10 +263,10 @@ export const SurveySection: React.FC<{
 }> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const titleSize = isStandard ? 'text-base md:text-lg' : 'text-[2.2rem] md:text-[2.75rem]';
-    const hintSize = isStandard ? 'text-xs md:text-sm' : 'text-lg md:text-xl';
-    const paddingClass = isStandard ? 'p-4 md:p-6' : 'p-6 md:p-10';
-    const roundedClass = isStandard ? 'rounded-2xl md:rounded-3xl' : 'rounded-[2rem] md:rounded-[2.5rem]';
+    const titleSize = isStandard ? 'text-[16px] md:text-[18px]' : 'text-[2.2rem] md:text-[2.75rem]';
+    const hintSize = isStandard ? 'text-[13px] md:text-[14px]' : 'text-lg md:text-xl';
+    const paddingClass = isStandard ? 'p-4 md:p-5' : 'p-6 md:p-10';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[2rem] md:rounded-[2.5rem]';
 
     // Default open, allowing users to collapse manually
     const [isOpen, setIsOpen] = useState(true);
@@ -383,8 +383,8 @@ export const SurveySection: React.FC<{
 export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'p-4 md:p-6' : 'p-6 md:p-8';
-    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const paddingClass = isStandard ? 'p-3 md:p-4' : 'p-6 md:p-8';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
     const borderClass = isStandard ? 'border' : 'border-2';
 
     return (
@@ -418,13 +418,13 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
 }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const labelSize = isStandard ? 'text-sm md:text-base' : 'dynamic-text-h2';
+    const labelSize = isStandard ? 'text-[15px] md:text-[16px]' : 'dynamic-text-h2';
 
     const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
     return (
         <QuestionBlock className={disabled ? 'opacity-40 grayscale pointer-events-none' : ''}>
-            <div className="mb-4 md:mb-6">
+            <div className="mb-3 md:mb-4">
                 {typeof label === 'string' ? <p className={`${labelSize} font-black text-slate-700 dark:text-slate-200`}>{label}</p> : label}
             </div>
             <RadioGroup 
@@ -456,12 +456,12 @@ export const FormInput: React.FC<{
 }> = ({ id, label, value, onChange, placeholder, highlighted = false, className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const labelSize = isStandard ? 'text-sm md:text-base' : 'dynamic-text-h2';
-    const inputSize = isStandard ? '!text-sm md:!text-base' : '!text-xl';
+    const labelSize = isStandard ? 'text-[14px] md:text-[15px]' : 'dynamic-text-h2';
+    const inputSize = isStandard ? '!text-[14px] md:!text-[15px]' : '!text-xl';
 
     return (
-        <div id={id} className={`transition-all duration-500 rounded-2xl p-2 -m-2 ${highlighted ? 'error-highlight-anim' : ''} ${className}`}>
-            <label className={`block text-slate-800 font-black mb-3 ${labelSize} text-left dark:text-slate-100`}>{label}</label>
+        <div id={id} className={`transition-all duration-500 rounded-xl p-2 -m-2 ${highlighted ? 'error-highlight-anim' : ''} ${className}`}>
+            <label className={`block text-slate-800 font-black mb-2 ${labelSize} text-left dark:text-slate-100`}>{label}</label>
             <input 
                 type="text" 
                 className={`full-width-input ${inputSize} border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20`} 
@@ -478,8 +478,8 @@ export const FormInput: React.FC<{
 export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false }: { value: string, onChange: (val: string) => void, unit: string, placeholder?: string, disabled?: boolean }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? '!text-sm md:!text-base' : '!text-xl';
-    const unitSize = isStandard ? 'text-sm md:text-base' : 'text-xl';
+    const inputSize = isStandard ? '!text-[14px] md:!text-[15px]' : '!text-xl';
+    const unitSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl';
 
     return (
         <div className="relative w-full">
@@ -510,7 +510,7 @@ export const LandNumberInputs: React.FC<{
 }> = ({ section, subSection, number, onChangeSection, onChangeSubSection, onChangeNumber }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? 'text-sm md:text-base' : 'text-xl md:text-2xl';
+    const inputSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl md:text-2xl';
 
     return (
         <div className="flex flex-wrap items-end gap-3 md:gap-4 w-full dark:text-slate-200 pt-2">
@@ -559,7 +559,7 @@ export const Select: React.FC<{
 }> = ({ value, onChange, options, placeholder = "請選擇", className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? 'text-sm md:text-base py-2' : 'text-xl py-4';
+    const inputSize = isStandard ? 'text-[14px] md:text-[15px] py-2' : 'text-xl py-4';
 
     return (
         <div className={`relative ${className}`}>
@@ -774,12 +774,12 @@ export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => 
 export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: boolean }> = ({ children, disabled = false }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'p-4 md:p-5' : 'p-6 md:p-8';
-    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
-    const borderClass = isStandard ? 'border-l-[4px] md:border-l-[6px]' : 'border-l-[8px] md:border-l-[12px]';
+    const paddingClass = isStandard ? 'p-3 md:p-4' : 'p-6 md:p-8';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const borderClass = isStandard ? 'border-l-[3px] md:border-l-[4px]' : 'border-l-[8px] md:border-l-[12px]';
 
     return (
-        <div className={`mt-4 mb-6 ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+        <div className={`mt-3 mb-4 ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
             <div className="pl-1 md:pl-2">{children}</div>
         </div>
     );
@@ -790,7 +790,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
     const [showMicHint, setShowMicHint] = useState(false);
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const inputSize = isStandard ? '!text-sm md:!text-base' : '!text-xl';
+    const inputSize = isStandard ? '!text-[14px] md:!text-[15px]' : '!text-xl';
     
     useEffect(() => {
         if (!disabled && autoFocus && inputRef.current) {
@@ -858,11 +858,11 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
 export const WarningBox: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const textSize = isStandard ? 'text-base md:text-lg' : 'text-2xl md:text-3xl';
-    const iconSize = isStandard ? 'w-8 h-8 md:w-10 md:h-10' : 'w-12 h-12 md:w-16 md:h-16';
+    const textSize = isStandard ? 'text-[15px] md:text-[16px]' : 'text-2xl md:text-3xl';
+    const iconSize = isStandard ? 'w-6 h-6 md:w-8 md:h-8' : 'w-12 h-12 md:w-16 md:h-16';
 
     return (
-        <div className="bg-yellow-100 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-4 border-red-500 text-center shadow-lg mb-8 md:mb-10 animate-in zoom-in-95 duration-300 dark:bg-yellow-900/30 dark:border-red-400">
+        <div className={`bg-yellow-100 ${isStandard ? 'p-4 md:p-5 rounded-xl md:rounded-2xl border-2' : 'p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-4'} border-red-500 text-center shadow-lg mb-6 md:mb-8 animate-in zoom-in-95 duration-300 dark:bg-yellow-900/30 dark:border-red-400`}>
             <div className="flex flex-col items-center gap-3 md:gap-4 text-red-800 dark:text-red-300">
                 <AlertTriangle className={`${iconSize}`} strokeWidth={3} />
                 <p className={`${textSize} font-black leading-relaxed tracking-wide`}>{children}</p>
@@ -874,11 +874,11 @@ export const WarningBox: React.FC<{ children: React.ReactNode }> = ({ children }
 export const InlineWarning: React.FC<{ children: React.ReactNode, center?: boolean, className?: string }> = ({ children, center = false, className = "" }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const textSize = isStandard ? 'text-base md:text-lg' : 'text-xl md:text-2xl';
-    const iconSize = isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-8 md:h-8';
+    const textSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl md:text-2xl';
+    const iconSize = isStandard ? 'w-5 h-5' : 'w-6 h-6 md:w-8 md:h-8';
 
     return (
-        <div className={`w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40 ${className}`}>
+        <div className={`w-full ${isStandard ? 'py-2 px-3 md:py-3 md:px-4 rounded-lg md:rounded-xl' : 'py-4 px-5 md:py-5 md:px-6 rounded-xl md:rounded-2xl'} bg-[#FDE047] flex items-start gap-2 shadow-sm dark:bg-yellow-900/40 ${className}`}>
             <AlertTriangle className={`${iconSize} text-[#78350F] shrink-0 mt-0.5 dark:text-yellow-200`} strokeWidth={2.5} />
             <div className={`${textSize} text-[#78350F] font-bold leading-snug dark:text-yellow-200 ${center ? 'text-center w-full' : 'text-left'}`}>
                 {children}

@@ -25,10 +25,10 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
     
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const textSize = isStandard ? 'text-base md:text-lg' : 'text-3xl';
-    const iconSize = isStandard ? 'w-5 h-5' : 'w-8 h-8';
-    const paddingClass = isStandard ? 'p-2' : 'p-3';
-    const roundedClass = isStandard ? 'rounded-xl' : 'rounded-2xl';
+    const textSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-3xl';
+    const iconSize = isStandard ? 'w-4 h-4' : 'w-8 h-8';
+    const paddingClass = isStandard ? 'p-1.5' : 'p-3';
+    const roundedClass = isStandard ? 'rounded-lg' : 'rounded-2xl';
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

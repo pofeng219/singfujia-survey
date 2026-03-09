@@ -4,6 +4,7 @@ import { formatDateROC } from './ROCDatePicker';
 import React, { useMemo, useState, useEffect } from 'react';
 import { FileText, Smartphone, Check } from 'lucide-react';
 import { GROUP_A_TYPES } from '../constants';
+import { useInterface } from './InterfaceContext';
 
 interface SurveyPreviewProps {
     data: SurveyData;
@@ -28,6 +29,8 @@ const formatAccessLandAddress = (section?: string, subSection?: string, number?:
 
 // Local PreviewResult: High contrast, larger text, less vibrant
 const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string; isWarning?: boolean }> = ({ checked, label, suffix, isWarning }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
     if (!checked) return null;
     
     // Highlight "有" (Yes/Has issue) or "是" options in red for quick scanning
@@ -56,7 +59,7 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
             <div className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-rose-500 bg-rose-500' : 'border-sky-600 bg-sky-600'}`}>
                 <Check size={14} strokeWidth={4} className="text-white" />
             </div>
-            <span className={`text-[17px] font-black leading-tight tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
+            <span className={`${isStandard ? 'text-[15px]' : 'text-[18px]'} font-black leading-tight tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
                 {label}{suffix}
             </span>
         </div>
@@ -64,49 +67,65 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 };
 
 // Modernized CheckRow: Clean, high readability with card-like row
-const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => (
-    <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
-        <div className="w-10 shrink-0 flex justify-center pt-1.5 border-r border-slate-100 bg-slate-50/50">
-            <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
-                {checked && <Check size={10} strokeWidth={3} className="text-white" />}
+const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    return (
+        <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
+            <div className="w-10 shrink-0 flex justify-center pt-1.5 border-r border-slate-100 bg-slate-50/50">
+                <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
+                    {checked && <Check size={10} strokeWidth={3} className="text-white" />}
+                </div>
             </div>
-        </div>
-        <div className="flex-grow py-1 px-2 text-left text-[14px]">
-            <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-2 gap-y-0">
-                {/* Apply small gray question style to the first span child if it's the question label */}
-                <div className="[&>span:first-child]:text-[13px] [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-2 gap-y-0 w-full">
-                    {children}
+            <div className={`flex-grow py-1 px-2 text-left ${isStandard ? 'text-[14px]' : 'text-[18px]'}`}>
+                <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-2 gap-y-0">
+                    {/* Apply small gray question style to the first span child if it's the question label */}
+                    <div className={`[&>span:first-child]:${isStandard ? 'text-[13px]' : 'text-[16px]'} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-2 gap-y-0 w-full`}>
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Professional Section Header: Card Header Style
-const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <div className="mt-1.5 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
-        <div className="px-2 py-1 flex items-center gap-2">
-            <div className="w-1.5 h-3.5 bg-sky-500 rounded-full"></div>
-            <span className="font-black text-slate-800 text-[16px] tracking-widest leading-none pt-0.5">{title}</span>
+const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    return (
+        <div className="mt-1.5 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
+            <div className="px-2 py-1 flex items-center gap-2">
+                <div className="w-1.5 h-3.5 bg-sky-500 rounded-full"></div>
+                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-none pt-0.5`}>{title}</span>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Clean Table Header
-const TableHeaderRow: React.FC = () => (
-    <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
-        <div className="w-10 shrink-0 text-center font-black text-slate-700 py-1 text-[13px] whitespace-nowrap tracking-wider border-r border-slate-300/50">確認<br/>無誤</div>
-        <div className="flex-grow py-1 px-2 font-black text-left text-slate-700 text-[14px] tracking-[0.2em] flex items-center">說明／檢查項目</div>
-    </div>
-);
+const TableHeaderRow: React.FC = () => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    return (
+        <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
+            <div className={`w-10 shrink-0 text-center font-black text-slate-700 py-1 ${isStandard ? 'text-[13px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-slate-300/50`}>確認<br/>無誤</div>
+            <div className={`flex-grow py-1 px-2 font-black text-left text-slate-700 ${isStandard ? 'text-[14px]' : 'text-[18px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
+        </div>
+    );
+};
 
-const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' | 'a4' }> = ({ label, value, variant = 'a4' }) => (
-    <div className={`font-bold text-[20px] mt-1 flex items-start leading-snug ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
-        <span className="mr-2 shrink-0 text-[#009FE3] text-xl">•</span>
-        <span className="mr-1 shrink-0">{label}：</span>
-        <span>{value || ''}</span>
-    </div>
-);
+const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' | 'a4' }> = ({ label, value, variant = 'a4' }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    return (
+        <div className={`font-bold ${isStandard ? 'text-[16px]' : 'text-[20px]'} mt-1 flex items-start leading-snug ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
+            <span className={`mr-2 shrink-0 text-[#009FE3] ${isStandard ? 'text-lg' : 'text-xl'}`}>•</span>
+            <span className="mr-1 shrink-0">{label}：</span>
+            <span>{value || ''}</span>
+        </div>
+    );
+};
 
 const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = "" }: { className?: string, textClassName?: string, subTextClassName?: string }) => (
     <div className={`flex flex-col items-center justify-center ${className}`}>
@@ -284,9 +303,9 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
                 {showSignature ? (
                     <div className="flex flex-col items-start shrink-0">
                         <span className="text-slate-900 font-black mb-1 text-[14px]">調查業務人員簽章：</span>
-                        <div className="w-[160px] border-b-2 border-slate-800 flex items-end relative h-[2.5rem]">
+                        <div className="w-[240px] border-b-2 border-slate-800 flex items-end relative h-[4rem]">
                             {signatureImage ? (
-                                <img src={signatureImage} alt="Signature" className="absolute bottom-1 left-0 max-h-[2.5rem] max-w-full object-contain" />
+                                <img src={signatureImage} alt="Signature" className="absolute bottom-1 left-0 max-h-[4rem] max-w-full object-contain" />
                             ) : null}
                         </div>
                     </div>
@@ -1062,6 +1081,8 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
 // --- MAIN PREVIEW COMPONENT ---
 
 export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, exporting, previewScale, previewPage, setPreviewPage, page1Ref, page2Ref, page3Ref, isMobile = false }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
     // Removed viewMode state as we are defaulting to A4 view for consistency
     const activeMode = 'a4';
 
@@ -1132,25 +1153,29 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
         </div>
     );
 
-    const BasicInfoTable = () => (
-        <div className="mb-1 w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
-            <div className="px-2 py-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px] leading-snug text-black">
-                <span className="font-black text-black text-[14px]">{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
-                {(type === 'factory' || type === 'house' || type === 'land') && (
-                    <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
-                )}
-                <PreviewResult checked={data?.access === '可進入'} label="可進入" />
-                {data?.access === '不可進入' && (
-                    <>
-                        <PreviewResult checked={true} label="不可進入：" />
-                        {(data?.accessType || []).map(opt => (
-                            <PreviewResult key={opt} checked={true} label={opt + (opt === "其他" || opt === "其他未列項目" ? '：' : '')} suffix={opt === "其他" || opt === "其他未列項目" ? data.accessOther : ""} />
-                        ))}
-                    </>
-                )}
+    const BasicInfoTable = () => {
+        const mode = useInterface();
+        const isStandard = mode === 'standard';
+        return (
+            <div className="mb-1 w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
+                <div className={`px-2 py-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 ${isStandard ? 'text-[13px]' : 'text-[16px]'} leading-snug text-black`}>
+                    <span className={`font-black text-black ${isStandard ? 'text-[14px]' : 'text-[18px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
+                    {(type === 'factory' || type === 'house' || type === 'land') && (
+                        <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
+                    )}
+                    <PreviewResult checked={data?.access === '可進入'} label="可進入" />
+                    {data?.access === '不可進入' && (
+                        <>
+                            <PreviewResult checked={true} label="不可進入：" />
+                            {(data?.accessType || []).map(opt => (
+                                <PreviewResult key={opt} checked={true} label={opt + (opt === "其他" || opt === "其他未列項目" ? '：' : '')} suffix={opt === "其他" || opt === "其他未列項目" ? data.accessOther : ""} />
+                            ))}
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     // --- RENDER ---
     // (Mobile view skipped for brevity as logic mostly impacts A4 layout rendering of Water Booster)
@@ -1165,26 +1190,26 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             ) : (<div className="w-full max-w-[210mm] mb-8 no-print"><PageSwitcher /></div>)}
 
             <ScaledA4Wrapper pageNum={1}>
-                <div className="flex-grow flex flex-col h-full text-black pb-24">
+                <div className="flex-grow flex flex-col h-full text-black pb-32">
                     <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                        <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
-                        <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【正面】{data?.version}</div>
+                        <h1 className={`font-black tracking-widest text-black leading-none mb-2 ${isStandard ? 'text-[32px]' : 'text-[36px]'}`}>幸福家不動產－業務版現況調查表</h1>
+                        <div className={`${isStandard ? 'text-[14px]' : 'text-[16px]'} font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
                     </div>
                     <table className="excel-table mb-2 w-full text-black border-collapse border-2 border-gray-300">
                         <tbody>
                             <tr className="border-b border-gray-300">
-                                <td className="bg-gray-100 w-[10%] text-black font-black py-1.5 px-2 text-[14px]">案名</td><td className="w-[30%] font-black text-black py-1.5 px-2 text-[14px]">{data?.caseName}</td>
-                                <td className="bg-gray-100 w-[15%] text-black font-black py-1.5 px-2 text-[14px]">編號</td><td className="w-[20%] font-black text-black py-1.5 px-2 text-[14px]">{data?.authNumber}</td>
-                                <td className="bg-gray-100 w-[8%] text-black font-black py-1.5 px-2 text-[14px]">店名</td><td className="w-[17%] text-black py-1.5 px-2 text-[14px]">{data?.storeName}</td>
+                                <td className={`bg-gray-100 w-[10%] text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>案名</td><td className={`w-[30%] font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.caseName}</td>
+                                <td className={`bg-gray-100 w-[15%] text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>編號</td><td className={`w-[20%] font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.authNumber}</td>
+                                <td className={`bg-gray-100 w-[8%] text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>店名</td><td className={`w-[17%] text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.storeName}</td>
                             </tr>
                             <tr className="border-b border-gray-300">
-                                <td className="bg-gray-100 text-black font-black py-1.5 px-2 text-[14px]">{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className="font-black text-black py-1.5 px-2 text-[14px]">{data?.address}</td>
-                                <td className="bg-gray-100 text-black font-black py-1.5 px-2 text-[14px]">業務</td><td className="font-black text-black py-1.5 px-2 text-[14px]">{data?.agentName}</td>
-                                <td className="bg-gray-100 text-black font-black py-1.5 px-2 text-[14px]">日期</td><td className="text-left font-mono pl-2 text-black py-1.5 px-2 text-[14px]">{formatDateROC(data?.fillDate || '')}</td>
+                                <td className={`bg-gray-100 text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.address}</td>
+                                <td className={`bg-gray-100 text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>業務</td><td className={`font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.agentName}</td>
+                                <td className={`bg-gray-100 text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div className="bg-[#009FE3] text-white px-4 py-1 text-[14px] font-black mb-1 self-start rounded-r-full shadow-md tracking-wide">【調查現況】</div>
+                    <div className={`bg-[#009FE3] text-white px-4 py-1 ${isStandard ? 'text-[14px]' : 'text-[16px]'} font-black mb-1 self-start rounded-r-full shadow-md tracking-wide`}>【調查現況】</div>
                     
                     <BasicInfoTable />
 
@@ -1236,10 +1261,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             {(type !== 'parking' || previewPage === 2) && (
                 <ScaledA4Wrapper pageNum={2}>
-                    <div className="flex-grow flex flex-col h-full text-black pb-24">
+                    <div className="flex-grow flex flex-col h-full text-black pb-32">
                         <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
-                            <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【背面】</div>
+                            <h1 className={`font-black tracking-widest text-black leading-none mb-2 ${isStandard ? 'text-[32px]' : 'text-[36px]'}`}>幸福家不動產－業務版現況調查表</h1>
+                            <div className={`${isStandard ? 'text-[14px]' : 'text-[16px]'} font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]`}>【背面】</div>
                         </div>
                         <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
                                 <TableHeaderRow />
@@ -1254,10 +1279,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             {(hasPage3 && (previewPage === 3 || exporting)) && (
                 <ScaledA4Wrapper pageNum={3}>
-                    <div className="flex-grow flex flex-col h-full text-black pb-24">
+                    <div className="flex-grow flex flex-col h-full text-black pb-32">
                          <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                            <h1 className="text-[32px] font-black tracking-widest text-black leading-none mb-2">幸福家不動產－業務版現況調查表</h1>
-                            <div className="text-[14px] font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]">【附件】</div>
+                            <h1 className={`font-black tracking-widest text-black leading-none mb-2 ${isStandard ? 'text-[32px]' : 'text-[36px]'}`}>幸福家不動產－業務版現況調查表</h1>
+                            <div className={`${isStandard ? 'text-[14px]' : 'text-[16px]'} font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]`}>【附件】</div>
                         </div>
                         <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
                                 <TableHeaderRow />
