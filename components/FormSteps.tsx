@@ -281,7 +281,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <ImageModal 
                 isOpen={showLeakageGuide} 
                 onClose={() => setShowLeakageGuide(false)} 
-                imageSrc="https://lh3.googleusercontent.com/d/1IBFxfJDMDJb3TW5nlpkXa9dUe1Rdcr2S" 
+                imageSrc="https://lh3.googleusercontent.com/d/1s1ErxnSDgdNTWLUnGAQ53_9dqeeMiWNb" 
                 title="滲漏水與壁癌參考圖例" 
             />
             <ImageModal 

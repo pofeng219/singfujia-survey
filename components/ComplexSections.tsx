@@ -307,51 +307,43 @@ export const ParkingSection = ({
             <div className="space-y-12">
                 <QuestionBlock className={parkingLogic.disableMethod ? 'opacity-40 grayscale pointer-events-none' : ''}>
                     <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">停車方式 (單選)：</p>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
-                        {PARK_TYPES.map(pt => (
-                            <div key={pt} className={`relative overflow-hidden transition-all duration-300 ${data?.q10_parkTypes?.[0] === pt ? 'bg-sky-50 rounded-[2rem] transform scale-[1.01] dark:bg-sky-900/30' : 'bg-white rounded-[2rem] dark:bg-slate-800'}`}>
-                                <div onClick={() => { 
-                                    if (parkingLogic.disableMethod) return; 
-                                    setData(prev => {
-                                        const isSelected = prev.q10_parkTypes?.[0] === pt;
-                                        return {
-                                            ...prev,
-                                            q10_parkTypes: isSelected ? [] : [pt], // Toggle logic: Clear if selected, else set new
-                                            // Clear sub-options if switching away or deselecting relevant type
-                                            q10_rampMechLoc: (isSelected || pt !== '坡道機械') ? '' : prev.q10_rampMechLoc,
-                                            q10_liftMechLoc: (isSelected || pt !== '升降機械') ? '' : prev.q10_liftMechLoc
-                                        };
-                                    }); 
-                                }} className={`cursor-pointer w-full p-4 md:p-6 flex items-center gap-2 md:gap-4 rounded-[1.5rem] md:rounded-[2rem] border-4 border-b-[6px] md:border-b-[8px] transition-all duration-150 active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] ${data?.q10_parkTypes?.[0] === pt ? 'border-sky-600 border-b-sky-800 bg-sky-50 dark:bg-sky-900 dark:border-sky-500' : 'border-slate-300 border-b-slate-400 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:border-b-slate-700 dark:hover:bg-slate-700'}`}>
-                                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-3 flex items-center justify-center flex-shrink-0 transition-colors ${data?.q10_parkTypes?.[0] === pt ? 'border-sky-600 bg-sky-600 text-white dark:border-sky-400 dark:bg-sky-500' : 'border-slate-300 bg-white dark:bg-slate-700 dark:border-slate-500'}`}>{data?.q10_parkTypes?.[0] === pt && <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />}</div>
-                                        <span className={`font-black text-lg md:text-2xl ${data?.q10_parkTypes?.[0] === pt ? 'text-sky-800 dark:text-sky-100' : 'text-slate-600 dark:text-slate-300'}`}>{pt}</span>
-                                </div>
-                                {((pt === "坡道機械" || pt === "升降機械") && data?.q10_parkTypes?.[0] === pt) && (
-                                    <div className="p-4 md:p-6 pt-2 animate-in slide-in-from-top-4 duration-300 mt-2">
-                                        <p className="text-xl md:text-2xl font-bold text-slate-600 mb-3 text-center dark:text-slate-300">請選擇所在層置：</p>
-                                        <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
-                                            {['上層', '中層', '下層'].map(loc => (
-                                                <button 
-                                                    key={loc} 
-                                                    type="button" 
-                                                    onClick={(e) => { 
-                                                        e.stopPropagation(); 
-                                                        const targetKey = pt === "坡道機械" ? 'q10_rampMechLoc' : 'q10_liftMechLoc';
-                                                        const currentVal = pt === "坡道機械" ? data.q10_rampMechLoc : data.q10_liftMechLoc;
-                                                        // Toggle logic for sub-options
-                                                        update(targetKey, currentVal === loc ? '' : loc); 
-                                                    }} 
-                                                    className={`flex-1 items-center justify-center px-4 py-3 md:px-5 md:py-4 rounded-2xl font-black text-lg md:text-xl transition-all duration-150 border-3 border-b-[6px] active:border-b-3 active:translate-y-[3px] ${(pt === "坡道機械" ? data.q10_rampMechLoc : data.q10_liftMechLoc) === loc ? 'bg-sky-500 text-white border-sky-500 border-b-sky-700 dark:bg-sky-600 dark:border-sky-400' : 'bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300'}`}
-                                                >
-                                                    {loc}
-                                                </button>
-                                            ))}
-                                        </div>
+                    <AccordionRadio 
+                        options={PARK_TYPES} 
+                        value={data?.q10_parkTypes?.[0] || ''} 
+                        onChange={(v) => {
+                            setData(prev => {
+                                const isSelected = prev.q10_parkTypes?.[0] === v;
+                                return {
+                                    ...prev,
+                                    q10_parkTypes: isSelected ? [] : [v],
+                                    q10_rampMechLoc: (isSelected || v !== '坡道機械') ? '' : prev.q10_rampMechLoc,
+                                    q10_liftMechLoc: (isSelected || v !== '升降機械') ? '' : prev.q10_liftMechLoc
+                                };
+                            });
+                        }}
+                        renderDetail={(opt) => {
+                            if (opt === '坡道機械' || opt === '升降機械') {
+                                return (
+                                    <div className="p-2 md:p-4 pt-0">
+                                        <p className="text-lg md:text-xl font-bold text-slate-600 mb-3 text-center dark:text-slate-300">請選擇所在層置：</p>
+                                        <RadioGroup 
+                                            options={['上層', '中層', '下層']} 
+                                            value={opt === '坡道機械' ? data.q10_rampMechLoc || '' : data.q10_liftMechLoc || ''} 
+                                            onChange={(v) => {
+                                                const targetKey = opt === '坡道機械' ? 'q10_rampMechLoc' : 'q10_liftMechLoc';
+                                                update(targetKey, v);
+                                            }} 
+                                            layout="grid" 
+                                            cols={3} 
+                                        />
                                     </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                        cols={2}
+                        disabled={parkingLogic.disableMethod}
+                    />
                     <div className={`bg-white p-4 md:p-6 rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 mt-6 dark:bg-slate-800 dark:border-slate-700`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => update('q10_hasParkTypeOther', !data.q10_hasParkTypeOther)} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="騎樓停車" /></SubItemHighlight>)}</div>
                 </QuestionBlock>
                 

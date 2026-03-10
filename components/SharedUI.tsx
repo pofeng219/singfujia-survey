@@ -81,7 +81,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
     // 1. Exactly 2 options
     // 2. Both options are very short (<= 4 chars)
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
-    const gridCols = isShortAndSimple ? 'grid-cols-2' : 'grid-cols-1';
+    const gridCols = layout === 'grid' ? (cols ? `grid-cols-${cols}` : 'grid-cols-2') : (isShortAndSimple ? 'grid-cols-2' : 'grid-cols-1');
     
     // Helper to render label with subtitle if parentheses exist
     const renderLabel = (text: string, isSelected: boolean) => {
@@ -130,7 +130,8 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                             }
                         }}
                         className={`flex-1 ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex items-center justify-center transition-all duration-200 select-none gap-2 md:gap-3 relative overflow-hidden
-                        ${getButtonColorClass(isSelected, v, disabled, isStandard)}`}
+                        ${getButtonColorClass(isSelected, v, disabled, isStandard)}
+                        ${spanFullOption === v ? 'col-span-full' : ''}`}
                     >
                         {renderLabel(v, isSelected)}
                     </button>
@@ -159,7 +160,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
 
     // Stage 2: Intelligent Layout Detection
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
-    const gridClass = isShortAndSimple ? 'grid grid-cols-2' : 'grid grid-cols-1';
+    const gridClass = cols ? `grid grid-cols-${cols}` : (isShortAndSimple ? 'grid grid-cols-2' : 'grid grid-cols-1');
 
     return (
         <div className="flex flex-col gap-4 md:gap-6">
