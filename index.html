@@ -64,8 +64,8 @@
         }
 
         /* Excel-like Table Styling */
-        .excel-table { border: 2px solid #000; width: 100%; border-collapse: collapse; font-size: 18px; line-height: 1.5; position: relative; z-index: 10; font-weight: 700; flex-shrink: 0; }
-        .excel-table td, .excel-table th { border: 1px solid #000; padding: 6px 8px; vertical-align: middle; word-break: break-word; white-space: normal; }
+        .excel-table { border: 2px solid #6b7280; width: 100%; border-collapse: collapse; font-size: 18px; line-height: 1.5; position: relative; z-index: 10; font-weight: 700; flex-shrink: 0; }
+        .excel-table td, .excel-table th { border: 1px solid #d1d5db; padding: 6px 8px; vertical-align: middle; word-break: break-word; white-space: normal; }
         .align-top-cell { vertical-align: top !important; padding-top: 8px !important; text-align: left !important; }
         .bg-gray-label { background-color: #e5e7eb; font-weight: 900; text-align: center; vertical-align: middle !important; font-size: 18px; width: 1%; white-space: nowrap;}
         
@@ -158,18 +158,18 @@
 
         /* Phase 3: Error Animation - Pulse Effect */
         @keyframes error-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); transform: scale(1); }
+            0% { box-shadow: 0 0 0 0 var(--highlight-border, rgba(239, 68, 68, 0.4)); transform: scale(1); }
             50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); transform: scale(1.01); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); transform: scale(1); }
         }
         .error-highlight-anim {
             animation: error-pulse 1.5s infinite;
-            border-color: #ef4444 !important;
-            background-color: #fef2f2 !important; /* Red-50 */
+            border-color: var(--highlight-border, #ef4444) !important;
+            background-color: var(--highlight-bg, #fef2f2) !important;
         }
         .dark .error-highlight-anim {
-            background-color: rgba(127, 29, 29, 0.3) !important; /* Red-900/30 */
-            border-color: #ef4444 !important;
+            background-color: var(--highlight-dark-bg, rgba(127, 29, 29, 0.3)) !important;
+            border-color: var(--highlight-border, #ef4444) !important;
         }
     </style>
 </head>

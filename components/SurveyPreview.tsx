@@ -72,7 +72,7 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
     const isStandard = mode === 'standard';
     return (
         <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
-            <div className="w-10 shrink-0 flex justify-center pt-1.5 border-r border-slate-100 bg-slate-50/50">
+            <div className="w-[80px] shrink-0 flex justify-center pt-1.5 border-r border-slate-100 bg-slate-50/50">
                 <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
                     {checked && <Check size={10} strokeWidth={3} className="text-white" />}
                 </div>
@@ -109,7 +109,7 @@ const TableHeaderRow: React.FC = () => {
     const isStandard = mode === 'standard';
     return (
         <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
-            <div className={`w-10 shrink-0 text-center font-black text-slate-700 py-1 ${isStandard ? 'text-[13px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-slate-300/50`}>確認<br/>無誤</div>
+            <div className={`w-[80px] shrink-0 text-center font-black text-slate-700 py-1 ${isStandard ? 'text-[13px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-slate-300/50`}>確認無須<br/>新增說明</div>
             <div className={`flex-grow py-1 px-2 font-black text-left text-slate-700 ${isStandard ? 'text-[14px]' : 'text-[18px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
         </div>
     );
@@ -313,12 +313,12 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
                     <div className="w-10 shrink-0"></div>
                 )}
                 {!hideBranding && (
-                    <div className="flex flex-col items-end shrink-0 text-right max-w-[60%]">
-                        <div className="flex flex-col items-center select-none opacity-100 mb-1">
-                             <SingfujiaLogo className="h-5" textClassName="text-[1rem]" subTextClassName="text-[0.4rem]" />
+                    <div className="flex flex-col items-end shrink-0 text-right max-w-[70%]">
+                        <div className="flex flex-col items-center select-none opacity-100 mb-2">
+                             <SingfujiaLogo className="h-8" textClassName="text-[1.5rem]" subTextClassName="text-[0.6rem]" />
                         </div>
-                        <span className="text-[10px] font-bold text-black tracking-wider block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
-                        <span className="text-[8px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
+                        <span className="text-[14px] font-black text-red-600 tracking-wider block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
+                        <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
                     </div>
                 )}
             </div>
@@ -493,7 +493,10 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案與社區特殊或影響交易事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`} />
         <CheckRow checked={data?.q17_homicide === '無'}>
             <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
-            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-black underline underline-offset-4 decoration-2' : ''}`}>{data?.q17_homicide || ''}</span>
+            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-black underline underline-offset-4 decoration-2' : ''}`}>
+                {data?.q17_homicide || ''}
+                {(data?.q17_homicide === '有' || data?.q17_homicide === '待查證') && data?.q17_homicide_desc && `：${data.q17_homicide_desc}`}
+            </span>
         </CheckRow>
         <CheckRow checked={data?.q17_issue === '否'}>
              <span className="font-black mr-2">其他特殊或影響交易狀況補充</span>
@@ -584,14 +587,6 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
                     <PreviewResult checked={data?.water_booster === '無' || data?.water_booster === '無設置'} label="無" />
                 </CheckRow>
             )}
-
-            <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
-            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
-                <span className="font-black mr-2">公共設施</span>
-                <PreviewResult checked={data?.publicFacilities === '有公共設施'} label="有公共設施" />
-                <PreviewResult checked={data?.publicFacilities === '無公共設施'} label="無公共設施" />
-                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
-            </CheckRow>
         </>
     );
 };
@@ -600,6 +595,14 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
     const labels = getHouseLabels(data);
     return (
         <>
+            <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
+            <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
+                <span className="font-black mr-2">公共設施</span>
+                <PreviewResult checked={data?.publicFacilities === '有公共設施'} label="有公共設施" />
+                <PreviewResult checked={data?.publicFacilities === '無公共設施'} label="無公共設施" />
+                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
+            </CheckRow>
+
             <SectionHeader title="7. 公設空間（梯間／地下室）現況" />
             <CheckRow checked={!!data?.q8_stairIssue}>
                 <span className="font-black mr-2">公設空間（梯間／地下室現況）</span>
@@ -628,7 +631,13 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
                 <span className="font-black mr-2">車位與車道其他備註</span>
                 <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
             </CheckRow>
-            
+        </>
+    );
+};
+
+const HousePrintPage3 = ({ data }: { data: SurveyData }) => {
+    return (
+        <>
             <CommonExtraQuestions data={data} startIdx={10} type="house" />
         </>
     );
@@ -1087,7 +1096,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
     const activeMode = 'a4';
 
     // Detect if we need page 3 (All factory types now use 3 pages)
-    const hasPage3 = type === 'factory';
+    const hasPage3 = type === 'factory' || type === 'house';
 
     const parkingSummary = useMemo(() => {
         const isNoParking = data?.q10_noParking === true;
@@ -1245,7 +1254,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                     <SectionHeader title="3. 本案或本社區須注意的事項" />
                                     <CheckRow checked={data?.q17_homicide === '無'}>
                                         <span className="font-black mr-2">是否曾發生非自然死亡情事</span>
-                                        <span className="font-medium">{data?.q17_homicide || ''}</span>
+                                        <span className="font-medium">
+                                            {data?.q17_homicide || ''}
+                                            {(data?.q17_homicide === '有' || data?.q17_homicide === '待查證') && data?.q17_homicide_desc && `：${data.q17_homicide_desc}`}
+                                        </span>
                                     </CheckRow>
                                     <CheckRow checked={data?.q17_issue === '否'}>
                                              <span className="font-black mr-2">其他應注意事項</span>
@@ -1272,7 +1284,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                 {type === 'land' && <LandPrintPage2 data={data} />}
                                 {type === 'factory' && <FactoryPrintPage2 data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                         </div>
-                        <Footer showSignature={type !== 'factory'} signatureImage={data.signatureImage} />
+                        <Footer showSignature={type === 'land'} signatureImage={data.signatureImage} />
                     </div>
                 </ScaledA4Wrapper>
             )}
@@ -1286,7 +1298,8 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                         </div>
                         <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
                                 <TableHeaderRow />
-                                <FactoryPrintPage3 data={data} />
+                                {type === 'factory' && <FactoryPrintPage3 data={data} />}
+                                {type === 'house' && <HousePrintPage3 data={data} />}
                         </div>
                         <Footer showSignature={true} signatureImage={data.signatureImage} />
                     </div>

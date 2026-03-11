@@ -305,7 +305,7 @@ export const ParkingSection = ({
             {startNum !== 1 && <div className="mb-8"><CheckBox checked={data?.q10_noParking || false} label="無車位" onClick={() => update('q10_noParking', !data.q10_noParking)} /></div>}
             
             <div className="space-y-12">
-                <QuestionBlock className={parkingLogic.disableMethod ? 'opacity-40 grayscale pointer-events-none' : ''}>
+                <QuestionBlock className={parkingLogic.disableMethod ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}>
                     <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">停車方式 (單選)：</p>
                     <AccordionRadio 
                         options={PARK_TYPES} 
@@ -349,7 +349,7 @@ export const ParkingSection = ({
                 
                 {hasCarMethod && (
                     <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-12">
-                        <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableNumber ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                        <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableNumber ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">車位編號：</p>
                             <RadioGroup 
                                 options={['無車位編號', '有車位編號']} 
@@ -364,7 +364,7 @@ export const ParkingSection = ({
                             {data?.q10_parkingNumberType === 'number' && <SubItemHighlight disabled={parkingLogic.disableNumber}><DetailInput value={data.q10_parkingNumberVal || ''} onChange={v => update('q10_parkingNumberVal', v)} placeholder="如：B1-123" /></SubItemHighlight>}
                         </QuestionBlock>
 
-                        <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableCarStatus ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                        <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableCarStatus ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">汽車車位使用現況：</p>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                 {CAR_USAGE_OPTS.map(u => <div key={u} className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes(u) || false} label={u} onClick={() => handleCarUsageToggle(u)} disabled={parkingLogic.disableCarStatus} /></div>)}
@@ -373,7 +373,7 @@ export const ParkingSection = ({
                             </div>
                         </QuestionBlock>
 
-                        <div className={`bg-blue-50 p-6 md:p-10 rounded-[2.5rem] space-y-8 border-4 border-blue-100 transition-all duration-500 shadow-sm dark:bg-blue-900/20 dark:border-blue-800 ${parkingLogic.disableCarSize ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                        <div className={`bg-blue-50 p-6 md:p-10 rounded-[2.5rem] space-y-8 border-4 border-blue-100 transition-all duration-500 shadow-sm dark:bg-blue-900/20 dark:border-blue-800 ${parkingLogic.disableCarSize ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                             <p className="font-black dynamic-text-h2 text-slate-800 text-left dark:text-blue-100 leading-normal">汽車車位尺寸 (公尺)</p>
                             
                             <div className="mb-4">
@@ -424,7 +424,7 @@ export const ParkingSection = ({
                     </div>
                 </div>
                 
-                <div className={`space-y-10 ${parkingLogic.disableCharging ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                <div className={`space-y-10 ${parkingLogic.disableCharging ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                     <QuestionBlock>
                         <p className="dynamic-text-h2 font-black text-slate-700 mb-8 dark:text-slate-200 leading-normal">車位充電設備配置</p>
                         <RadioGroup options={['無', '有', '僅預留管線／孔位', '須經管委會同意']} value={data?.q10_charging === '否' ? '無' : (data?.q10_charging === '是' ? '有' : (data?.q10_charging || ''))} onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); if (val === '僅預留管線／孔位' || val === '須經管委會同意') { update('q10_charging', val); update('q10_chargingOther', ''); } else { setData(p => ({ ...p, q10_charging: val, q10_chargingOther: '' })); } }} cols={2} layout="grid" disabled={parkingLogic.disableCharging} />
@@ -433,7 +433,7 @@ export const ParkingSection = ({
                 
                 {includeExtras && (
                     <>
-                        <div className={`${parkingLogic.disableAbnormal ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                        <div className={`${parkingLogic.disableAbnormal ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                             <BooleanReveal 
                                 label="車位使用現況" 
                                 value={data?.q11_hasIssue === '否' ? '無異常' : (data?.q11_hasIssue === '是' ? '有異常' : '')}
@@ -457,7 +457,7 @@ export const ParkingSection = ({
                             </BooleanReveal>
                         </div>
 
-                        <div className={`${parkingLogic.disableSupplement ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                        <div className={`${parkingLogic.disableSupplement ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                             <BooleanReveal 
                                 label={
                                     <>
@@ -495,7 +495,7 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                 <CheckBox checked={data?.q16_noFacilities || false} label="無重要環境設施" onClick={() => { if (!data.q16_noFacilities) { update('q16_items', []); update('q16_hasOther', false); update('q16_other', ''); } update('q16_noFacilities', !data.q16_noFacilities); }} />
             </div>
 
-            <div className={`space-y-12 transition-all duration-500 ${data?.q16_noFacilities ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+            <div className={`space-y-12 transition-all duration-500 ${data?.q16_noFacilities ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                 {ENV_CATEGORIES.map((cat: any) => (
                     <div key={cat.title}>
                         <p className="dynamic-text-h2 font-black text-slate-700 mb-6 dark:text-slate-200 leading-normal">{cat.title}</p>
@@ -519,7 +519,7 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                     <CheckBox checked={data?.q16_2_noFacilities || false} label="無常見環境抗性設施" onClick={() => { if (!data.q16_2_noFacilities) { update('q16_2_items', []); update('q16_2_hasOther', false); update('q16_2_other', ''); } update('q16_2_noFacilities', !data.q16_2_noFacilities); }} />
                 </div>
 
-                <div className={`grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 transition-all duration-500 ${data?.q16_2_noFacilities ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                <div className={`grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 transition-all duration-500 ${data?.q16_2_noFacilities ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                     {RESISTANCE_FACILITIES_OPTIONS.map((i: string) => (
                         <CheckBox key={i} checked={data?.q16_2_items?.includes(i) || false} label={i} onClick={() => toggleArr('q16_2_items', i)} disabled={data?.q16_2_noFacilities} />
                     ))}

@@ -175,6 +175,7 @@ export interface SurveyData {
     q17_issue: string;
     q17_desc: string;
     q17_homicide: string; // New: Homicide question
+    q17_homicide_desc?: string; // New: Homicide description
 
     // Factory Specific - Phase 1 Expansion
     factory_height: string; // 滴水高度

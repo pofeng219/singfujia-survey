@@ -125,6 +125,15 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     // Text colors
     const themeText = useMemo(() => type === 'parking' ? 'text-rose-700 dark:text-rose-300' : (type === 'land' ? 'text-emerald-700 dark:text-emerald-300' : (type === 'factory' ? 'text-orange-700 dark:text-orange-300' : 'text-sky-700 dark:text-sky-300')), [type]);
 
+    const highlightStyles = useMemo(() => {
+        switch (type) {
+            case 'parking': return { '--highlight-bg': '#fff1f2', '--highlight-border': '#fda4af', '--highlight-dark-bg': 'rgba(159, 18, 57, 0.3)' } as React.CSSProperties; // rose-50, rose-300
+            case 'land': return { '--highlight-bg': '#ecfdf5', '--highlight-border': '#6ee7b7', '--highlight-dark-bg': 'rgba(6, 78, 59, 0.3)' } as React.CSSProperties; // emerald-50, emerald-300
+            case 'factory': return { '--highlight-bg': '#fff7ed', '--highlight-border': '#fdba74', '--highlight-dark-bg': 'rgba(124, 45, 18, 0.3)' } as React.CSSProperties; // orange-50, orange-300
+            default: return { '--highlight-bg': '#f0f9ff', '--highlight-border': '#7dd3fc', '--highlight-dark-bg': 'rgba(12, 74, 110, 0.3)' } as React.CSSProperties; // sky-50, sky-300
+        }
+    }, [type]);
+
     useEffect(() => { dataRef.current = data; }, [data]);
 
     const parkingLogic = useMemo(() => {
@@ -409,7 +418,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     }, [data, type]);
 
     return (
-        <div className="flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300">
+        <div className="flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300" style={highlightStyles}>
             {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
             
             <ConfirmModal 
@@ -473,6 +482,39 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                         {activeStep === 3 && <Step3 {...stepProps} />}
                         {activeStep === 4 && type !== 'parking' && <Step4 {...stepProps} />}
                     </ErrorBoundary>
+
+                    <div className="hidden lg:flex w-full gap-4 mt-8 mb-4">
+                        {activeStep > 1 && (
+                            <button 
+                                onClick={() => {
+                                    if (activeStep > 1) {
+                                        setActiveStep(prev => prev - 1);
+                                        if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }
+                                }}
+                                className="flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all active:scale-95 bg-white text-slate-600 border-4 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
+                            >
+                                <ArrowLeft className="w-6 h-6" /> 上一步
+                            </button>
+                        )}
+                        <button 
+                            onClick={() => {
+                                if (activeStep < stepsToShow) {
+                                    setActiveStep(prev => prev + 1);
+                                    if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                } else {
+                                    setMobileTab('preview');
+                                }
+                            }}
+                            className={`flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-b-4 active:border-b-0 active:translate-y-[2px] ${isCurrentStepValid ? 'animate-pulse ring-4 ring-sky-200 dark:ring-sky-900' : ''} ${activeStep === stepsToShow ? 'bg-emerald-600 text-white border-emerald-800' : 'bg-sky-600 text-white border-sky-800'}`}
+                        >
+                            {activeStep === stepsToShow ? (
+                                <>預覽匯出 <FileText className="w-6 h-6" /></>
+                            ) : (
+                                <>下一步 <ChevronRight className="w-6 h-6" /></>
+                            )}
+                        </button>
+                    </div>
 
                     <div className="no-print bg-white border-t-4 border-slate-200 p-6 pb-40 lg:pb-10 flex flex-col items-center justify-center shrink-0 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
                         <div className="w-full max-w-3xl mx-auto mb-12 mt-4 px-4 md:px-12 relative">

@@ -86,7 +86,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <SurveySection id="section-access" highlighted={highlightedField === 'section-access'} title={type === 'factory' || type === 'house' || type === 'land' ? "本物件型態與現況" : "本物件現況"} className={themeBorder} status={getAccessStatus()}>
                 {type === 'factory' && (
                     <>
-                        <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
+                        <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-2 border-slate-100 rounded-2xl p-4 md:p-6 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                             <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
                             <RadioGroup options={FACTORY_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他特殊工業設施' ? prev.propertyTypeOther : '' })); }} />
                             {data?.propertyType === '其他特殊工業設施' && (<SubItemHighlight><DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明物件型態" /></SubItemHighlight>)}
@@ -107,7 +107,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     </>
                 )}
                 {type === 'house' && (
-                     <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
+                     <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-2 border-slate-100 rounded-2xl p-4 md:p-6 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
                         <RadioGroup options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '' })); }} />
                         {data?.propertyType === '其他未列項目' && (
@@ -118,7 +118,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     </div>
                 )}
                 {type === 'land' && (
-                     <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-b-2 border-slate-100 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'ring-4 ring-yellow-400 bg-yellow-50 transition-all duration-500' : 'transition-all duration-500'}`}>
+                     <div id="section-propertyType" className={`flex flex-col gap-6 mb-8 border-2 border-slate-100 rounded-2xl p-4 md:p-6 pb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
                         <RadioGroup options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
                     </div>
@@ -809,11 +809,11 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     if (type === 'house') {
         return (
              <StepContainer title="第三步：公設／車位" type={type} themeText={themeText}>
-                <SurveySection id="section-publicFacilities" highlighted={highlightedField === 'section-publicFacilities'} title="7. 大樓／社區公共設施 (可否進入／使用)" status={getPublicFacilitiesStatus()}>
+                <SurveySection id="section-publicFacilities" highlighted={highlightedField === 'section-publicFacilities'} title="6. 大樓／社區公共設施 (可否進入／使用)" status={getPublicFacilitiesStatus()}>
                     <RadioGroup options={['無公共設施', '有公共設施', '無法進入']} value={data?.publicFacilities || ''} onChange={(v) => { setData(prev => ({ ...prev, publicFacilities: v, publicFacilitiesReason: v === '無法進入' ? prev.publicFacilitiesReason : '' })); }} cols={2} layout="grid" />{data?.publicFacilities === '無法進入' && <SubItemHighlight><DetailInput value={data.publicFacilitiesReason || ''} onChange={v => update('publicFacilitiesReason', v)} placeholder="如：需磁扣感應" /></SubItemHighlight>}
                 </SurveySection>
 
-                <SurveySection id="section-q8" highlighted={highlightedField === 'section-q8'} title="8. 公設空間（梯間/地下室）現況" status={getStairStatus()}>
+                <SurveySection id="section-q8" highlighted={highlightedField === 'section-q8'} title="7. 公設空間（梯間/地下室）現況" status={getStairStatus()}>
                      <BooleanReveal 
                         label="" 
                         value={data?.q8_stairIssue === '否' ? '無異常' : (data?.q8_stairIssue === '是' ? '有異常' : '')} 
@@ -832,7 +832,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                      </BooleanReveal>
                 </SurveySection>
-                <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="9. 物件與社區內須注意的設施" status={getFacilityStatus()}>
+                <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="8. 物件與社區內須注意的設施" status={getFacilityStatus()}>
                      <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
@@ -890,7 +890,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                      </BooleanReveal>
                 </SurveySection>
-                <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={10} ids={{ main: 'section-house-parking-main', abnormal: 'section-house-parking-abnormal', supplement: 'section-house-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={getParkingStatus()} />
+                <ParkingSection data={data} setData={setData} update={update} toggleArr={toggleArr} parkingLogic={parkingLogic} startNum={9} ids={{ main: 'section-house-parking-main', abnormal: 'section-house-parking-abnormal', supplement: 'section-house-parking-supplement' }} highlightedId={highlightedField} includeExtras={true} status={getParkingStatus()} />
              </StepContainer>
         );
     }
@@ -1520,7 +1520,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <BuildingLandAccessSection 
                 data={data} setData={setData} update={update}
                 prefix={type === 'house' ? 'q14' : 'land_q2'} 
-                title={type === 'house' ? "11. 進出通行與臨路現況" : (type === 'land' ? "8. 進出通行與臨路現況" : `${accessNum}. 廠房進出通行與臨路的現況`)}
+                title={type === 'house' ? "10. 進出通行與臨路現況" : (type === 'land' ? "8. 進出通行與臨路現況" : `${accessNum}. 廠房進出通行與臨路的現況`)}
                 id={type === 'house' ? "section-q14" : "section-land-q2"}
                 highlightedId={highlightedField}
                 type={type}
@@ -1559,7 +1559,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {/* Environment */}
             <EnvironmentSection 
                 data={data} update={update} toggleArr={toggleArr} id="section-q16" 
-                title={type === 'house' ? "12. 重大環境設施與常見環境抗性設施" : (type === 'land' ? "10. 重大環境設施與常見環境抗性設施" : `${envNum}. 重大環境設施與常見環境抗性設施`)} 
+                title={type === 'house' ? "11. 重大環境設施與常見環境抗性設施" : (type === 'land' ? "10. 重大環境設施與常見環境抗性設施" : `${envNum}. 重大環境設施與常見環境抗性設施`)} 
                 highlightedId={highlightedField} 
                 warningText="※內政部於 104 年 10 月新版不動產說明書中，房仲業者須對於受託銷售之不動產，應調查周邊半徑 300 公尺範圍內之重要環境設施"
                 status={getEnvStatus()}
@@ -1569,7 +1569,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <SurveySection 
                 id="section-q17" 
                 highlighted={highlightedField === 'section-q17'} 
-                title={type === 'house' ? "13. 本案與社區特殊或影響交易事項" : (type === 'land' ? "11. 本案或周圍特殊或影響交易事項" : `${noteNum}. 本案與社區特殊或影響交易事項`)} 
+                title={type === 'house' ? "12. 本案與社區特殊或影響交易事項" : (type === 'land' ? "11. 本案或周圍特殊或影響交易事項" : `${noteNum}. 本案與社區特殊或影響交易事項`)} 
                 status={getNotesStatus()}
             >
                 <div className="space-y-10">
@@ -1590,6 +1590,15 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 onChange={v => update('q17_homicide', v)} 
                                 layout="grid" cols={3}
                             />
+                            {(data.q17_homicide === '有' || data.q17_homicide === '待查證') && (
+                                <SubItemHighlight>
+                                    <DetailInput 
+                                        value={data.q17_homicide_desc || ''} 
+                                        onChange={v => update('q17_homicide_desc', v)} 
+                                        placeholder="說明現況" 
+                                    />
+                                </SubItemHighlight>
+                            )}
                         </QuestionBlock>
                     )}
 
@@ -1647,7 +1656,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             </div>
 
             {/* Signature */}
-            <SurveySection id="section-signature" highlighted={highlightedField === 'section-signature'} title={type === 'house' ? "14. 調查人員簽章" : (type === 'land' ? "12. 調查人員簽章" : `${sigNum}. 調查人員簽章`)} status={data.signatureImage ? 'complete' : 'incomplete'}>
+            <SurveySection id="section-signature" highlighted={highlightedField === 'section-signature'} title={type === 'house' ? "13. 調查人員簽章" : (type === 'land' ? "12. 調查人員簽章" : `${sigNum}. 調查人員簽章`)} status={data.signatureImage ? 'complete' : 'incomplete'}>
                 <SignaturePad value={data.signatureImage} onChange={(v) => update('signatureImage', v)} />
             </SurveySection>
         </StepContainer>

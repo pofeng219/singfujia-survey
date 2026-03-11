@@ -7,8 +7,8 @@ import { useInterface } from './InterfaceContext';
 // Helper to determine color based on label content (Heuristic for Safety/Danger)
 const getButtonColorClass = (checked: boolean, label: string, disabled: boolean, isStandard: boolean = false) => {
     if (disabled) {
-        if (isStandard) return 'border-2 border-b-[4px] bg-white border-slate-300 text-slate-300 opacity-50 cursor-not-allowed grayscale dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600';
-        return 'border-4 border-b-[6px] md:border-b-[8px] bg-white border-slate-300 text-slate-300 opacity-50 cursor-not-allowed grayscale dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600';
+        if (isStandard) return 'border-2 border-b-[4px] bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500';
+        return 'border-4 border-b-[6px] md:border-b-[8px] bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500';
     }
     
     if (isStandard) {
@@ -424,7 +424,7 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
     const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
     return (
-        <QuestionBlock className={disabled ? 'opacity-40 grayscale pointer-events-none' : ''}>
+        <QuestionBlock className={disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}>
             <div className="mb-3 md:mb-4">
                 {typeof label === 'string' ? <p className={`${labelSize} font-black text-slate-700 dark:text-slate-200`}>{label}</p> : label}
             </div>
@@ -780,7 +780,7 @@ export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: 
     const borderClass = isStandard ? 'border-l-[3px] md:border-l-[4px]' : 'border-l-[8px] md:border-l-[12px]';
 
     return (
-        <div className={`mt-3 mb-4 ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+        <div className={`mt-3 mb-4 ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
             <div className="pl-1 md:pl-2">{children}</div>
         </div>
     );
@@ -803,7 +803,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
     }, [disabled, autoFocus]);
 
     return (
-        <div className={`relative w-full ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+        <div className={`relative w-full ${disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
             <input 
                 ref={inputRef}
                 type="text" 

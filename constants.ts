@@ -55,7 +55,7 @@ export const INITIAL_STATE: SurveyData = {
     q15_occupy: '', q15_section: '', q15_subSection: '', q15_number: '',
     q16_noFacilities: false, q16_items: [], q16_hasOther: false, q16_other: '',
     q16_2_noFacilities: false, q16_2_items: [], q16_2_hasOther: false, q16_2_other: '',
-    q17_issue: '', q17_desc: '', q17_homicide: '',
+    q17_issue: '', q17_desc: '', q17_homicide: '', q17_homicide_desc: '',
 
     // Factory Init
     factory_height: '', factory_column_spacing: '', factory_floor_load: '', 
