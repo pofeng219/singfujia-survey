@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, ImageIcon } from 'lucide-react';
 import { SurveyData, SurveyType } from '../types';
 import { 
     PARK_TYPES, CAR_USAGE_OPTS, Q11_OPTS, ENV_CATEGORIES,
@@ -13,7 +13,7 @@ import {
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
     InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs,
-    SectionStatus, FormInput
+    SectionStatus, FormInput, ImageModal
 } from './SharedUI';
 
 export const UtilitiesSection = ({ 
@@ -285,6 +285,7 @@ export const ParkingSection = ({
     isFactory?: boolean,
     status?: SectionStatus
 }) => {
+    const [showParkingGuide, setShowParkingGuide] = React.useState(false);
     const isHouseOrFactory = startNum === 8 || startNum === 11 || startNum === 9; 
     const handleCarUsageToggle = (val: string) => {
         setData(prev => {
@@ -462,7 +463,17 @@ export const ParkingSection = ({
                                 label={
                                     <>
                                         <p className="dynamic-text-h2 font-black text-slate-800 mb-6 text-left dark:text-slate-200 leading-normal">車位與車道其他備註</p>
-                                        <div className="mb-6"><InlineWarning>※如車格位置有其他孔蓋、排風機、消防管道、租期租金、車道出入外通道狹窄等</InlineWarning></div>
+                                        <div className="mb-6 flex flex-col gap-3">
+                                            <InlineWarning>※如車格位置有其他孔蓋、排風機、消防管道、租期租金、車道出入外通道狹窄等</InlineWarning>
+                                            <button
+                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowParkingGuide(true); }}
+                                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                                type="button"
+                                            >
+                                                <ImageIcon size={20} />
+                                                參考圖例
+                                            </button>
+                                        </div>
                                     </>
                                 }
                                 value={data?.q12_hasNote === '否' ? '無' : (data?.q12_hasNote === '是' ? '有' : '')}
@@ -482,6 +493,13 @@ export const ParkingSection = ({
                     </>
                 )}
             </div>
+            
+            <ImageModal 
+                isOpen={showParkingGuide} 
+                onClose={() => setShowParkingGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1nXLAxIFQoyDfZ3y4XWEfxjMTN7ZMQIyo" 
+                title="車位與車道其他備註參考圖例" 
+            />
         </SurveySection>
     );
 };

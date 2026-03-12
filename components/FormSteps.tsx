@@ -151,6 +151,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     const [showLeakageGuide, setShowLeakageGuide] = useState(false);
     const [showLeakageGuide1, setShowLeakageGuide1] = useState(false);
     const [showStructureGuide, setShowStructureGuide] = useState(false);
+    const [showOccupyGuide, setShowOccupyGuide] = useState(false);
 
     const getQ1Status = (): SectionStatus => {
         if (!data.q1_hasExt) return 'incomplete';
@@ -296,6 +297,12 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 imageSrc="https://lh3.googleusercontent.com/d/1CzKWXqCMjdHCJ4cKQ1v68lDdsm7F13YP" 
                 title="建物結構安全評估參考圖例" 
             />
+            <ImageModal 
+                isOpen={showOccupyGuide} 
+                onClose={() => setShowOccupyGuide(false)} 
+                imageSrc="/occupy.jpg" 
+                title="增建、占用與被占用現況參考圖例" 
+            />
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
                     <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
@@ -325,6 +332,16 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {(type === 'house' || type === 'factory') && (
                 <div className="space-y-8 md:space-y-12">
                     <SurveySection id="section-q1" highlighted={highlightedField === 'section-q1'} title="1. 增建、占用與被占用現況" status={getQ1Status()}>
+                        <div className="mb-4">
+                            <button
+                                onClick={() => setShowOccupyGuide(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                type="button"
+                            >
+                                <ImageIcon size={20} />
+                                參考圖例
+                            </button>
+                        </div>
                         <div className="space-y-8 md:space-y-10 pl-0 md:pl-2">
                             <BooleanReveal 
                                 label={
