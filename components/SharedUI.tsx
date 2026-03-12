@@ -33,9 +33,9 @@ interface CheckBoxProps {
 export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'p-4 md:p-6';
-    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[2rem]';
-    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-4xl';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-3xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     return (
@@ -70,9 +70,9 @@ interface RadioGroupProps {
 export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-4 px-3 md:py-5 md:px-4';
-    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
-    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-3xl';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
     const subTextSize = isStandard ? 'text-[14px]' : 'text-lg';
 
@@ -81,7 +81,8 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
     // 1. Exactly 2 options
     // 2. Both options are very short (<= 4 chars)
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
-    const gridCols = layout === 'grid' ? (cols ? `grid-cols-${cols}` : 'grid-cols-2') : (isShortAndSimple ? 'grid-cols-2' : 'grid-cols-1');
+    const isGrid = layout === 'grid' || isShortAndSimple;
+    const gridCols = cols ? `grid-cols-${cols}` : 'grid-cols-2';
     
     // Helper to render label with subtitle if parentheses exist
     const renderLabel = (text: string, isSelected: boolean) => {
@@ -116,7 +117,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
     };
 
     return (
-        <div className={`grid ${gridCols} gap-3 md:gap-4`}>
+        <div className={`${isGrid ? `grid ${gridCols}` : 'flex flex-wrap'} gap-2 md:gap-3`}>
             {options.map((v, idx) => {
                 const isSelected = value === v;
                 return (
@@ -129,9 +130,9 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                                 onChange(value === v ? '' : v);
                             }
                         }}
-                        className={`flex-1 ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex items-center justify-center transition-all duration-200 select-none gap-2 md:gap-3 relative overflow-hidden
+                        className={`${isGrid ? 'flex-1' : 'flex-auto min-w-[120px]'} ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex items-center justify-center transition-all duration-200 select-none gap-2 md:gap-3 relative overflow-hidden
                         ${getButtonColorClass(isSelected, v, disabled, isStandard)}
-                        ${spanFullOption === v ? 'col-span-full' : ''}`}
+                        ${spanFullOption === v ? 'col-span-full w-full' : ''}`}
                     >
                         {renderLabel(v, isSelected)}
                     </button>
@@ -153,18 +154,19 @@ interface AccordionRadioProps {
 export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-4 px-3 md:py-6 md:px-6';
-    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.5rem] md:rounded-[1.75rem]';
-    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-2xl md:text-4xl';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     // Stage 2: Intelligent Layout Detection
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
-    const gridClass = cols ? `grid grid-cols-${cols}` : (isShortAndSimple ? 'grid grid-cols-2' : 'grid grid-cols-1');
+    const isGrid = cols > 0 || isShortAndSimple;
+    const gridClass = isGrid ? (cols ? `grid grid-cols-${cols}` : 'grid grid-cols-2') : 'flex flex-wrap';
 
     return (
-        <div className="flex flex-col gap-4 md:gap-6">
-            <div className={`${gridClass} gap-3 md:gap-4`}>
+        <div className="flex flex-col gap-3 md:gap-4">
+            <div className={`${gridClass} gap-2 md:gap-3`}>
                 {options.map((opt, idx) => {
                     const isSelected = value === opt;
                     return (
@@ -176,7 +178,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
                                 onChange(value === opt ? '' : opt);
                             }} 
-                            className={`flex-1 min-w-[100px] md:min-w-[120px] ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex justify-center items-center transition-all duration-200 select-none gap-2 md:gap-4 relative overflow-hidden
+                            className={`${isGrid ? 'flex-1' : 'flex-auto min-w-[120px]'} ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex justify-center items-center transition-all duration-200 select-none gap-2 md:gap-4 relative overflow-hidden
                             ${getButtonColorClass(isSelected, opt, disabled, isStandard)}`}
                         >
                             <span className="flex items-center gap-2">
@@ -264,10 +266,15 @@ export const SurveySection: React.FC<{
 }> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const titleSize = isStandard ? 'text-[22px] md:text-[24px]' : 'text-[2.2rem] md:text-[2.75rem]';
+    const titleSize = isStandard ? 'text-[22px] md:text-[24px]' : 'text-[1.75rem] md:text-[2.25rem]';
     const hintSize = isStandard ? 'text-[16px] md:text-[18px]' : 'text-lg md:text-xl';
-    const paddingClass = isStandard ? 'p-4 md:p-5' : 'p-6 md:p-10';
-    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[2rem] md:rounded-[2.5rem]';
+    const titlePaddingClass = isStandard ? 'px-4 pt-4 pb-2' : 'p-5 md:p-6';
+    const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const contentPaddingClass = isStandard ? 'px-4 pb-3 pt-0' : 'px-5 md:px-6 pb-5 md:pb-6 pt-0';
+    const dividerMarginClass = isStandard ? 'mb-2 -mt-1' : 'mb-5 md:mb-6 -mt-2';
+    const spaceYClass = isStandard ? 'space-y-3 md:space-y-4' : 'space-y-6 md:space-y-8';
+    const collapseMarginClass = isStandard ? 'mt-3' : 'mt-8 md:mt-10';
+    const collapseBtnClass = isStandard ? 'px-6 py-2.5 rounded-xl text-lg' : 'px-8 py-4 rounded-2xl text-xl';
 
     // Default open, allowing users to collapse manually
     const [isOpen, setIsOpen] = useState(true);
@@ -306,9 +313,9 @@ export const SurveySection: React.FC<{
             {title ? (
                 <div 
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`${paddingClass} flex justify-between items-start gap-4 md:gap-6 cursor-pointer select-none transition-colors duration-200 ${isOpen ? '' : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'}`}
+                    className={`${titlePaddingClass} flex justify-between items-start gap-4 md:gap-6 cursor-pointer select-none transition-colors duration-200 ${isOpen ? '' : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'}`}
                 >
-                    <div className="flex-grow pt-1 flex flex-col gap-2">
+                    <div className={`flex-grow pt-1 flex flex-col ${isStandard ? 'gap-1' : 'gap-2'}`}>
                         {typeof title === 'string' 
                             ? <p className={`${titleSize} font-black text-left leading-tight tracking-tight transition-colors duration-300 ${getTitleColor()}`}>{title}</p> 
                             : title
@@ -343,17 +350,17 @@ export const SurveySection: React.FC<{
             
             <div className={`grid transition-all duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                 <div className="overflow-hidden">
-                    <div className="px-6 md:px-10 pb-6 md:pb-10 pt-0">
+                    <div className={contentPaddingClass}>
                         {/* Divider Line */}
-                        {title && <div className={`border-b-4 mb-6 md:mb-8 -mt-2 ${status === 'complete' ? 'border-emerald-100 dark:border-emerald-800' : (status === 'incomplete' ? 'border-rose-100 dark:border-rose-800' : 'border-slate-100 dark:border-slate-700')}`} />}
+                        {title && <div className={`border-b-4 ${dividerMarginClass} ${status === 'complete' ? 'border-emerald-100 dark:border-emerald-800' : (status === 'incomplete' ? 'border-rose-100 dark:border-rose-800' : 'border-slate-100 dark:border-slate-700')}`} />}
                         
                         {/* Content */}
-                        <div className={className.includes('space-y') ? className : `space-y-8 md:space-y-10 ${className}`}>
+                        <div className={className.includes('space-y') ? className : `${spaceYClass} ${className}`}>
                             {children}
                         </div>
 
                         {/* Bottom Collapse Button */}
-                        <div className="mt-8 md:mt-10 flex justify-center">
+                        <div className={`${collapseMarginClass} flex justify-center`}>
                             <button 
                                 type="button"
                                 onClick={(e) => {
@@ -365,9 +372,9 @@ export const SurveySection: React.FC<{
                                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                     }
                                 }}
-                                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-orange-50 text-orange-600 font-black text-xl hover:bg-orange-100 transition-colors shadow-sm border-2 border-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-800 dark:hover:bg-orange-900/60"
+                                className={`flex items-center gap-2 md:gap-3 ${collapseBtnClass} bg-orange-50 text-orange-600 font-black hover:bg-orange-100 transition-colors shadow-sm border-2 border-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-800 dark:hover:bg-orange-900/60`}
                             >
-                                <ChevronDown className="w-6 h-6 rotate-180" strokeWidth={3} />
+                                <ChevronDown className="w-5 h-5 md:w-6 md:h-6 rotate-180" strokeWidth={3} />
                                 <span>點我縮小</span>
                             </button>
                         </div>
@@ -384,8 +391,8 @@ export const SurveySection: React.FC<{
 export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'p-3 md:p-4' : 'p-6 md:p-8';
-    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
+    const paddingClass = isStandard ? 'p-2.5 md:p-3' : 'p-4 md:p-5';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
     const borderClass = isStandard ? 'border' : 'border-2';
 
     return (
@@ -420,14 +427,17 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const labelSize = isStandard ? 'text-[18px] md:text-[20px]' : 'dynamic-text-h2';
+    const labelMarginClass = isStandard ? 'mb-2 md:mb-3' : 'mb-3 md:mb-4';
 
     const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
     return (
         <QuestionBlock className={disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}>
-            <div className="mb-3 md:mb-4">
-                {typeof label === 'string' ? <p className={`${labelSize} font-black text-slate-700 dark:text-slate-200`}>{label}</p> : label}
-            </div>
+            {label && (
+                <div className={labelMarginClass}>
+                    {typeof label === 'string' ? <p className={`${labelSize} font-black text-slate-700 dark:text-slate-200`}>{label}</p> : label}
+                </div>
+            )}
             <RadioGroup 
                 options={options} 
                 value={value || ''} 
@@ -775,12 +785,13 @@ export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => 
 export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: boolean }> = ({ children, disabled = false }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'p-3 md:p-4' : 'p-6 md:p-8';
-    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
-    const borderClass = isStandard ? 'border-l-[3px] md:border-l-[4px]' : 'border-l-[8px] md:border-l-[12px]';
+    const paddingClass = isStandard ? 'p-2 md:p-3' : 'p-4 md:p-5';
+    const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
+    const borderClass = isStandard ? 'border-l-[3px] md:border-l-[4px]' : 'border-l-[6px] md:border-l-[8px]';
+    const marginClass = isStandard ? 'mt-2 mb-2' : 'mt-2 mb-3';
 
     return (
-        <div className={`mt-3 mb-4 ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
+        <div className={`${marginClass} ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
             <div className="pl-1 md:pl-2">{children}</div>
         </div>
     );

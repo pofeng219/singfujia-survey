@@ -43,12 +43,21 @@
         @media (min-width: 768px) { .mode-standard .dynamic-text-h2 { font-size: 1.25rem; line-height: 1.75rem; } } /* md:text-[20px] */
         
         /* Adjust spacing for standard mode */
+        .mode-standard .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem !important; }
         .mode-standard .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem !important; }
         .mode-standard .space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem !important; }
-        .mode-standard .space-y-12 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem !important; }
         @media (min-width: 768px) {
+            .mode-standard .md\:space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem !important; }
             .mode-standard .md\:space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem !important; }
-            .mode-standard .md\:space-y-12 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem !important; }
+        }
+
+        /* Adjust spacing for friendly mode to improve density while remaining accessible */
+        .mode-friendly .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem !important; }
+        .mode-friendly .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem !important; }
+        .mode-friendly .space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.75rem !important; }
+        @media (min-width: 768px) {
+            .mode-friendly .md\:space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem !important; }
+            .mode-friendly .md\:space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.75rem !important; }
         }
         
         .mode-friendly .dynamic-text-h2 { font-size: 1.5rem; line-height: 2rem; } /* text-[1.5rem] */
@@ -88,7 +97,7 @@
             width: 100%; 
             border: 3px solid #cbd5e1; 
             border-radius: 1.25rem; 
-            padding: 1.25rem; 
+            padding: 1rem 1.25rem; 
             font-size: 1.8rem; /* Increased from 1.6rem for seniors */
             outline: none; 
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
