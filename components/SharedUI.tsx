@@ -77,12 +77,28 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
     const subTextSize = isStandard ? 'text-[14px]' : 'text-lg';
 
     // Stage 2: Intelligent Layout Detection
-    // Default force vertical (1 column). Only switch to horizontal (2 columns) if:
-    // 1. Exactly 2 options
-    // 2. Both options are very short (<= 4 chars)
-    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
-    const isGrid = layout === 'grid' || isShortAndSimple;
-    const gridCols = cols ? `grid-cols-${cols}` : 'grid-cols-2';
+    // 題目的選項按鈕若只有兩個且字數短(不超過5個字)，例如 無 有 ，則維持水平排序；超過三個以上的選項則改為垂直排序
+    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 5);
+    
+    let finalLayout = layout;
+    let finalCols = cols || 2;
+
+    if (options.length >= 3) {
+        finalLayout = 'grid';
+        finalCols = 1;
+    } else if (isShortAndSimple) {
+        finalLayout = 'grid';
+        finalCols = 2;
+    } else if (options.length === 2) {
+        finalLayout = 'grid';
+        finalCols = 1;
+    } else {
+        finalLayout = 'grid';
+        finalCols = 1;
+    }
+
+    const isGrid = finalLayout === 'grid';
+    const gridCols = finalCols === 1 ? 'grid-cols-1' : (finalCols === 2 ? 'grid-cols-2' : (finalCols === 3 ? 'grid-cols-3' : `grid-cols-${finalCols}`));
     
     // Helper to render label with subtitle if parentheses exist
     const renderLabel = (text: string, isSelected: boolean) => {
@@ -160,9 +176,23 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
     // Stage 2: Intelligent Layout Detection
-    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 4);
-    const isGrid = cols > 0 || isShortAndSimple;
-    const gridClass = isGrid ? (cols ? `grid grid-cols-${cols}` : 'grid grid-cols-2') : 'flex flex-wrap';
+    // 題目的選項按鈕若只有兩個且字數短(不超過5個字)，例如 無 有 ，則維持水平排序；超過三個以上的選項則改為垂直排序
+    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 5);
+    
+    let finalCols = cols || 2;
+
+    if (options.length >= 3) {
+        finalCols = 1;
+    } else if (isShortAndSimple) {
+        finalCols = 2;
+    } else if (options.length === 2) {
+        finalCols = 1;
+    } else {
+        finalCols = 1;
+    }
+
+    const isGrid = true;
+    const gridClass = finalCols === 1 ? 'grid grid-cols-1' : (finalCols === 2 ? 'grid grid-cols-2' : `grid grid-cols-${finalCols}`);
 
     return (
         <div className="flex flex-col gap-3 md:gap-4">
@@ -388,15 +418,15 @@ export const SurveySection: React.FC<{
 // === New Reusable Components for Phase 2 Refactor ===
 
 // Standard visual block for questions (Gray bg, rounded)
-export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
+export const QuestionBlock: React.FC<{ children: React.ReactNode, className?: string, id?: string }> = ({ children, className = '', id }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'p-2.5 md:p-3' : 'p-4 md:p-5';
+    const paddingClass = isStandard ? 'p-2 md:p-3' : 'p-4 md:p-5';
     const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
     const borderClass = isStandard ? 'border' : 'border-2';
 
     return (
-        <div className={`bg-slate-50 ${paddingClass} ${roundedClass} ${borderClass} border-slate-200 text-left hover:border-slate-300 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600 ${className}`}>
+        <div id={id} className={`bg-slate-50 ${paddingClass} ${roundedClass} ${borderClass} border-slate-200 text-left hover:border-slate-300 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600 ${className}`}>
             {children}
         </div>
     );
@@ -427,7 +457,7 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const labelSize = isStandard ? 'text-[18px] md:text-[20px]' : 'dynamic-text-h2';
-    const labelMarginClass = isStandard ? 'mb-2 md:mb-3' : 'mb-3 md:mb-4';
+    const labelMarginClass = isStandard ? 'mb-1.5 md:mb-2' : 'mb-3 md:mb-4';
 
     const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
@@ -1123,7 +1153,16 @@ export const ImageModal: React.FC<{
     onClose: () => void;
     imageSrc: string;
     title?: string;
-}> = ({ isOpen, onClose, imageSrc, title }) => {
+    fallbackUrl?: string;
+}> = ({ isOpen, onClose, imageSrc, title, fallbackUrl }) => {
+    const [hasError, setHasError] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            setHasError(false);
+        }
+    }, [isOpen, imageSrc]);
+
     if (!isOpen) return null;
     
     return (
@@ -1145,12 +1184,27 @@ export const ImageModal: React.FC<{
                     </button>
                 </div>
                 <div className="p-4 bg-slate-100 flex justify-center overflow-auto flex-1">
-                    <img 
-                        src={imageSrc} 
-                        alt={title} 
-                        className="max-w-full h-auto object-contain rounded-lg shadow-sm" 
-                        referrerPolicy="no-referrer"
-                    />
+                    {hasError && fallbackUrl ? (
+                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                            <p className="text-slate-600 mb-4 text-lg">圖片無法載入，請點擊下方按鈕查看。</p>
+                            <a 
+                                href={fallbackUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="px-6 py-3 bg-sky-500 text-white rounded-xl font-bold hover:bg-sky-600 transition-colors"
+                            >
+                                開啟參考圖例
+                            </a>
+                        </div>
+                    ) : (
+                        <img 
+                            src={imageSrc} 
+                            alt={title} 
+                            className="max-w-full h-auto object-contain rounded-lg shadow-sm" 
+                            referrerPolicy="no-referrer"
+                            onError={() => setHasError(true)}
+                        />
+                    )}
                 </div>
             </div>
         </div>

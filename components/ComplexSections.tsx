@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle2, ImageIcon } from 'lucide-react';
 import { SurveyData, SurveyType } from '../types';
 import { 
@@ -286,6 +286,7 @@ export const ParkingSection = ({
     status?: SectionStatus
 }) => {
     const isHouseOrFactory = startNum === 8 || startNum === 11 || startNum === 9; 
+    const [showParkingGuide, setShowParkingGuide] = useState(false);
     const handleCarUsageToggle = (val: string) => {
         setData(prev => {
             let arr: string[] = prev.q10_carUsage || [];
@@ -464,16 +465,17 @@ export const ParkingSection = ({
                                         <p className="dynamic-text-h2 font-black text-slate-800 mb-4 text-left dark:text-slate-200 leading-normal">車位與車道其他備註</p>
                                         <div className="mb-4 flex flex-col gap-3">
                                             <InlineWarning>※如車格位置有其他孔蓋、排風機、消防管道、租期租金、車道出入外通道狹窄等</InlineWarning>
-                                            <a
-                                                href="https://drive.google.com/file/d/1nXLAxIFQoyDfZ3y4XWEfxjMTN7ZMQIyo/view?usp=sharing"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                onClick={(e) => e.stopPropagation()}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowParkingGuide(true);
+                                                }}
                                                 className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
                                             >
                                                 <ImageIcon size={20} />
                                                 參考圖例
-                                            </a>
+                                            </button>
                                         </div>
                                     </>
                                 }
@@ -494,6 +496,13 @@ export const ParkingSection = ({
                     </>
                 )}
             </div>
+
+            <ImageModal 
+                isOpen={showParkingGuide} 
+                onClose={() => setShowParkingGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1nXLAxIFQoyDfZ3y4XWEfxjMTN7ZMQIyo" 
+                title="車位與車道其他備註參考圖例" 
+            />
         </SurveySection>
     );
 };
