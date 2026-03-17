@@ -68,7 +68,7 @@ export const UtilitiesSection = ({
                     </p>
                     {type === 'factory' ? (
                          <div className="mb-6"><InlineWarning>※請務必拍照電費單或電盤再行確認</InlineWarning></div>
-                    ) : (
+                    ) : type === 'land' ? null : (
                          <p className="text-xl font-bold text-rose-600 mb-6 dark:text-rose-400">(請務必索取並詳見台電電費單)</p>
                     )}
 
@@ -287,6 +287,7 @@ export const ParkingSection = ({
 }) => {
     const isHouseOrFactory = startNum === 8 || startNum === 11 || startNum === 9; 
     const [showParkingGuide, setShowParkingGuide] = useState(false);
+    const [showParkingUsageGuide, setShowParkingUsageGuide] = useState(false);
     const handleCarUsageToggle = (val: string) => {
         setData(prev => {
             let arr: string[] = prev.q10_carUsage || [];
@@ -345,7 +346,7 @@ export const ParkingSection = ({
                         cols={2}
                         disabled={parkingLogic.disableMethod}
                     />
-                    <div className={`bg-white p-4 md:p-6 rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 mt-6 dark:bg-slate-800 dark:border-slate-700`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => update('q10_hasParkTypeOther', !data.q10_hasParkTypeOther)} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="騎樓停車" /></SubItemHighlight>)}</div>
+                    <div className={`space-y-3 col-span-1 lg:col-span-2 mt-6`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => update('q10_hasParkTypeOther', !data.q10_hasParkTypeOther)} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="騎樓停車" /></SubItemHighlight>)}</div>
                 </QuestionBlock>
                 
                 {hasCarMethod && (
@@ -367,10 +368,16 @@ export const ParkingSection = ({
 
                         <QuestionBlock className={`transition-all duration-500 ${parkingLogic.disableCarStatus ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 text-left dark:text-slate-200 leading-normal">汽車車位使用現況：</p>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
-                                {CAR_USAGE_OPTS.map(u => <div key={u} className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes(u) || false} label={u} onClick={() => handleCarUsageToggle(u)} disabled={parkingLogic.disableCarStatus} /></div>)}
-                                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_carUsage?.includes("須固定抽籤") || false} label="須固定抽籤" onClick={() => handleCarUsageToggle("須固定抽籤")} disabled={parkingLogic.disableCarStatus} />{data?.q10_carUsage?.includes("須固定抽籤") && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><div className="ml-0 md:ml-4 flex items-center justify-center gap-4 mt-2 font-black text-xl md:text-2xl text-slate-700 dark:text-slate-200">每 <input type="number" inputMode="numeric" disabled={parkingLogic.disableCarStatus} className="w-20 md:w-28 border-3 rounded-2xl p-2 md:p-4 text-center bg-white shadow-inner dark:bg-slate-900 dark:border-slate-600" value={data.q10_carLotteryMonth || ''} onChange={e => update('q10_carLotteryMonth', e.target.value)} /> 月抽籤一次</div></SubItemHighlight>)}</div>
-                                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 text-center dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_hasCarUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasCarUsageOther', !data.q10_hasCarUsageOther)} disabled={parkingLogic.disableCarStatus} />{data?.q10_hasCarUsageOther && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><DetailInput value={data.q10_carUsageOther || ''} onChange={v => update('q10_carUsageOther', v)} placeholder="說明現況" /></SubItemHighlight>)}</div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
+                                {CAR_USAGE_OPTS.map(u => <CheckBox key={u} checked={data?.q10_carUsage?.includes(u) || false} label={u} onClick={() => handleCarUsageToggle(u)} disabled={parkingLogic.disableCarStatus} />)}
+                                <div className="col-span-1 lg:col-span-2 space-y-3">
+                                    <CheckBox checked={data?.q10_carUsage?.includes("須固定抽籤") || false} label="須固定抽籤" onClick={() => handleCarUsageToggle("須固定抽籤")} disabled={parkingLogic.disableCarStatus} />
+                                    {data?.q10_carUsage?.includes("須固定抽籤") && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><div className="ml-0 md:ml-4 flex items-center justify-center gap-4 mt-2 font-black text-xl md:text-2xl text-slate-700 dark:text-slate-200">每 <input type="number" inputMode="numeric" disabled={parkingLogic.disableCarStatus} className="w-20 md:w-28 border-3 rounded-2xl p-2 md:p-4 text-center bg-white shadow-inner dark:bg-slate-900 dark:border-slate-600" value={data.q10_carLotteryMonth || ''} onChange={e => update('q10_carLotteryMonth', e.target.value)} /> 月抽籤一次</div></SubItemHighlight>)}
+                                </div>
+                                <div className="col-span-1 lg:col-span-2 text-center space-y-3">
+                                    <CheckBox checked={data?.q10_hasCarUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasCarUsageOther', !data.q10_hasCarUsageOther)} disabled={parkingLogic.disableCarStatus} />
+                                    {data?.q10_hasCarUsageOther && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><DetailInput value={data.q10_carUsageOther || ''} onChange={v => update('q10_carUsageOther', v)} placeholder="說明現況" /></SubItemHighlight>)}
+                                </div>
                             </div>
                         </QuestionBlock>
 
@@ -409,21 +416,24 @@ export const ParkingSection = ({
                             </div>
                         </div>
 
-                        <QuestionBlock className="bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left hover:border-slate-300 transition-colors space-y-6 dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600">
+                        <QuestionBlock className="space-y-4 md:space-y-6">
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">車道經過地號</p>
                             <LandNumberInputs section={data.q10_laneSection || ''} subSection={data.q10_laneSubSection || ''} number={data.q10_laneNumber || ''} onChangeSection={v => update('q10_laneSection', v)} onChangeSubSection={v => update('q10_laneSubSection', v)} onChangeNumber={v => update('q10_laneNumber', v)} />
                         </QuestionBlock>
                     </div>
                 )}
 
-                <div className="bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left hover:border-slate-300 transition-colors space-y-6 dark:bg-slate-900/50 dark:border-slate-700 dark:hover:border-slate-600">
+                <QuestionBlock className="space-y-4 md:space-y-6">
                     <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">機車車位使用現況</p>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
-                        <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_motoUsage?.includes("固定位置使用") || false} label="固定位置使用" onClick={() => toggleArr('q10_motoUsage', "固定位置使用")} /></div>
-                        <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_motoUsage?.includes("無機車車位") || false} label="無機車車位" onClick={() => toggleArr('q10_motoUsage', "無機車車位")} /></div>
-                        <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 col-span-1 lg:col-span-2 text-left dark:bg-slate-800 dark:border-slate-700"><CheckBox checked={data?.q10_hasMotoUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasMotoUsageOther', !data.q10_hasMotoUsageOther)} />{data?.q10_hasMotoUsageOther && (<SubItemHighlight><DetailInput value={data.q10_motoUsageOther || ''} onChange={v => update('q10_motoUsageOther', v)} placeholder="如：隨到隨停、一年一抽" /></SubItemHighlight>)}</div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
+                        <CheckBox checked={data?.q10_motoUsage?.includes("固定位置使用") || false} label="固定位置使用" onClick={() => toggleArr('q10_motoUsage', "固定位置使用")} />
+                        <CheckBox checked={data?.q10_motoUsage?.includes("無機車車位") || false} label="無機車車位" onClick={() => toggleArr('q10_motoUsage', "無機車車位")} />
+                        <div className="col-span-1 lg:col-span-2 text-left space-y-3">
+                            <CheckBox checked={data?.q10_hasMotoUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasMotoUsageOther', !data.q10_hasMotoUsageOther)} />
+                            {data?.q10_hasMotoUsageOther && (<SubItemHighlight><DetailInput value={data.q10_motoUsageOther || ''} onChange={v => update('q10_motoUsageOther', v)} placeholder="如：隨到隨停、一年一抽" /></SubItemHighlight>)}
+                        </div>
                     </div>
-                </div>
+                </QuestionBlock>
                 
                 <div className={`space-y-10 ${parkingLogic.disableCharging ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                     <QuestionBlock>
@@ -436,7 +446,24 @@ export const ParkingSection = ({
                     <>
                         <div className={`${parkingLogic.disableAbnormal ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                             <BooleanReveal 
-                                label="車位使用現況" 
+                                label={
+                                    <>
+                                        <p className="dynamic-text-h2 font-black text-slate-800 mb-4 text-left dark:text-slate-200 leading-normal">車位使用現況</p>
+                                        <div className="mb-4 flex flex-col gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowParkingUsageGuide(true);
+                                                }}
+                                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                            >
+                                                <ImageIcon size={20} />
+                                                參考圖例
+                                            </button>
+                                        </div>
+                                    </>
+                                }
                                 value={data?.q11_hasIssue === '否' ? '無異常' : (data?.q11_hasIssue === '是' ? '有異常' : '')}
                                 onChange={(v) => { 
                                     // Fix: Allow deselection by preserving empty string
@@ -450,7 +477,7 @@ export const ParkingSection = ({
                             >
                                 <div className="space-y-6 pt-2">
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{Q11_OPTS.map(i => <CheckBox key={i} checked={data?.q11_items?.includes(i) || false} label={i} onClick={() => toggleArr('q11_items', i)} disabled={parkingLogic.disableAbnormal} />)}</div>
-                                    <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 dark:bg-slate-800 dark:border-slate-700">
+                                    <div className="space-y-3">
                                         <CheckBox checked={data?.q11_hasOther || false} label="其他未列項目" onClick={() => update('q11_hasOther', !data.q11_hasOther)} disabled={parkingLogic.disableAbnormal} />
                                         {data?.q11_hasOther && <DetailInput value={data.q11_other || ''} onChange={v => update('q11_other', v)} disabled={parkingLogic.disableAbnormal} placeholder="如：機械故障、高度受限" />}
                                     </div>
@@ -500,8 +527,14 @@ export const ParkingSection = ({
             <ImageModal 
                 isOpen={showParkingGuide} 
                 onClose={() => setShowParkingGuide(false)} 
-                imageSrc="https://lh3.googleusercontent.com/d/1nXLAxIFQoyDfZ3y4XWEfxjMTN7ZMQIyo" 
+                imageSrc="https://lh3.googleusercontent.com/d/1uGe_fPzNK1QTat5PSR6SmkHEtMIF39lo" 
                 title="車位與車道其他備註參考圖例" 
+            />
+            <ImageModal 
+                isOpen={showParkingUsageGuide} 
+                onClose={() => setShowParkingUsageGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/12nlowzk-k3qp8KtfVbh7lDsjIQhhNPjV" 
+                title="車位使用現況參考圖例" 
             />
         </SurveySection>
     );

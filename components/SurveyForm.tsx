@@ -475,95 +475,91 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-40 lg:pb-24 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
+                <div className="bg-white border-b-2 border-slate-200 px-6 pt-12 pb-14 shrink-0 z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+                    <div className="w-full max-w-3xl mx-auto relative">
+                        {/* Track */}
+                        <div className="absolute left-0 top-1/2 w-full h-1.5 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
+                        {/* Progress Line */}
+                        <div 
+                            className="absolute left-0 top-1/2 h-1.5 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
+                            style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
+                        ></div>
+                        
+                        <div className="flex justify-between items-center w-full">
+                            {stepLabels.slice(0, stepsToShow).map((label, idx) => {
+                                const stepNum = idx + 1;
+                                const isActive = activeStep === stepNum;
+                                const isCompleted = activeStep > stepNum;
+                                const pageLabel = ["第一頁", "第二頁", "第三頁", "第四頁"][idx];
+
+                                return (
+                                    <button 
+                                        key={stepNum} 
+                                        type="button"
+                                        onClick={() => setActiveStep(stepNum)}
+                                        className="group relative flex flex-col items-center focus:outline-none"
+                                    >
+                                        {/* Page Label (Above) */}
+                                        <span className={`absolute -top-10 text-sm md:text-base font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-400 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-600 translate-y-1 opacity-60')}`}>
+                                            {pageLabel}
+                                        </span>
+                                        
+                                        {/* Dot */}
+                                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-lg md:text-xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600')}`}>
+                                            {isCompleted ? <Check className="w-6 h-6" strokeWidth={3} /> : stepNum}
+                                        </div>
+                                        
+                                        {/* Content Label (Below) */}
+                                        <span className={`absolute -bottom-10 whitespace-nowrap max-w-[140px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 opacity-80'}`}>
+                                            {label}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+
+                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-40 lg:pb-10 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
                         {activeStep === 2 && <Step2 {...stepProps} />}
                         {activeStep === 3 && <Step3 {...stepProps} />}
                         {activeStep === 4 && type !== 'parking' && <Step4 {...stepProps} />}
                     </ErrorBoundary>
+                </div>
 
-                    <div className="hidden lg:flex w-full gap-4 mt-8 mb-4">
-                        {activeStep > 1 && (
-                            <button 
-                                onClick={() => {
-                                    if (activeStep > 1) {
-                                        setActiveStep(prev => prev - 1);
-                                        if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                                    }
-                                }}
-                                className="flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all active:scale-95 bg-white text-slate-600 border-4 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
-                            >
-                                <ArrowLeft className="w-6 h-6" /> 上一步
-                            </button>
-                        )}
+                <div className="hidden lg:flex shrink-0 w-full gap-4 p-4 bg-white/95 backdrop-blur-md border-t-2 border-slate-200 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900/95 dark:border-slate-800">
+                    {activeStep > 1 && (
                         <button 
                             onClick={() => {
-                                if (activeStep < stepsToShow) {
-                                    setActiveStep(prev => prev + 1);
+                                if (activeStep > 1) {
+                                    setActiveStep(prev => prev - 1);
                                     if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                                } else {
-                                    setMobileTab('preview');
                                 }
                             }}
-                            className={`flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-b-4 active:border-b-0 active:translate-y-[2px] ${isCurrentStepValid ? 'animate-pulse ring-4 ring-sky-200 dark:ring-sky-900' : ''} ${activeStep === stepsToShow ? 'bg-emerald-600 text-white border-emerald-800' : 'bg-sky-600 text-white border-sky-800'}`}
+                            className="flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all active:scale-95 bg-slate-100 text-slate-600 border-2 border-slate-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
                         >
-                            {activeStep === stepsToShow ? (
-                                <>預覽匯出 <FileText className="w-6 h-6" /></>
-                            ) : (
-                                <>下一步 <ChevronRight className="w-6 h-6" /></>
-                            )}
+                            <ArrowLeft className="w-6 h-6" /> 上一步
                         </button>
-                    </div>
-
-                    <div className="no-print bg-white border-t-4 border-slate-200 p-6 pb-40 lg:pb-10 flex flex-col items-center justify-center shrink-0 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
-                        <div className="w-full max-w-3xl mx-auto mb-12 mt-4 px-4 md:px-12 relative">
-                            {/* Track */}
-                            <div className="absolute left-0 top-1/2 w-full h-1.5 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
-                            {/* Progress Line */}
-                            <div 
-                                className="absolute left-0 top-1/2 h-1.5 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
-                                style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
-                            ></div>
-                            
-                            <div className="flex justify-between items-center w-full">
-                                {stepLabels.slice(0, stepsToShow).map((label, idx) => {
-                                    const stepNum = idx + 1;
-                                    const isActive = activeStep === stepNum;
-                                    const isCompleted = activeStep > stepNum;
-                                    const pageLabel = ["第一頁", "第二頁", "第三頁", "第四頁"][idx];
-
-                                    return (
-                                        <button 
-                                            key={stepNum} 
-                                            type="button"
-                                            onClick={() => setActiveStep(stepNum)}
-                                            className="group relative flex flex-col items-center focus:outline-none"
-                                        >
-                                            {/* Page Label (Above) */}
-                                            <span className={`absolute -top-10 text-sm md:text-base font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-400 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-600 translate-y-1 opacity-60')}`}>
-                                                {pageLabel}
-                                            </span>
-                                            
-                                            {/* Dot */}
-                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-lg md:text-xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600')}`}>
-                                                {isCompleted ? <Check className="w-6 h-6" strokeWidth={3} /> : stepNum}
-                                            </div>
-                                            
-                                            {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-10 whitespace-nowrap max-w-[140px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 opacity-80'}`}>
-                                                {label}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                        <button onClick={clearDraft} className="w-full py-6 bg-rose-50 border-4 border-rose-200 text-rose-600 rounded-3xl font-black text-2xl flex items-center justify-center gap-4 hover:bg-rose-100 hover:text-rose-700 transition-all duration-200 shadow-sm active:scale-[0.98] dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
-                            <Trash2 className="w-8 h-8" />
-                            <span>清空所有填寫內容 (重填)</span>
-                        </button>
-                    </div>
+                    )}
+                    <button 
+                        onClick={() => {
+                            if (activeStep < stepsToShow) {
+                                setActiveStep(prev => prev + 1);
+                                if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                            } else {
+                                setMobileTab('preview');
+                            }
+                        }}
+                        className={`flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-b-4 active:border-b-0 active:translate-y-[2px] ${isCurrentStepValid ? 'animate-pulse ring-4 ring-sky-200 dark:ring-sky-900' : ''} ${activeStep === stepsToShow ? 'bg-emerald-600 text-white border-emerald-800' : 'bg-sky-600 text-white border-sky-800'}`}
+                    >
+                        {activeStep === stepsToShow ? (
+                            <>預覽匯出 <FileText className="w-6 h-6" /></>
+                        ) : (
+                            <>下一步 <ChevronRight className="w-6 h-6" /></>
+                        )}
+                    </button>
                 </div>
             </div>
 

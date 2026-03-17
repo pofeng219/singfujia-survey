@@ -55,32 +55,35 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
          !label.includes('有設置'));
     
     return (
-        <div className="flex items-start gap-2 mr-4 my-1">
-            <div className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-rose-500 bg-rose-500' : 'border-sky-600 bg-sky-600'}`}>
-                <Check size={14} strokeWidth={4} className="text-white" />
+        <div className={`flex items-start ${isStandard ? 'gap-1 mr-3 my-0.5' : 'gap-2 mr-4 my-1.5'}`}>
+            <div className={`w-4 h-4 mt-0.5 rounded-sm border flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-rose-500 bg-rose-500' : 'border-sky-600 bg-sky-600'}`}>
+                <Check size={12} strokeWidth={4} className="text-white" />
             </div>
-            <span className={`${isStandard ? 'text-[15px]' : 'text-[18px]'} font-black leading-tight tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
+            <span className={`${isStandard ? 'text-[13px]' : 'text-[18px]'} font-black leading-tight tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
                 {label}{suffix}
             </span>
         </div>
     );
 };
 
-// Modernized CheckRow: Clean, high readability with card-like row
+// Modernized CheckRow: Clean, high readability with card-like row, highlights abnormal fields
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
+    // If NOT checked, it means there's an abnormality (needs explanation)
+    const isAbnormal = !checked;
+    
     return (
-        <div className="flex border-b border-slate-200 last:border-0 bg-white hover:bg-slate-50 transition-colors">
-            <div className="w-[80px] shrink-0 flex justify-center pt-1.5 border-r border-slate-100 bg-slate-50/50">
+        <div className={`flex border-b border-slate-200 last:border-0 transition-colors ${isAbnormal ? 'bg-rose-50/80 hover:bg-rose-100/80' : 'bg-white hover:bg-slate-50'}`}>
+            <div className={`w-[60px] md:w-[80px] shrink-0 flex justify-center pt-1 border-r ${isAbnormal ? 'border-rose-200 bg-rose-100/50' : 'border-slate-100 bg-slate-50/50'}`}>
                 <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
                     {checked && <Check size={10} strokeWidth={3} className="text-white" />}
                 </div>
             </div>
-            <div className={`flex-grow py-1 px-2 text-left ${isStandard ? 'text-[14px]' : 'text-[18px]'}`}>
-                <div className="flex flex-col md:flex-row md:flex-wrap items-start md:items-center gap-x-2 gap-y-0">
+            <div className={`flex-grow ${isStandard ? 'py-0.5' : 'py-1.5'} px-2 text-left ${isStandard ? 'text-[13px]' : 'text-[20px]'}`}>
+                <div className={`flex flex-col md:flex-row md:flex-wrap items-start md:items-center ${isStandard ? 'gap-x-1 gap-y-0' : 'gap-x-2 gap-y-1'}`}>
                     {/* Apply small gray question style to the first span child if it's the question label */}
-                    <div className={`[&>span:first-child]:${isStandard ? 'text-[13px]' : 'text-[16px]'} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-500 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center gap-x-2 gap-y-0 w-full`}>
+                    <div className={`[&>span:first-child]:${isStandard ? 'text-[12px]' : 'text-[18px]'} [&>span:first-child]:font-bold ${isAbnormal ? '[&>span:first-child]:text-rose-700' : '[&>span:first-child]:text-slate-500'} [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center ${isStandard ? 'gap-x-1 gap-y-0' : 'gap-x-2 gap-y-1'} w-full leading-tight`}>
                         {children}
                     </div>
                 </div>
@@ -94,10 +97,10 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     return (
-        <div className="mt-1.5 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
-            <div className="px-2 py-1 flex items-center gap-2">
-                <div className="w-1.5 h-3.5 bg-sky-500 rounded-full"></div>
-                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-none pt-0.5`}>{title}</span>
+        <div className={`mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? '' : 'py-1'}`}>
+            <div className={`px-2 ${isStandard ? 'py-0.5 gap-1.5' : 'py-1 gap-2'} flex items-center`}>
+                <div className={`bg-sky-500 rounded-full ${isStandard ? 'w-1 h-3' : 'w-1.5 h-4'}`}></div>
+                <span className={`font-black text-slate-800 ${isStandard ? 'text-[14px]' : 'text-[20px]'} tracking-widest leading-none pt-0.5`}>{title}</span>
             </div>
         </div>
     );
@@ -109,8 +112,8 @@ const TableHeaderRow: React.FC = () => {
     const isStandard = mode === 'standard';
     return (
         <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
-            <div className={`w-[80px] shrink-0 text-center font-black text-slate-700 py-1 ${isStandard ? 'text-[13px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-slate-300/50`}>確認無須<br/>新增說明</div>
-            <div className={`flex-grow py-1 px-2 font-black text-left text-slate-700 ${isStandard ? 'text-[14px]' : 'text-[18px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
+            <div className={`w-[60px] md:w-[80px] shrink-0 text-center font-black text-slate-700 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[12px]' : 'text-[18px]'} whitespace-nowrap tracking-wider border-r border-slate-300/50`}>確認無須<br/>新增說明</div>
+            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-2'} px-2 font-black text-left text-slate-700 ${isStandard ? 'text-[13px]' : 'text-[20px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
         </div>
     );
 };
@@ -119,8 +122,8 @@ const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' |
     const mode = useInterface();
     const isStandard = mode === 'standard';
     return (
-        <div className={`font-bold ${isStandard ? 'text-[16px]' : 'text-[20px]'} mt-1 flex items-start leading-snug ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
-            <span className={`mr-2 shrink-0 text-[#009FE3] ${isStandard ? 'text-lg' : 'text-xl'}`}>•</span>
+        <div className={`font-bold ${isStandard ? 'text-[14px]' : 'text-[20px]'} ${isStandard ? 'mt-0.5' : 'mt-1.5'} flex items-start leading-snug ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
+            <span className={`mr-1.5 shrink-0 text-[#009FE3] ${isStandard ? 'text-[16px]' : 'text-[22px]'}`}>•</span>
             <span className="mr-1 shrink-0">{label}：</span>
             <span>{value || ''}</span>
         </div>
@@ -1166,9 +1169,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
         const mode = useInterface();
         const isStandard = mode === 'standard';
         return (
-            <div className="mb-1 w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden">
-                <div className={`px-2 py-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 ${isStandard ? 'text-[13px]' : 'text-[16px]'} leading-snug text-black`}>
-                    <span className={`font-black text-black ${isStandard ? 'text-[14px]' : 'text-[18px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
+            <div className={`${isStandard ? 'mb-1' : 'mb-3'} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden`}>
+                <div className={`px-2 ${isStandard ? 'py-1 gap-x-2 gap-y-0.5' : 'py-2 gap-x-3 gap-y-1'} flex flex-wrap items-center ${isStandard ? 'text-[13px]' : 'text-[20px]'} leading-snug text-black`}>
+                    <span className={`font-black text-black ${isStandard ? 'text-[14px]' : 'text-[22px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
                     {(type === 'factory' || type === 'house' || type === 'land') && (
                         <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
                     )}
@@ -1200,29 +1203,33 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             <ScaledA4Wrapper pageNum={1}>
                 <div className="flex-grow flex flex-col h-full text-black pb-32">
-                    <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                        <h1 className={`font-black tracking-widest text-black leading-none mb-2 ${isStandard ? 'text-[32px]' : 'text-[36px]'}`}>幸福家不動產－業務版現況調查表</h1>
-                        <div className={`${isStandard ? 'text-[14px]' : 'text-[16px]'} font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
+                    <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-3' : 'mb-5'} relative w-full`}>
+                        <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-none mb-2 text-[32px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                            {isStandard ? '幸福家不動產－業務版現況調查表' : (
+                                <>幸福家不動產<br/>－業務版現況調查表</>
+                            )}
+                        </h1>
+                        <div className={`${isStandard ? 'text-[14px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
                     </div>
-                    <table className="excel-table mb-2 w-full text-black border-collapse border-2 border-gray-300">
+                    <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-4'} w-full text-black border-collapse border-2 border-gray-300`}>
                         <tbody>
                             <tr className="border-b border-gray-300">
-                                <td className={`bg-gray-100 w-[10%] text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>案名</td><td className={`w-[30%] font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.caseName}</td>
-                                <td className={`bg-gray-100 w-[15%] text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>編號</td><td className={`w-[20%] font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.authNumber}</td>
-                                <td className={`bg-gray-100 w-[8%] text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>店名</td><td className={`w-[17%] text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.storeName}</td>
+                                <td className={`bg-gray-100 w-[10%] text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>案名</td><td className={`w-[30%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{data?.caseName}</td>
+                                <td className={`bg-gray-100 w-[15%] text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>編號</td><td className={`w-[20%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{data?.authNumber}</td>
+                                <td className={`bg-gray-100 w-[8%] text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>店名</td><td className={`w-[17%] text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{data?.storeName}</td>
                             </tr>
                             <tr className="border-b border-gray-300">
-                                <td className={`bg-gray-100 text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.address}</td>
-                                <td className={`bg-gray-100 text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>業務</td><td className={`font-black text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{data?.agentName}</td>
-                                <td className={`bg-gray-100 text-black font-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black py-1.5 px-2 ${isStandard ? 'text-[14px]' : 'text-[16px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
+                                <td className={`bg-gray-100 text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{data?.address}</td>
+                                <td className={`bg-gray-100 text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>業務</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{data?.agentName}</td>
+                                <td className={`bg-gray-100 text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[14px]' : 'text-[20px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div className={`bg-[#009FE3] text-white px-4 py-1 ${isStandard ? 'text-[14px]' : 'text-[16px]'} font-black mb-1 self-start rounded-r-full shadow-md tracking-wide`}>【調查現況】</div>
+                    <div className={`bg-[#009FE3] text-white px-4 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[14px]' : 'text-[20px]'} font-black ${isStandard ? 'mb-1' : 'mb-3'} self-start rounded-r-full shadow-md tracking-wide`}>【調查現況】</div>
                     
                     <BasicInfoTable />
 
-                    <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
+                    <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden`}>
                             {type === 'house' && <HousePrintPage1 data={data} />}
                             {type === 'land' && <LandPrintPage1 data={data} />}
                             {type === 'factory' && <FactoryPrintPage1 data={data} />}
@@ -1274,11 +1281,15 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {(type !== 'parking' || previewPage === 2) && (
                 <ScaledA4Wrapper pageNum={2}>
                     <div className="flex-grow flex flex-col h-full text-black pb-32">
-                        <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                            <h1 className={`font-black tracking-widest text-black leading-none mb-2 ${isStandard ? 'text-[32px]' : 'text-[36px]'}`}>幸福家不動產－業務版現況調查表</h1>
-                            <div className={`${isStandard ? 'text-[14px]' : 'text-[16px]'} font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]`}>【背面】</div>
+                        <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-3' : 'mb-5'} relative w-full`}>
+                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-none mb-2 text-[32px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                                {isStandard ? '幸福家不動產－業務版現況調查表' : (
+                                    <>幸福家不動產<br/>－業務版現況調查表</>
+                                )}
+                            </h1>
+                            <div className={`${isStandard ? 'text-[14px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【背面】</div>
                         </div>
-                        <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
+                        <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden`}>
                                 <TableHeaderRow />
                                 {type === 'house' && <HousePrintPage2 data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                                 {type === 'land' && <LandPrintPage2 data={data} />}
@@ -1292,11 +1303,15 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {(hasPage3 && (previewPage === 3 || exporting)) && (
                 <ScaledA4Wrapper pageNum={3}>
                     <div className="flex-grow flex flex-col h-full text-black pb-32">
-                         <div className="flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 mb-3 relative w-full">
-                            <h1 className={`font-black tracking-widest text-black leading-none mb-2 ${isStandard ? 'text-[32px]' : 'text-[36px]'}`}>幸福家不動產－業務版現況調查表</h1>
-                            <div className={`${isStandard ? 'text-[14px]' : 'text-[16px]'} font-bold text-white bg-[#009FE3] px-4 py-1.5 rounded-t-lg translate-y-[5px]`}>【附件】</div>
+                         <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-3' : 'mb-5'} relative w-full`}>
+                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-none mb-2 text-[32px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                                {isStandard ? '幸福家不動產－業務版現況調查表' : (
+                                    <>幸福家不動產<br/>－業務版現況調查表</>
+                                )}
+                            </h1>
+                            <div className={`${isStandard ? 'text-[14px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【附件】</div>
                         </div>
-                        <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden">
+                        <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden`}>
                                 <TableHeaderRow />
                                 {type === 'factory' && <FactoryPrintPage3 data={data} />}
                                 {type === 'house' && <HousePrintPage3 data={data} />}

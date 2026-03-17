@@ -151,6 +151,9 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     const [showLeakageGuide, setShowLeakageGuide] = useState(false);
     const [showLeakageGuide1, setShowLeakageGuide1] = useState(false);
     const [showStructureGuide, setShowStructureGuide] = useState(false);
+    const [showStructureGuide1, setShowStructureGuide1] = useState(false);
+    const [showStructureGuide2, setShowStructureGuide2] = useState(false);
+    const [showTiltGuide, setShowTiltGuide] = useState(false);
     const [showOccupyGuide, setShowOccupyGuide] = useState(false);
 
     const getQ1Status = (): SectionStatus => {
@@ -276,7 +279,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <ImageModal 
                 isOpen={showMeasurementGuide} 
                 onClose={() => setShowMeasurementGuide(false)} 
-                imageSrc="https://lh3.googleusercontent.com/d/1ptENQiVhKkfwvGWEbxbq2NycrJxXseJL" 
+                imageSrc="https://lh3.googleusercontent.com/d/1wAmc238i_LOlWdJa7KjE5RFWH05G44LG" 
                 title="測量參考圖例" 
             />
             <ImageModal 
@@ -288,14 +291,32 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             <ImageModal 
                 isOpen={showLeakageGuide1} 
                 onClose={() => setShowLeakageGuide1(false)} 
-                imageSrc="https://lh3.googleusercontent.com/d/1307yNKkGX2UJXEcx0MuW63pYUMb-0HDA" 
+                imageSrc="https://lh3.googleusercontent.com/d/1P8s5Evk8ECU4ywYHi-xWeQnfJV6Ov_N0" 
                 title="滲漏水與壁癌參考圖例 (1)" 
             />
             <ImageModal 
                 isOpen={showStructureGuide} 
                 onClose={() => setShowStructureGuide(false)} 
-                imageSrc="https://lh3.googleusercontent.com/d/1CzKWXqCMjdHCJ4cKQ1v68lDdsm7F13YP" 
+                imageSrc="https://lh3.googleusercontent.com/d/1s96VDVuXH7zlz-7osRXoeCK6LO4BMPHw" 
                 title="建物結構安全評估參考圖例" 
+            />
+            <ImageModal 
+                isOpen={showStructureGuide1} 
+                onClose={() => setShowStructureGuide1(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1i23-q7QEYC2YNd1gCg-6zc0pwEDEJF2S" 
+                title="建物結構安全評估參考圖例 (1)" 
+            />
+            <ImageModal 
+                isOpen={showStructureGuide2} 
+                onClose={() => setShowStructureGuide2(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1KMJwYPW6IwnPEmrpbY5hlk32B5HKt9cf" 
+                title="建物結構安全評估參考圖例 (2)" 
+            />
+            <ImageModal 
+                isOpen={showTiltGuide} 
+                onClose={() => setShowTiltGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/173MWcVrNWsHw3Zk61LKRtw6aUh9SxnEn" 
+                title="建物傾斜現況參考圖例" 
             />
             <ImageModal 
                 isOpen={showOccupyGuide} 
@@ -360,8 +381,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 trigger="有"
                             >
                                 <div className="space-y-6 md:space-y-8 pt-4">
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{EXT_LIST.map(i => (<div key={i} className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 hover:border-slate-300 transition-colors"><CheckBox checked={data?.q1_items?.includes(i) || false} label={i} onClick={() => toggleArr('q1_items', i)} />{i === "地下室增建" && data?.q1_items?.includes("地下室增建") && (<div className="mt-4 text-left"><CheckBox checked={data?.q1_basementPartition || false} label="內含隔間" onClick={() => update('q1_basementPartition', !data.q1_basementPartition)} /></div>)}</div>))}</div>
-                                    <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q1_hasOther || false} label="其他未列項目" onClick={() => update('q1_hasOther', !data.q1_hasOther)} />{data?.q1_hasOther && <DetailInput value={data.q1_other || ''} onChange={v => update('q1_other', v)} placeholder="如遮雨棚增建、平台外推" />}</div>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">{EXT_LIST.map(i => (<div key={i} className="space-y-3"><CheckBox checked={data?.q1_items?.includes(i) || false} label={i} onClick={() => toggleArr('q1_items', i)} />{i === "地下室增建" && data?.q1_items?.includes("地下室增建") && (<div className="mt-4 text-left"><CheckBox checked={data?.q1_basementPartition || false} label="內含隔間" onClick={() => update('q1_basementPartition', !data.q1_basementPartition)} /></div>)}</div>))}</div>
+                                    <div className="space-y-3 text-left"><CheckBox checked={data?.q1_hasOther || false} label="其他未列項目" onClick={() => update('q1_hasOther', !data.q1_hasOther)} />{data?.q1_hasOther && <DetailInput value={data.q1_other || ''} onChange={v => update('q1_other', v)} placeholder="如遮雨棚增建、平台外推" />}</div>
                                 </div>
                             </BooleanReveal>
 
@@ -469,8 +490,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                 <p className="dynamic-text-h2 font-black mb-6 leading-normal">發生位置：</p>
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">{LEAK_LOCATIONS.map(i => <CheckBox key={i} checked={data?.q3_locations?.includes(i) || false} label={i} onClick={() => toggleArr('q3_locations', i)} />)}</div>
                                             </div>
-                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 space-y-4 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" />}</div>
-                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 space-y-4 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => update('q3_suspected', !data.q3_suspected)} />{data?.q3_suspected && <DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" />}</div>
+                                            <div className="space-y-3 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" />}</div>
+                                            <div className="space-y-3 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => update('q3_suspected', !data.q3_suspected)} />{data?.q3_suspected && <DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" />}</div>
                                         </div>
                                     )}
                                 </div>
@@ -502,14 +523,32 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     <p className="text-xl text-slate-600 font-bold mb-6 dark:text-slate-300">（非單純壁癌或油漆剝落）</p>
                                     <div className="flex flex-col gap-3">
                                         <InlineWarning>※可從浴廁、廚房通風孔／維修孔、輕鋼架推開檢查</InlineWarning>
-                                        <button
-                                            onClick={() => setShowStructureGuide(true)}
-                                            className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
-                                            type="button"
-                                        >
-                                            <ImageIcon size={20} />
-                                            參考圖例
-                                        </button>
+                                        <div className="flex flex-wrap gap-3">
+                                            <button
+                                                onClick={() => setShowStructureGuide(true)}
+                                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                                type="button"
+                                            >
+                                                <ImageIcon size={20} />
+                                                參考圖例
+                                            </button>
+                                            <button
+                                                onClick={() => setShowStructureGuide1(true)}
+                                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                                type="button"
+                                            >
+                                                <ImageIcon size={20} />
+                                                參考圖例 1
+                                            </button>
+                                            <button
+                                                onClick={() => setShowStructureGuide2(true)}
+                                                className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                                type="button"
+                                            >
+                                                <ImageIcon size={20} />
+                                                參考圖例 2
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <RadioGroup 
@@ -530,8 +569,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     <SubItemHighlight>
                                         <div className="space-y-8 pt-4">
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{STRUCTURAL_ISSUES.map(i => <CheckBox key={i} checked={data?.q4_items?.includes(i) || false} label={i} onClick={() => toggleArr('q4_items', i)} />)}</div>
-                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q4_hasOther || false} label="其他未列項目" onClick={() => update('q4_hasOther', !data.q4_hasOther)} />{data?.q4_hasOther && <DetailInput value={data.q4_otherDesc || ''} onChange={v => update('q4_otherDesc', v)} placeholder="說明現況與位置" />}</div>
-                                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q4_suspected || false} label="現況需待查證" onClick={() => update('q4_suspected', !data.q4_suspected)} />{data?.q4_suspected && <DetailInput value={data.q4_suspectedDesc || ''} onChange={v => update('q4_suspectedDesc', v)} placeholder="說明位置與現況" />}</div>
+                                            <div className="space-y-3 text-left"><CheckBox checked={data?.q4_hasOther || false} label="其他未列項目" onClick={() => update('q4_hasOther', !data.q4_hasOther)} />{data?.q4_hasOther && <DetailInput value={data.q4_otherDesc || ''} onChange={v => update('q4_otherDesc', v)} placeholder="說明現況與位置" />}</div>
+                                            <div className="space-y-3 text-left"><CheckBox checked={data?.q4_suspected || false} label="現況需待查證" onClick={() => update('q4_suspected', !data.q4_suspected)} />{data?.q4_suspected && <DetailInput value={data.q4_suspectedDesc || ''} onChange={v => update('q4_suspectedDesc', v)} placeholder="說明位置與現況" />}</div>
                                         </div>
                                     </SubItemHighlight>
                                 )}
@@ -539,7 +578,17 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black mb-2 leading-normal">建物傾斜現況</p>
-                                <div className="mb-4"><InlineWarning>※僅依目視觀察，精確數據須由專業技師鑑定</InlineWarning></div>
+                                <div className="mb-4 flex flex-col gap-3">
+                                    <InlineWarning>※僅依目視觀察，精確數據須由專業技師鑑定</InlineWarning>
+                                    <button
+                                        onClick={() => setShowTiltGuide(true)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                        type="button"
+                                    >
+                                        <ImageIcon size={20} />
+                                        參考圖例
+                                    </button>
+                                </div>
                                 <RadioGroup 
                                     options={['無', '有', '待查證（待測量）']} 
                                     value={data?.q5_hasTilt === '否' ? '無' : (data?.q5_hasTilt === '是' ? '有' : (data?.q5_hasTilt === '待查證' || data?.q5_hasTilt === '疑似' ? '待查證（待測量）' : (data?.q5_hasTilt || '')))} 
@@ -591,7 +640,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                                     {UTILITY_ISSUES.map(i => <CheckBox key={i} checked={data?.q7_items?.includes(i) || false} label={i} onClick={() => toggleArr('q7_items', i)} />)}
                                                 </div>
-                                                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left">
+                                                <div className="space-y-3 text-left">
                                                     <CheckBox checked={data?.q7_hasOther || false} label="其他未列項目" onClick={() => update('q7_hasOther', !data.q7_hasOther)} />
                                                     {data?.q7_hasOther && <DetailInput value={data.q7_otherDesc || ''} onChange={v => update('q7_otherDesc', v)} placeholder="說明現況" />}
                                                 </div>
@@ -842,7 +891,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                 {STAIR_ISSUES.map(i => <CheckBox key={i} checked={data?.q8_stairItems?.includes(i) || false} label={i} onClick={() => toggleArr('q8_stairItems', i)} />)}
                             </div>
-                            <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left">
+                            <div className="space-y-3 text-left">
                                 <CheckBox checked={data?.q8_stairItems?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => toggleArr('q8_stairItems', '其他未列項目')} />
                                 {data?.q8_stairItems?.includes('其他未列項目') && <DetailInput value={data.q8_stairOther || ''} onChange={v => update('q8_stairOther', v)} placeholder="說明現況與位置" />}
                             </div>
@@ -900,7 +949,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     </div>
                                 ))}
                             </div>
-                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left">
+                             <div className="space-y-3 text-left">
                                 <CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => update('q9_hasOther', !data.q9_hasOther)} />
                                 {data?.q9_hasOther && <DetailInput value={data.q9_otherDesc || ''} onChange={v => update('q9_otherDesc', v)} placeholder={isGroupA ? "說明現況" : "如：發電機"} />}
                              </div>
@@ -1167,7 +1216,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     </div>
                                 ))}
                             </div>
-                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left">
+                             <div className="space-y-3 text-left">
                                 <CheckBox checked={data?.land_q7_facilities_items?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => toggleArr('land_q7_facilities_items', '其他未列項目')} />
                                 {data?.land_q7_facilities_items?.includes('其他未列項目') && <DetailInput value={data.land_q7_facilities_other || ''} onChange={v => update('land_q7_facilities_other', v)} placeholder="說明現況" />}
                              </div>
@@ -1440,7 +1489,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     </div>
                                 ))}
                             </div>
-                             <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-3 border-slate-200 text-left"><CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => update('q9_hasOther', !data.q9_hasOther)} />{data?.q9_hasOther && <DetailInput value={data.q9_otherDesc || ''} onChange={v => update('q9_otherDesc', v)} placeholder={isGroupA ? "說明現況" : "如：發電機"} />}</div>
+                             <div className="space-y-3 text-left"><CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => update('q9_hasOther', !data.q9_hasOther)} />{data?.q9_hasOther && <DetailInput value={data.q9_otherDesc || ''} onChange={v => update('q9_otherDesc', v)} placeholder={isGroupA ? "說明現況" : "如：發電機"} />}</div>
                         </div>
                      </BooleanReveal>
                 </SurveySection>

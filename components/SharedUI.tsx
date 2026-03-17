@@ -13,14 +13,14 @@ const getButtonColorClass = (checked: boolean, label: string, disabled: boolean,
     
     if (isStandard) {
         if (!checked) return 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800/80 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700/80';
-        return 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-700/80 dark:border-sky-800 dark:text-sky-50';
+        return 'border-2 border-b-2 translate-y-[2px] bg-sky-100 border-sky-300 border-b-sky-400 text-sky-800 shadow-inner dark:bg-sky-900/40 dark:border-sky-700 dark:text-sky-200';
     }
 
     // Unchecked state (Physical feel - Thick border, shadow)
     if (!checked) return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-white border-slate-300 border-b-slate-400 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-800 shadow-sm dark:bg-slate-800/80 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-400 dark:hover:bg-slate-700/80 dark:hover:text-slate-200';
 
     // Selected State (Warm Light Blue - Replaces Traffic Light)
-    return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-[#E0F2FE] border-[#7DD3FC] border-b-[#0EA5E9] text-[#0369A1] shadow-md dark:bg-sky-900/40 dark:border-sky-600 dark:border-b-sky-700 dark:text-sky-200';
+    return 'border-4 border-b-[6px] md:border-b-[8px] active:border-b-4 active:translate-y-[2px] md:active:translate-y-[4px] bg-sky-100 border-sky-300 border-b-sky-400 text-sky-800 shadow-md dark:bg-sky-900/40 dark:border-sky-700 dark:border-b-sky-800 dark:text-sky-200';
 };
 
 // === CheckBox ===
@@ -252,10 +252,10 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
             className={`w-[90%] mx-auto ${minHeight} flex items-center justify-between ${isStandard ? 'px-3 py-1.5' : 'px-5 py-3'} rounded-lg transition-all duration-200 cursor-pointer select-none mb-2
             ${isStandard 
                 ? (checked 
-                    ? 'border-2 border-b-2 translate-y-[2px] bg-sky-600 border-sky-700 border-b-sky-700 text-white shadow-inner dark:bg-sky-700/80 dark:border-sky-800 dark:text-sky-50' 
+                    ? 'border-2 border-b-2 translate-y-[2px] bg-sky-100 border-sky-300 border-b-sky-400 text-sky-800 shadow-inner dark:bg-sky-900/40 dark:border-sky-700 dark:text-sky-200' 
                     : 'border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] bg-white border-slate-400 border-b-slate-500 text-slate-700 hover:bg-slate-50 hover:border-slate-500 hover:border-b-slate-600 shadow-sm dark:bg-slate-800/80 dark:border-slate-600 dark:border-b-slate-700 dark:text-slate-300 dark:hover:bg-slate-700/80')
                 : (checked
-                    ? 'border bg-sky-50 border-sky-200 shadow-sm dark:bg-sky-900/30 dark:border-sky-700'
+                    ? 'border bg-sky-100 border-sky-300 text-sky-800 shadow-sm dark:bg-sky-900/40 dark:border-sky-700 dark:text-sky-200'
                     : 'border bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-800/80 dark:border-slate-700 dark:hover:bg-slate-700/80')
             }`}
         >
