@@ -475,51 +475,6 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div className="bg-white border-b-2 border-slate-200 px-6 pt-12 pb-14 shrink-0 z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800">
-                    <div className="w-full max-w-3xl mx-auto relative">
-                        {/* Track */}
-                        <div className="absolute left-0 top-1/2 w-full h-1.5 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
-                        {/* Progress Line */}
-                        <div 
-                            className="absolute left-0 top-1/2 h-1.5 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
-                            style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
-                        ></div>
-                        
-                        <div className="flex justify-between items-center w-full">
-                            {stepLabels.slice(0, stepsToShow).map((label, idx) => {
-                                const stepNum = idx + 1;
-                                const isActive = activeStep === stepNum;
-                                const isCompleted = activeStep > stepNum;
-                                const pageLabel = ["第一頁", "第二頁", "第三頁", "第四頁"][idx];
-
-                                return (
-                                    <button 
-                                        key={stepNum} 
-                                        type="button"
-                                        onClick={() => setActiveStep(stepNum)}
-                                        className="group relative flex flex-col items-center focus:outline-none"
-                                    >
-                                        {/* Page Label (Above) */}
-                                        <span className={`absolute -top-10 text-sm md:text-base font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-400 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-600 translate-y-1 opacity-60')}`}>
-                                            {pageLabel}
-                                        </span>
-                                        
-                                        {/* Dot */}
-                                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-lg md:text-xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600')}`}>
-                                            {isCompleted ? <Check className="w-6 h-6" strokeWidth={3} /> : stepNum}
-                                        </div>
-                                        
-                                        {/* Content Label (Below) */}
-                                        <span className={`absolute -bottom-10 whitespace-nowrap max-w-[140px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 opacity-80'}`}>
-                                            {label}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-
                 <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-40 lg:pb-10 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
@@ -527,6 +482,52 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                         {activeStep === 3 && <Step3 {...stepProps} />}
                         {activeStep === 4 && type !== 'parking' && <Step4 {...stepProps} />}
                     </ErrorBoundary>
+
+                    {/* Progress Bar */}
+                    <div className="w-full relative pt-12 pb-10 mt-6 md:pt-14 md:pb-12 md:mt-8 border-t-2 border-slate-200/60 dark:border-slate-800/60">
+                        <div className="w-full max-w-[240px] md:max-w-[380px] lg:max-w-[460px] mx-auto relative">
+                            {/* Track */}
+                            <div className="absolute left-0 top-1/2 w-full h-1.5 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
+                            {/* Progress Line */}
+                            <div 
+                                className="absolute left-0 top-1/2 h-1.5 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
+                                style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
+                            ></div>
+                            
+                            <div className="flex justify-between items-center w-full">
+                                {stepLabels.slice(0, stepsToShow).map((label, idx) => {
+                                    const stepNum = idx + 1;
+                                    const isActive = activeStep === stepNum;
+                                    const isCompleted = activeStep > stepNum;
+                                    const pageLabel = ["第一頁", "第二頁", "第三頁", "第四頁"][idx];
+
+                                    return (
+                                        <button 
+                                            key={stepNum} 
+                                            type="button"
+                                            onClick={() => setActiveStep(stepNum)}
+                                            className="group relative flex flex-col items-center focus:outline-none"
+                                        >
+                                            {/* Page Label (Above) */}
+                                            <span className={`absolute -top-8 md:-top-10 text-base md:text-lg font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-400 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-600 translate-y-1 opacity-60')}`}>
+                                                {pageLabel}
+                                            </span>
+                                            
+                                            {/* Dot */}
+                                            <div className={`w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-2xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600')}`}>
+                                                {isCompleted ? <Check className="w-5 h-5 md:w-7 md:h-7" strokeWidth={3} /> : stepNum}
+                                            </div>
+                                            
+                                            {/* Content Label (Below) */}
+                                            <span className={`absolute -bottom-8 md:-bottom-10 whitespace-nowrap max-w-[120px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-base md:text-lg font-bold text-slate-500 dark:text-slate-400 opacity-80'}`}>
+                                                {label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="hidden lg:flex shrink-0 w-full gap-4 p-4 bg-white/95 backdrop-blur-md border-t-2 border-slate-200 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900/95 dark:border-slate-800">
