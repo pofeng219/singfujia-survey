@@ -75,36 +75,37 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
         <div className="relative w-full" ref={containerRef}>
             <div 
                 onClick={() => setShow(!show)} 
-                className={`full-width-input cursor-pointer flex items-center justify-between bg-white transition-all duration-300 ${show ? 'ring-4 ring-sky-200 border-sky-400' : ''}`}
+                className={`full-width-input cursor-pointer flex items-center justify-between bg-white dark:bg-slate-900 transition-all duration-300 ${show ? 'ring-4 ring-sky-200 dark:ring-sky-900/40 border-sky-400 dark:border-sky-500' : 'border-slate-300 dark:border-slate-600 hover:border-sky-300 dark:hover:border-sky-600'}`}
             >
-                <span className={`font-black ${textSize} ${value ? 'text-slate-800' : 'text-slate-400'}`}>
+                <span className={`font-black ${textSize} ${value ? 'text-slate-800 dark:text-slate-200' : 'text-slate-500 dark:text-slate-400'}`}>
                     {displayValue}
                 </span>
-                <div className={`${paddingClass} ${roundedClass} transition-colors ${show ? 'bg-sky-100 text-sky-600' : 'bg-slate-100 text-slate-500'}`}>
+                <div className={`${paddingClass} ${roundedClass} transition-colors flex items-center gap-1.5 shadow-sm border ${show ? 'bg-sky-100 text-sky-600 border-sky-200 dark:bg-sky-900/50 dark:text-sky-400 dark:border-sky-800' : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
                     <Calendar className={iconSize} strokeWidth={2.5} />
+                    <span className={`font-bold ${isStandard ? 'text-sm' : 'text-lg'} whitespace-nowrap`}>選擇日期</span>
                 </div>
             </div>
             
             {show && (
-                <div className="absolute top-full left-0 z-50 mt-4 w-full sm:w-[420px] bg-white rounded-[2.5rem] shadow-[0_30px_80px_-15px_rgba(0,0,0,0.4)] border-4 border-slate-100 p-6 animate-in fade-in zoom-in-95 duration-200 overflow-hidden ring-4 ring-black/5">
+                <div className="absolute top-full left-0 z-50 mt-4 w-full sm:w-[420px] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-[0_30px_80px_-15px_rgba(0,0,0,0.4)] dark:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] border-4 border-slate-100 dark:border-slate-800 p-6 animate-in fade-in zoom-in-95 duration-200 overflow-hidden ring-4 ring-black/5 dark:ring-white/5">
                     {/* Header */}
-                    <div className="flex justify-between items-center mb-6 bg-slate-50 p-2 rounded-3xl border-2 border-slate-100">
-                        <button onClick={handlePrevMonth} className="p-4 hover:bg-white hover:shadow-md rounded-2xl transition-all active:scale-90 border-2 border-transparent hover:border-slate-200 group">
-                            <ChevronLeft className="w-8 h-8 text-slate-400 group-hover:text-slate-800" strokeWidth={3} />
+                    <div className="flex justify-between items-center mb-6 bg-slate-50 dark:bg-slate-800 p-2 rounded-3xl border-2 border-slate-100 dark:border-slate-700">
+                        <button onClick={handlePrevMonth} className="p-4 hover:bg-white dark:hover:bg-slate-700 hover:shadow-md rounded-2xl transition-all active:scale-90 border-2 border-transparent hover:border-slate-200 dark:hover:border-slate-600 group">
+                            <ChevronLeft className="w-8 h-8 text-slate-400 dark:text-slate-500 group-hover:text-slate-800 dark:group-hover:text-slate-200" strokeWidth={3} />
                         </button>
                         <div className="flex flex-col items-center">
-                            <span className="font-black text-2xl text-slate-800 tracking-wider">民國 {rocYear} 年</span>
-                            <span className="font-bold text-xl text-slate-400">{month + 1} 月</span>
+                            <span className="font-black text-2xl text-slate-800 dark:text-slate-200 tracking-wider">民國 {rocYear} 年</span>
+                            <span className="font-bold text-xl text-slate-500 dark:text-slate-400">{month + 1} 月</span>
                         </div>
-                        <button onClick={handleNextMonth} className="p-4 hover:bg-white hover:shadow-md rounded-2xl transition-all active:scale-90 border-2 border-transparent hover:border-slate-200 group">
-                            <ChevronRight className="w-8 h-8 text-slate-400 group-hover:text-slate-800" strokeWidth={3} />
+                        <button onClick={handleNextMonth} className="p-4 hover:bg-white dark:hover:bg-slate-700 hover:shadow-md rounded-2xl transition-all active:scale-90 border-2 border-transparent hover:border-slate-200 dark:hover:border-slate-600 group">
+                            <ChevronRight className="w-8 h-8 text-slate-400 dark:text-slate-500 group-hover:text-slate-800 dark:group-hover:text-slate-200" strokeWidth={3} />
                         </button>
                     </div>
 
                     {/* Week Days */}
                     <div className="grid grid-cols-7 gap-2 text-center mb-4">
                         {['日', '一', '二', '三', '四', '五', '六'].map((d, i) => (
-                            <div key={d} className={`text-xl font-black ${i === 0 || i === 6 ? 'text-orange-500' : 'text-slate-400'}`}>
+                            <div key={d} className={`text-xl font-black ${i === 0 || i === 6 ? 'text-orange-500 dark:text-orange-400' : 'text-slate-500 dark:text-slate-400'}`}>
                                 {d}
                             </div>
                         ))}
@@ -125,10 +126,10 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
                                         onClick={() => handleSelectDate(d)} 
                                         className={`w-full h-full rounded-2xl flex items-center justify-center font-black text-2xl transition-all duration-200 active:scale-90 border-2 relative
                                         ${isSelected 
-                                            ? 'bg-slate-800 text-white border-slate-900 shadow-lg scale-105 z-10' 
-                                            : `bg-white hover:bg-slate-50 ${isWeekend ? 'text-orange-600 border-orange-100 hover:border-orange-200' : 'text-slate-700 border-slate-100 hover:border-slate-300'}`
+                                            ? 'bg-slate-800 text-white border-slate-900 dark:bg-sky-600 dark:border-sky-500 shadow-lg scale-105 z-10' 
+                                            : `bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 ${isWeekend ? 'text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-900/50 hover:border-orange-200 dark:hover:border-orange-800' : 'text-slate-700 dark:text-slate-300 border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500'}`
                                         }
-                                        ${isToday && !isSelected ? 'ring-2 ring-sky-300 ring-offset-1 bg-sky-50' : ''}`}
+                                        ${isToday && !isSelected ? 'ring-2 ring-sky-300 dark:ring-sky-500 ring-offset-1 dark:ring-offset-slate-900 bg-sky-50 dark:bg-sky-900/30' : ''}`}
                                     >
                                         {d.getDate()}
                                     </button>
@@ -140,7 +141,7 @@ export const ROCDatePicker: React.FC<ROCDatePickerProps> = ({ value, onChange })
                     {/* Footer Actions */}
                     <button 
                         onClick={handleToday}
-                        className="w-full py-5 bg-sky-50 text-sky-700 font-black text-2xl rounded-2xl border-2 border-sky-100 hover:bg-sky-100 hover:border-sky-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3 border-b-4 active:border-b-2 active:translate-y-[2px]"
+                        className="w-full py-5 bg-sky-50 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 font-black text-2xl rounded-2xl border-2 border-sky-100 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-800 hover:border-sky-200 dark:hover:border-sky-700 transition-all active:scale-[0.98] flex items-center justify-center gap-3 border-b-4 active:border-b-2 active:translate-y-[2px]"
                     >
                         <Check className="w-6 h-6" strokeWidth={3} />
                         選擇今天 ({formatDateROC(new Date().toISOString())})

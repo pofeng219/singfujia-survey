@@ -509,17 +509,17 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             className="group relative flex flex-col items-center focus:outline-none"
                                         >
                                             {/* Page Label (Above) */}
-                                            <span className={`absolute -top-8 md:-top-10 text-base md:text-lg font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-400 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-600 translate-y-1 opacity-60')}`}>
+                                            <span className={`absolute -top-8 md:-top-10 text-base md:text-lg font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
                                                 {pageLabel}
                                             </span>
                                             
                                             {/* Dot */}
-                                            <div className={`w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-2xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600')}`}>
+                                            <div className={`w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-2xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')}`}>
                                                 {isCompleted ? <Check className="w-5 h-5 md:w-7 md:h-7" strokeWidth={3} /> : stepNum}
                                             </div>
                                             
                                             {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-8 md:-bottom-10 whitespace-nowrap max-w-[120px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-base md:text-lg font-bold text-slate-500 dark:text-slate-400 opacity-80'}`}>
+                                            <span className={`absolute -bottom-8 md:-bottom-10 whitespace-nowrap max-w-[120px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-base md:text-lg font-bold text-slate-500 dark:text-slate-300 opacity-80'}`}>
                                                 {label}
                                             </span>
                                         </button>
@@ -610,12 +610,12 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             )}
 
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 flex justify-around items-center pb-safe pt-1 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
-                <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
+                <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-400'}`}>
                     <Edit3 className={`w-6 h-6 mb-1 ${mobileTab === 'edit' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'edit' ? 2.5 : 2} />
                     <span className="text-lg font-black">填寫資料</span>
                 </button>
                 <div className="w-[2px] h-10 bg-slate-100 dark:bg-slate-800"></div>
-                <button onClick={() => setMobileTab('preview')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'preview' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-500'}`}>
+                <button onClick={() => setMobileTab('preview')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'preview' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-400'}`}>
                     <Eye className={`w-6 h-6 mb-1 ${mobileTab === 'preview' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'preview' ? 2.5 : 2} />
                     <span className="text-lg font-black">預覽/匯出</span>
                 </button>

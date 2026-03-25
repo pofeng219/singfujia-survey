@@ -1203,11 +1203,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             <ScaledA4Wrapper pageNum={1}>
                 <div className="flex-grow flex flex-col h-full text-black pb-32">
-                    <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-3' : 'mb-5'} relative w-full`}>
-                        <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-none mb-2 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
-                            {isStandard ? '幸福家不動產－業務版現況調查表' : (
-                                <>幸福家不動產<br/>－業務版現況調查表</>
-                            )}
+                    <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-5'} relative w-full`}>
+                        <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                            <>幸福家不動產<br/>－業務版現況調查表</>
                         </h1>
                         <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
                     </div>
@@ -1281,11 +1279,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {(type !== 'parking' || previewPage === 2) && (
                 <ScaledA4Wrapper pageNum={2}>
                     <div className="flex-grow flex flex-col h-full text-black pb-32">
-                        <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-3' : 'mb-5'} relative w-full`}>
-                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-none mb-2 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
-                                {isStandard ? '幸福家不動產－業務版現況調查表' : (
-                                    <>幸福家不動產<br/>－業務版現況調查表</>
-                                )}
+                        <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-5'} relative w-full`}>
+                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                                <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
                             <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【背面】</div>
                         </div>
@@ -1303,11 +1299,9 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             {(hasPage3 && (previewPage === 3 || exporting)) && (
                 <ScaledA4Wrapper pageNum={3}>
                     <div className="flex-grow flex flex-col h-full text-black pb-32">
-                         <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-3' : 'mb-5'} relative w-full`}>
-                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-none mb-2 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
-                                {isStandard ? '幸福家不動產－業務版現況調查表' : (
-                                    <>幸福家不動產<br/>－業務版現況調查表</>
-                                )}
+                         <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-5'} relative w-full`}>
+                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                                <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
                             <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【附件】</div>
                         </div>

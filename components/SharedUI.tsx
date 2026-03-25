@@ -264,7 +264,7 @@ export const AccordionOption: React.FC<AccordionOptionProps> = ({ label, subLabe
                     {label}
                 </span>
                 {subLabel && (
-                    <span className={`${subSize} mt-1 leading-normal ${isStandard ? (checked ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400') : 'text-slate-500 dark:text-slate-500'}`}>
+                    <span className={`${subSize} mt-1 leading-normal ${isStandard ? (checked ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400') : 'text-slate-500 dark:text-slate-400'}`}>
                         {subLabel}
                     </span>
                 )}
@@ -534,7 +534,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
                 placeholder={placeholder} 
             />
             <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
-                <span className={`${unitSize} font-black ${disabled ? 'text-gray-400 dark:text-slate-600' : 'text-slate-400 dark:text-slate-500'}`}>{unit}</span>
+                <span className={`${unitSize} font-black ${disabled ? 'text-gray-400 dark:text-slate-600' : 'text-slate-400 dark:text-slate-400'}`}>{unit}</span>
             </div>
         </div>
     );
@@ -865,7 +865,7 @@ export const DetailInput = ({ value, onChange, placeholder = "說明現況", dis
                             setShowMicHint(true);
                             setTimeout(() => setShowMicHint(false), 3000);
                         }}
-                        className="text-slate-400 dark:text-slate-500 animate-pulse hover:text-sky-500 transition-colors p-1" 
+                        className="text-slate-400 dark:text-slate-400 animate-pulse hover:text-sky-500 transition-colors p-1" 
                         title="可使用鍵盤語音輸入"
                     >
                         <Mic className="w-6 h-6" />
