@@ -75,17 +75,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, 
         // Changed container to allow scrolling: h-full, overflow-y-auto ensures content is reachable
         <div className="h-full w-full bg-slate-50 dark:bg-slate-950 overflow-y-auto overflow-x-hidden relative transition-colors duration-300">
             {/* Top Bar */}
-            <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-50">
-                {onBack ? (
-                    <button 
-                        onClick={onBack}
-                        className="px-4 py-2.5 md:px-5 md:py-3 bg-amber-100/95 dark:bg-amber-900/80 backdrop-blur-md rounded-xl shadow-md border border-amber-200 dark:border-amber-700 transition-all active:scale-95 hover:bg-amber-200 dark:hover:bg-amber-800 flex items-center gap-2 text-amber-800 dark:text-amber-100 font-black text-lg md:text-xl"
-                    >
-                        <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
-                        <span>返回模式選擇</span>
-                    </button>
-                ) : <div></div>}
-                
+            <div className="absolute top-4 right-4 flex justify-end items-center z-50">
                 <button 
                     onClick={toggleTheme}
                     className="p-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-xl shadow-md border border-slate-200 dark:border-slate-700 transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-800"
@@ -108,19 +98,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, 
             
             {/* Content Container - min-h-full for vertical centering when content fits, scrolling when it doesn't */}
             <div className="min-h-full flex flex-col items-center justify-center p-4 py-8 md:p-6 relative z-10">
-                <div className="w-full max-w-xl flex flex-col gap-6 md:gap-8">
+                <div className="w-full max-w-xl flex flex-col gap-4 md:gap-5">
                     {/* Header Card - Adjusted padding and font sizes for mobile */}
-                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-3 md:space-y-4 animate-in slide-in-from-bottom-4 duration-700">
+                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-2 md:space-y-3 animate-in slide-in-from-bottom-4 duration-700">
                         <img 
                             src="https://lh3.googleusercontent.com/d/1kibsmrcTX_fDtniNVqWDQXkVP3ZNwGwI" 
                             alt="幸福家不動產 Logo" 
-                            className="w-24 h-24 md:w-32 md:h-32 object-contain mx-auto mb-4" 
+                            className="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto mb-2" 
                             referrerPolicy="no-referrer"
                         />
                         <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                             幸福家不動產
                         </h1>
-                        <div className="w-12 h-1.5 bg-sky-500 mx-auto rounded-full my-6"></div>
+                        <div className="w-12 h-1.5 bg-sky-500 mx-auto rounded-full my-4"></div>
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-lg md:text-xl tracking-[0.2em] uppercase">
                             物件現況調查系統
                         </p>
@@ -155,6 +145,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, 
                             </button>
                         ))}
                     </div>
+
+                    {/* Back Button (Moved to bottom to prevent misclicks, colored for visibility) */}
+                    {onBack && (
+                        <div className="animate-in slide-in-from-bottom-10 duration-700 delay-200 flex justify-center mt-2">
+                            <button 
+                                onClick={onBack}
+                                className="w-full sm:w-auto py-3 px-6 bg-slate-100 dark:bg-slate-800/80 rounded-xl shadow-sm border-2 border-slate-200 dark:border-slate-700 transition-all active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 font-bold text-lg"
+                            >
+                                <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                                <span>返回模式選擇</span>
+                            </button>
+                        </div>
+                    )}
 
                     {/* Footer */}
                     <div className="text-center mt-4">

@@ -34,19 +34,19 @@ export const ModeSelectionPage: React.FC<ModeSelectionPageProps> = ({ onSelect, 
             </div>
             
             <div className="min-h-full flex flex-col items-center justify-center p-4 py-8 md:p-6 relative z-10">
-                <div className="w-full max-w-xl flex flex-col gap-6 md:gap-8">
+                <div className="w-full max-w-xl flex flex-col gap-4 md:gap-5">
                     {/* Header Card */}
-                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-3 md:space-y-4 animate-in slide-in-from-bottom-4 duration-700">
+                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-2 md:space-y-3 animate-in slide-in-from-bottom-4 duration-700">
                         <img 
                             src="https://lh3.googleusercontent.com/d/1kibsmrcTX_fDtniNVqWDQXkVP3ZNwGwI" 
                             alt="幸福家不動產 Logo" 
-                            className="w-24 h-24 md:w-32 md:h-32 object-contain mx-auto mb-4" 
+                            className="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto mb-2" 
                             referrerPolicy="no-referrer"
                         />
                         <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                             幸福家不動產
                         </h1>
-                        <div className="w-12 h-1.5 bg-sky-500 mx-auto rounded-full my-6"></div>
+                        <div className="w-12 h-1.5 bg-sky-500 mx-auto rounded-full my-4"></div>
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-lg md:text-xl tracking-[0.2em] uppercase">
                             物件現況調查系統
                         </p>
