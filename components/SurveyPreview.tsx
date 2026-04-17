@@ -74,7 +74,7 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
     const isAbnormal = !checked;
     
     return (
-        <div className={`flex border-b border-slate-200 last:border-0 transition-colors ${isAbnormal ? 'bg-rose-50/80 hover:bg-rose-100/80' : 'bg-white hover:bg-slate-50'}`}>
+        <div className={`flex border-b border-slate-200 last:border-0 transition-colors shrink-0 max-w-full ${isAbnormal ? 'bg-rose-50/80 hover:bg-rose-100/80' : 'bg-white hover:bg-slate-50'}`}>
             <div className={`w-[85px] md:w-[100px] shrink-0 flex justify-center pt-1 border-r ${isAbnormal ? 'border-rose-200 bg-rose-100/50' : 'border-slate-100 bg-slate-50/50'}`}>
                 <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
                     {checked && <Check size={10} strokeWidth={3} className="text-white" />}
@@ -97,10 +97,10 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     return (
-        <div className={`mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? '' : 'py-1'}`}>
+        <div className={`shrink-0 mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? '' : 'py-1'}`}>
             <div className={`px-2 ${isStandard ? 'py-0.5 gap-1.5' : 'py-1 gap-2'} flex items-center`}>
-                <div className={`bg-sky-500 rounded-full ${isStandard ? 'w-1 h-3' : 'w-1.5 h-4'}`}></div>
-                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-none pt-0.5`}>{title}</span>
+                <div className={`bg-sky-500 rounded-full shrink-0 ${isStandard ? 'w-1 h-3' : 'w-1.5 h-4'}`}></div>
+                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-none pt-0.5 whitespace-normal break-words`}>{title}</span>
             </div>
         </div>
     );
@@ -111,9 +111,9 @@ const TableHeaderRow: React.FC = () => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     return (
-        <div className="flex border-b-2 border-sky-300 bg-sky-50 rounded-t-xl overflow-hidden shadow-sm">
-            <div className={`w-[85px] md:w-[100px] shrink-0 text-center font-black text-sky-800 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[14px]' : 'text-[18px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
-            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-2'} px-2 font-black text-left text-sky-800 ${isStandard ? 'text-[15px]' : 'text-[20px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
+        <div className="flex border-b-2 border-sky-300 bg-sky-50 rounded-t-xl overflow-hidden shadow-sm shrink-0">
+            <div className={`w-[85px] md:w-[100px] shrink-0 text-center font-black text-sky-800 ${isStandard ? 'py-1' : 'py-1.5'} ${isStandard ? 'text-[14px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
+            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-1.5'} px-2 font-black text-left text-sky-800 ${isStandard ? 'text-[15px]' : 'text-[18px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
         </div>
     );
 };
@@ -302,7 +302,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
         const timestamp = new Date().toLocaleString('zh-TW', { hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
         
         return (
-            <div className="absolute bottom-[10mm] left-[10mm] right-[10mm] pt-2 pb-1 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white">
+            <div className="mt-auto pt-2 pb-1 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white relative w-full shrink-0">
                 {showSignature ? (
                     <div className="flex flex-col items-start shrink-0">
                         <span className="text-slate-900 font-black mb-1 text-[14px]">調查業務人員簽章：</span>
@@ -1133,45 +1133,67 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
         ) : null
     );
 
-    const ScaledA4Wrapper = ({ children, pageNum }: { children?: React.ReactNode, pageNum: number }) => (
-        <div style={{
-            width: exporting ? '210mm' : `${210 * previewScale}mm`,
-            height: exporting ? 'auto' : `${297 * previewScale}mm`,
-            flexShrink: 0,
-            boxShadow: exporting ? 'none' : '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-            backgroundColor: 'white',
-            marginBottom: exporting ? 0 : '2rem',
-            overflow: exporting ? 'visible' : 'hidden', 
-            display: (previewPage === pageNum || exporting) ? 'block' : 'none',
-            pageBreakAfter: exporting ? 'always' : 'auto'
-        }} className={exporting ? 'print-page' : ''}>
-            <div 
-                ref={(pageNum === 1 ? page1Ref : (pageNum === 2 ? page2Ref : page3Ref)) as React.RefObject<HTMLDivElement>} 
-                className="a4-page relative" 
-                style={{
-                    transform: `scale(${exporting ? 1 : previewScale})`,
-                    transformOrigin: 'top left',
-                    width: '210mm',
-                    minHeight: '297mm',
-                    margin: 0,
-                    padding: '10mm 10mm' // Use 10mm padding consistently to match export
-                }}
-            >
-                <Watermark />
-                <div className="relative z-10 h-full flex flex-col">
-                    {children}
+    const ScaledA4Wrapper = ({ children, pageNum }: { children?: React.ReactNode, pageNum: number }) => {
+        const pageRef = (pageNum === 1 ? page1Ref : (pageNum === 2 ? page2Ref : page3Ref)) as React.RefObject<HTMLDivElement>;
+        const [actualHeight, setActualHeight] = useState<number | null>(null);
+
+        useEffect(() => {
+            if (!pageRef.current || exporting) return;
+            const ro = new ResizeObserver((entries) => {
+                for (let entry of entries) {
+                    if (entry.target instanceof HTMLElement) {
+                        setActualHeight(entry.target.offsetHeight);
+                    }
+                }
+            });
+            ro.observe(pageRef.current);
+            return () => ro.disconnect();
+        }, [pageRef, exporting]);
+
+        const computedHeight = actualHeight !== null && !exporting 
+                ? `${actualHeight * previewScale}px` 
+                : (exporting ? 'auto' : `${297 * previewScale}mm`);
+
+        return (
+            <div style={{
+                width: exporting ? '210mm' : `${210 * previewScale}mm`,
+                height: computedHeight,
+                flexShrink: 0,
+                boxShadow: exporting ? 'none' : '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+                backgroundColor: 'white',
+                marginBottom: exporting ? 0 : '2rem',
+                overflow: exporting ? 'visible' : 'hidden', 
+                display: (previewPage === pageNum || exporting) ? 'block' : 'none',
+                pageBreakAfter: exporting ? 'always' : 'auto'
+            }} className={exporting ? 'print-page transition-none' : 'transition-all duration-300 transform-gpu'}>
+                <div 
+                    ref={pageRef} 
+                    className="a4-page relative" 
+                    style={{
+                        transform: `scale(${exporting ? 1 : previewScale})`,
+                        transformOrigin: 'top left',
+                        width: '210mm',
+                        minHeight: '297mm',
+                        margin: 0,
+                        padding: '10mm 10mm' // Use 10mm padding consistently to match export
+                    }}
+                >
+                    <Watermark />
+                    <div className="relative z-10 flex-grow flex flex-col">
+                        {children}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const BasicInfoTable = () => {
         const mode = useInterface();
         const isStandard = mode === 'standard';
         return (
-            <div className={`${isStandard ? 'mb-1' : 'mb-3'} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden`}>
-                <div className={`px-2 ${isStandard ? 'py-1 gap-x-2 gap-y-0.5' : 'py-2 gap-x-3 gap-y-1'} flex flex-wrap items-center ${isStandard ? 'text-[15px]' : 'text-[20px]'} leading-snug text-black`}>
-                    <span className={`font-black text-black ${isStandard ? 'text-[16px]' : 'text-[22px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
+            <div className={`${isStandard ? 'mb-1' : 'mb-2'} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden shrink-0`}>
+                <div className={`px-2 ${isStandard ? 'py-1 gap-x-2 gap-y-0.5' : 'py-1.5 gap-x-2 gap-y-1'} flex flex-wrap items-center ${isStandard ? 'text-[15px]' : 'text-[17px]'} leading-snug text-black`}>
+                    <span className={`font-black text-black ${isStandard ? 'text-[16px]' : 'text-[18px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
                     {(type === 'factory' || type === 'house' || type === 'land') && (
                         <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
                     )}
@@ -1202,32 +1224,32 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             ) : (<div className="w-full max-w-[210mm] mb-8 no-print"><PageSwitcher /></div>)}
 
             <ScaledA4Wrapper pageNum={1}>
-                <div className="flex-grow flex flex-col h-full text-black pb-32">
-                    <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-5'} relative w-full`}>
-                        <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                <div className="flex-grow flex flex-col h-full text-black pb-0">
+                    <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-3 mt-3'} relative w-full shrink-0`}>
+                        <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                             <>幸福家不動產<br/>－業務版現況調查表</>
                         </h1>
-                        <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
+                        <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
                     </div>
-                    <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-4'} w-full text-black border-collapse border-2 border-[#009FE3]`}>
+                    <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-2'} w-full text-black border-collapse border-2 border-[#009FE3] shrink-0`}>
                         <tbody>
                             <tr className="border-b border-[#7dd3fc]">
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>案名</td><td className={`w-[30%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.caseName}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[15%] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>編號</td><td className={`w-[20%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.authNumber}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[8%] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>店名</td><td className={`w-[17%] text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.storeName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>案名</td><td className={`w-[30%] font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.caseName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[15%] font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>編號</td><td className={`w-[20%] font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.authNumber}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[8%] font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>店名</td><td className={`w-[17%] text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.storeName}</td>
                             </tr>
                             <tr className="border-b border-[#7dd3fc]">
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.address}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>業務</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.agentName}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.address}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>業務</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.agentName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div className={`bg-[#009FE3] text-white px-4 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[16px]' : 'text-[20px]'} font-black ${isStandard ? 'mb-1' : 'mb-3'} self-start rounded-r-full shadow-md tracking-wide`}>【調查現況】</div>
+                    <div className={`bg-[#009FE3] text-white px-4 ${isStandard ? 'py-1 px-4' : 'py-1.5 px-4'} ${isStandard ? 'text-[16px]' : 'text-[18px]'} font-black ${isStandard ? 'mb-1' : 'mb-2'} self-start rounded-r-full shadow-md tracking-wide shrink-0`}>【調查現況】</div>
                     
                     <BasicInfoTable />
 
-                    <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden`}>
+                    <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}>
                             {type === 'house' && <HousePrintPage1 data={data} />}
                             {type === 'land' && <LandPrintPage1 data={data} />}
                             {type === 'factory' && <FactoryPrintPage1 data={data} />}
@@ -1278,14 +1300,14 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             {(type !== 'parking' || previewPage === 2) && (
                 <ScaledA4Wrapper pageNum={2}>
-                    <div className="flex-grow flex flex-col h-full text-black pb-32">
-                        <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-5'} relative w-full`}>
-                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                    <div className="flex-grow flex flex-col h-full text-black pb-0">
+                        <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-3 mt-3'} relative w-full shrink-0`}>
+                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                                 <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
-                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【背面】</div>
+                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【背面】</div>
                         </div>
-                        <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden`}>
+                        <div className={`${isStandard ? 'mb-2' : 'mb-2'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}>
                                 <TableHeaderRow />
                                 {type === 'house' && <HousePrintPage2 data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                                 {type === 'land' && <LandPrintPage2 data={data} />}
@@ -1298,14 +1320,14 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
 
             {(hasPage3 && (previewPage === 3 || exporting)) && (
                 <ScaledA4Wrapper pageNum={3}>
-                    <div className="flex-grow flex flex-col h-full text-black pb-32">
-                         <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-5'} relative w-full`}>
-                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-3 text-[42px]'}`}>
+                    <div className="flex-grow flex flex-col h-full text-black pb-0">
+                         <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-3 mt-3'} relative w-full shrink-0`}>
+                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                                 <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
-                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【附件】</div>
+                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【附件】</div>
                         </div>
-                        <div className={`${isStandard ? 'mb-2' : 'mb-4'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden`}>
+                        <div className={`${isStandard ? 'mb-2' : 'mb-2'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}>
                                 <TableHeaderRow />
                                 {type === 'factory' && <FactoryPrintPage3 data={data} />}
                                 {type === 'house' && <HousePrintPage3 data={data} />}

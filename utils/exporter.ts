@@ -108,7 +108,20 @@ export const exportToPDF = async ({ fileName, page1Ref, page2Ref, page3Ref, isMo
 
         const addScaledImage = (c: HTMLCanvasElement) => {
             const imgData = c.toDataURL('image/jpeg', 0.9);
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+            const ratio = c.height / c.width;
+            let finalWidth = pdfWidth;
+            let finalHeight = pdfWidth * ratio;
+
+            // If the content is taller than A4 ratio due to dynamic expansion, scale it down to fit without distortion
+            if (finalHeight > pdfHeight) {
+                finalHeight = pdfHeight;
+                finalWidth = pdfHeight / ratio;
+            }
+            
+            // Center horizontally if scaled down
+            const xOffset = (pdfWidth - finalWidth) / 2;
+            
+            pdf.addImage(imgData, 'JPEG', xOffset, 0, finalWidth, finalHeight, undefined, 'FAST');
         };
 
         addScaledImage(canvas1);
