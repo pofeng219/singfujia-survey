@@ -278,9 +278,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             } else { 
                 if (mobileTab === 'preview') { 
                     const availableWidth = window.innerWidth - 32; 
-                    // Set a floor on scaling for mobile to keep text legible.
-                    // This causes horizontal scrolling, but prevents text being "顯過小" (too small to read).
-                    newScale = Math.max(0.65, Math.min(1, availableWidth / A4_WIDTH)); 
+                    newScale = Math.min(1, availableWidth / A4_WIDTH); 
                 } 
             } 
             setPreviewScale(newScale > 0.1 ? newScale : 0.1); 
@@ -528,17 +526,17 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             className="group relative flex flex-col items-center focus:outline-none"
                                         >
                                             {/* Page Label (Above) */}
-                                            <span className={`absolute -top-8 md:-top-10 text-base md:text-lg font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
+                                            <span className={`absolute -top-7 md:-top-10 text-[13px] md:text-lg font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
                                                 {pageLabel}
                                             </span>
                                             
                                             {/* Dot */}
-                                            <div className={`w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-2xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')}`}>
+                                            <div className={`w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-base md:text-2xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')}`}>
                                                 {isCompleted ? <Check className="w-5 h-5 md:w-7 md:h-7" strokeWidth={3} /> : stepNum}
                                             </div>
                                             
                                             {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-8 md:-bottom-10 whitespace-nowrap max-w-[120px] overflow-hidden text-ellipsis transition-all duration-300 ${isActive ? 'text-lg md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-base md:text-lg font-bold text-slate-500 dark:text-slate-300 opacity-80'}`}>
+                                            <span className={`absolute -bottom-8 md:-bottom-10 w-max max-w-[80px] md:max-w-[140px] text-center transition-all duration-300 leading-tight ${isActive ? 'text-[13px] md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : 'text-[11px] md:text-lg font-bold text-slate-500 dark:text-slate-300 opacity-80'}`}>
                                                 {label}
                                             </span>
                                         </button>
@@ -583,8 +581,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 </div>
             </div>
 
-            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-center absolute lg:relative inset-0 z-30 transition-transform duration-300 ${mobileTab === 'preview' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} pb-32 lg:pb-10 dark:bg-slate-900`}>
-                <div className="w-auto flex justify-center pb-8 px-2 md:px-4">
+            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-start lg:items-center absolute lg:relative inset-0 z-30 transition-transform duration-300 ${mobileTab === 'preview' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} pb-32 lg:pb-10 dark:bg-slate-900`}>
+                <div className="w-full flex lg:justify-center justify-start pb-8">
                     <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
                 </div>
 
