@@ -111,9 +111,9 @@ const TableHeaderRow: React.FC = () => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     return (
-        <div className="flex border-b-2 border-slate-300 bg-slate-200/80 rounded-t-xl overflow-hidden shadow-sm">
-            <div className={`w-[60px] md:w-[80px] shrink-0 text-center font-black text-slate-700 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[14px]' : 'text-[18px]'} whitespace-nowrap tracking-wider border-r border-slate-300/50`}>確認無須<br/>新增說明</div>
-            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-2'} px-2 font-black text-left text-slate-700 ${isStandard ? 'text-[15px]' : 'text-[20px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
+        <div className="flex border-b-2 border-sky-300 bg-sky-50 rounded-t-xl overflow-hidden shadow-sm">
+            <div className={`w-[60px] md:w-[80px] shrink-0 text-center font-black text-sky-800 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[14px]' : 'text-[18px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
+            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-2'} px-2 font-black text-left text-sky-800 ${isStandard ? 'text-[15px]' : 'text-[20px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
         </div>
     );
 };
@@ -1209,17 +1209,17 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                         </h1>
                         <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[20px] py-2'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
                     </div>
-                    <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-4'} w-full text-black border-collapse border-2 border-gray-300`}>
+                    <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-4'} w-full text-black border-collapse border-2 border-[#009FE3]`}>
                         <tbody>
-                            <tr className="border-b border-gray-300">
-                                <td className={`bg-gray-100 w-[10%] text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>案名</td><td className={`w-[30%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.caseName}</td>
-                                <td className={`bg-gray-100 w-[15%] text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>編號</td><td className={`w-[20%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.authNumber}</td>
-                                <td className={`bg-gray-100 w-[8%] text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>店名</td><td className={`w-[17%] text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.storeName}</td>
+                            <tr className="border-b border-[#7dd3fc]">
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>案名</td><td className={`w-[30%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.caseName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[15%] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>編號</td><td className={`w-[20%] font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.authNumber}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[8%] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>店名</td><td className={`w-[17%] text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.storeName}</td>
                             </tr>
-                            <tr className="border-b border-gray-300">
-                                <td className={`bg-gray-100 text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.address}</td>
-                                <td className={`bg-gray-100 text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>業務</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.agentName}</td>
-                                <td className={`bg-gray-100 text-black font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
+                            <tr className="border-b border-[#7dd3fc]">
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.address}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>業務</td><td className={`font-black text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{data?.agentName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] font-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>日期</td><td className={`text-left font-mono pl-2 text-black ${isStandard ? 'py-1.5' : 'py-2.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[20px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>

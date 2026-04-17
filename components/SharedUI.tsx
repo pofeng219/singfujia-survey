@@ -33,10 +33,10 @@ interface CheckBoxProps {
 export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, disabled = false }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
-    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
-    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-3xl';
-    const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
+    const paddingClass = isStandard ? 'py-2 px-3' : 'py-4 px-5';
+    const roundedClass = isStandard ? 'rounded-lg' : 'rounded-[1.5rem]';
+    const textClass = isStandard ? 'text-[16px] md:text-[18px]' : 'text-2xl md:text-3xl';
+    const iconSize = isStandard ? 'w-5 h-5' : 'w-8 h-8';
 
     return (
         <div 
@@ -70,11 +70,11 @@ interface RadioGroupProps {
 export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange, layout = 'flex', cols = 0, disabled = false, spanFullOption }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
-    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
-    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
-    const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
-    const subTextSize = isStandard ? 'text-[14px]' : 'text-lg';
+    const paddingClass = isStandard ? 'py-2 px-3' : 'py-4 px-5';
+    const roundedClass = isStandard ? 'rounded-lg' : 'rounded-[1.5rem]';
+    const textClass = isStandard ? 'text-[16px] md:text-[18px]' : 'text-2xl md:text-3xl';
+    const iconSize = isStandard ? 'w-5 h-5' : 'w-8 h-8';
+    const subTextSize = isStandard ? 'text-[14px] md:text-[15px]' : 'text-xl';
 
     // Stage 2: Intelligent Layout Detection
     // 題目的選項按鈕若只有兩個且字數短(不超過5個字)，例如 無 有 ，則維持水平排序；超過三個以上的選項則改為垂直排序
@@ -296,8 +296,8 @@ export const SurveySection: React.FC<{
 }> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const titleSize = isStandard ? 'text-[22px] md:text-[24px]' : 'text-[1.75rem] md:text-[2.25rem]';
-    const hintSize = isStandard ? 'text-[16px] md:text-[18px]' : 'text-lg md:text-xl';
+    const titleSize = isStandard ? 'text-[18px] md:text-[24px]' : 'text-[1.75rem] md:text-[2.25rem]';
+    const hintSize = isStandard ? 'text-[14px] md:text-[18px]' : 'text-lg md:text-xl';
     const titlePaddingClass = isStandard ? 'px-4 pt-4 pb-2' : 'p-5 md:p-6';
     const roundedClass = isStandard ? 'rounded-xl md:rounded-2xl' : 'rounded-[1.5rem] md:rounded-[2rem]';
     const contentPaddingClass = isStandard ? 'px-4 pb-3 pt-0' : 'px-5 md:px-6 pb-5 md:pb-6 pt-0';
@@ -362,13 +362,18 @@ export const SurveySection: React.FC<{
                         )}
                     </div>
                     {/* Accordion Arrow Icon & Hint */}
-                    <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${isOpen ? 'bg-slate-100 border-slate-200 text-slate-600 rotate-0 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300' : 'bg-slate-800 border-slate-900 text-white -rotate-90 dark:bg-sky-600 dark:border-sky-500'}`}>
-                            <ChevronDown className="w-6 h-6 md:w-7 md:h-7" strokeWidth={3} />
+                    <div className="flex flex-col items-center gap-2 flex-shrink-0 mt-0.5">
+                        <div className={`${isStandard ? 'w-8 h-8 md:w-10 md:h-10' : 'w-10 h-10 md:w-12 md:h-12'} rounded-full flex items-center justify-center transition-all duration-300 border-2 ${isOpen ? 'bg-slate-100 border-slate-200 text-slate-600 rotate-0 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300' : 'bg-slate-800 border-slate-900 text-white -rotate-90 dark:bg-sky-600 dark:border-sky-500'}`}>
+                            <ChevronDown className={`${isStandard ? 'w-5 h-5 md:w-6 md:h-6' : 'w-6 h-6 md:w-7 md:h-7'}`} strokeWidth={3} />
                         </div>
                         {!isOpen && (
                             <span className={`${hintSize} font-black text-emerald-600 transition-all duration-300 whitespace-nowrap dark:text-emerald-400 animate-in fade-in bg-emerald-50/60 px-4 py-2 rounded-xl dark:bg-emerald-900/20 border-2 border-emerald-100/50 dark:border-emerald-800/50`}>
                                 點我展開
+                            </span>
+                        )}
+                        {isOpen && (
+                            <span className={`${isStandard ? 'text-[16px] md:text-[18px] text-slate-400' : 'text-[22px] md:text-[26px] text-slate-500 bg-slate-100 dark:bg-slate-800 px-4 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm'} font-bold transition-all duration-300 whitespace-nowrap dark:text-slate-400`}>
+                                點我收合
                             </span>
                         )}
                     </div>

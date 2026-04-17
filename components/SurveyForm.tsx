@@ -265,7 +265,26 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     }, []);
 
     useEffect(() => {
-        const handleResize = () => { if (exporting || typeof window === 'undefined') return; const A4_WIDTH = 794; let newScale = 1; if (window.innerWidth >= 1024) { if (previewWrapperRef.current) { const containerWidth = previewWrapperRef.current.clientWidth; const availableWidth = containerWidth - 100; newScale = Math.min(1, availableWidth / A4_WIDTH); } } else { if (mobileTab === 'preview') { const availableWidth = window.innerWidth - 32; newScale = Math.min(1, availableWidth / A4_WIDTH); } } setPreviewScale(newScale > 0.1 ? newScale : 0.1); };
+        const handleResize = () => { 
+            if (exporting || typeof window === 'undefined') return; 
+            const A4_WIDTH = 794; 
+            let newScale = 1; 
+            if (window.innerWidth >= 1024) { 
+                if (previewWrapperRef.current) { 
+                    const containerWidth = previewWrapperRef.current.clientWidth; 
+                    const availableWidth = containerWidth - 100; 
+                    newScale = Math.min(1, availableWidth / A4_WIDTH); 
+                } 
+            } else { 
+                if (mobileTab === 'preview') { 
+                    const availableWidth = window.innerWidth - 32; 
+                    // Set a floor on scaling for mobile to keep text legible.
+                    // This causes horizontal scrolling, but prevents text being "顯過小" (too small to read).
+                    newScale = Math.max(0.65, Math.min(1, availableWidth / A4_WIDTH)); 
+                } 
+            } 
+            setPreviewScale(newScale > 0.1 ? newScale : 0.1); 
+        };
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -450,15 +469,15 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-transform duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                 <div className={`p-5 ${themeBg} flex flex-col gap-4 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300`}>
-                    <div className="flex justify-between items-center relative z-10">
-                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-4 border-yellow-500 px-6 py-3 rounded-2xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[4px] flex items-center gap-3 shadow-xl dark:bg-yellow-600 dark:text-white dark:border-yellow-800">
-                            <ArrowLeft className="w-7 h-7" strokeWidth={3} />
-                            <span className="font-black text-2xl tracking-wide">回首頁</span>
+                    <div className="flex justify-between items-center gap-2 relative z-10 w-full overflow-hidden">
+                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] md:border-b-4 border-yellow-500 px-3 md:px-5 py-2 md:py-3 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1.5 shadow-md dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
+                            <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
+                            <span className="font-black text-lg md:text-xl tracking-wide whitespace-nowrap">回首頁</span>
                         </button>
-                        <div className="flex items-center gap-3">
-                            <span className="bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-xs font-bold tracking-wider shadow-sm border border-white/10">{data?.version}</span>
-                            <button onClick={toggleTheme} className="p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors" aria-label="Toggle Theme">
-                                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        <div className="flex items-center gap-2 shrink-0 overflow-hidden">
+                            <span className="bg-black/20 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider shadow-sm border border-white/10 shrink-0 truncate max-w-[120px] md:max-w-none">{data?.version}</span>
+                            <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
+                                {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
                             </button>
                         </div>
                     </div>
@@ -564,8 +583,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 </div>
             </div>
 
-            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 p-4 lg:p-10 overflow-y-auto flex flex-col items-center absolute lg:relative inset-0 z-30 transition-transform duration-300 ${mobileTab === 'preview' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} pb-32 lg:pb-10 dark:bg-slate-900`}>
-                <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
+            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-center absolute lg:relative inset-0 z-30 transition-transform duration-300 ${mobileTab === 'preview' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} pb-32 lg:pb-10 dark:bg-slate-900`}>
+                <div className="w-auto flex justify-center pb-8 px-2 md:px-4">
+                    <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
+                </div>
 
                 <div className="hidden lg:flex shrink-0 w-full gap-4 justify-center mt-10 lg:flex-row text-left relative z-20">
                     <button onClick={() => handleExport('jpg')} className="w-full lg:w-auto px-10 py-5 bg-sky-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-sky-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-sky-700 dark:border-sky-900"><ImageIcon className="w-8 h-8" /> 匯出 JPG 圖片</button>
