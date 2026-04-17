@@ -471,7 +471,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             <ImagePreviewModal isOpen={showImageModal} imageUrl={generatedImage} onClose={() => setShowImageModal(false)} />
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
 
-            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-transform duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
                 <div className={`p-5 ${themeBg} flex flex-col gap-4 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300`}>
                     <div className="flex justify-between items-center gap-2 relative z-10 w-full overflow-hidden">
                         <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] md:border-b-4 border-yellow-500 px-3 md:px-5 py-2 md:py-3 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1.5 shadow-md dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
@@ -587,7 +587,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 </div>
             </div>
 
-            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-start lg:items-center absolute lg:relative inset-0 z-30 transition-transform duration-300 ${mobileTab === 'preview' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} pb-32 lg:pb-10 dark:bg-slate-900`}>
+            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-start lg:items-center absolute lg:relative inset-0 z-30 transition-all duration-300 ${mobileTab === 'preview' ? 'translate-x-0 opacity-100 pointer-events-auto' : 'translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'} pb-32 lg:pb-10 dark:bg-slate-900`}>
                 <div className="w-full flex lg:justify-center justify-start pb-8">
                     <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
                 </div>

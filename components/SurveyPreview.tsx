@@ -75,7 +75,7 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
     
     return (
         <div className={`flex border-b border-slate-200 last:border-0 transition-colors ${isAbnormal ? 'bg-rose-50/80 hover:bg-rose-100/80' : 'bg-white hover:bg-slate-50'}`}>
-            <div className={`w-[60px] md:w-[80px] shrink-0 flex justify-center pt-1 border-r ${isAbnormal ? 'border-rose-200 bg-rose-100/50' : 'border-slate-100 bg-slate-50/50'}`}>
+            <div className={`w-[85px] md:w-[100px] shrink-0 flex justify-center pt-1 border-r ${isAbnormal ? 'border-rose-200 bg-rose-100/50' : 'border-slate-100 bg-slate-50/50'}`}>
                 <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
                     {checked && <Check size={10} strokeWidth={3} className="text-white" />}
                 </div>
@@ -112,7 +112,7 @@ const TableHeaderRow: React.FC = () => {
     const isStandard = mode === 'standard';
     return (
         <div className="flex border-b-2 border-sky-300 bg-sky-50 rounded-t-xl overflow-hidden shadow-sm">
-            <div className={`w-[60px] md:w-[80px] shrink-0 text-center font-black text-sky-800 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[14px]' : 'text-[18px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
+            <div className={`w-[85px] md:w-[100px] shrink-0 text-center font-black text-sky-800 ${isStandard ? 'py-1' : 'py-2'} ${isStandard ? 'text-[14px]' : 'text-[18px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
             <div className={`flex-grow ${isStandard ? 'py-1' : 'py-2'} px-2 font-black text-left text-sky-800 ${isStandard ? 'text-[15px]' : 'text-[20px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
         </div>
     );
