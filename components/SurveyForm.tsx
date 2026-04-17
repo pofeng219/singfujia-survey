@@ -441,7 +441,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     }, [data, type]);
 
     return (
-        <div className="flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300" style={highlightStyles}>
+        <div className="relative w-full flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300" style={highlightStyles}>
             {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
             
             <ConfirmModal 
