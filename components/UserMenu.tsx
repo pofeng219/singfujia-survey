@@ -6,15 +6,6 @@ import { signIn, signOut } from '../utils/firebase';
 export const UserMenu: React.FC = () => {
     const { user, loading } = useAuth();
     const [errorMsg, setErrorMsg] = useState('');
-    const [isInIframe, setIsInIframe] = useState(false);
-    
-    useEffect(() => {
-        try {
-            setIsInIframe(window !== window.parent);
-        } catch (e) {
-            setIsInIframe(true);
-        }
-    }, []);
     
     if (loading) {
         return <div className="text-sm px-4 py-2 opacity-50">載入中...</div>;
@@ -43,16 +34,12 @@ export const UserMenu: React.FC = () => {
     }
 
     const handleSignIn = async () => {
-        if (isInIframe) {
-            window.open(window.location.href, '_blank');
-            return;
-        }
         try {
             setErrorMsg('');
             await signIn();
         } catch (error: any) {
             console.error('Sign in error:', error);
-            setErrorMsg('登入失敗，請重試');
+            setErrorMsg(`登入失敗: ${error.message || error.code || '未知錯誤'}`);
         }
     };
 
@@ -69,7 +56,7 @@ export const UserMenu: React.FC = () => {
                 className="flex items-center gap-2 px-4 py-2 bg-[#009FE3] hover:bg-sky-600 text-white rounded-full font-bold transition-all shadow-md active:scale-95"
             >
                 <LogIn className="w-5 h-5" />
-                <span className="text-sm">{isInIframe ? '在新分頁開啟登入' : '雲端登入'}</span>
+                <span className="text-sm">雲端登入</span>
             </button>
         </div>
     );
