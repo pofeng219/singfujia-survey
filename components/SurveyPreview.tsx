@@ -2,7 +2,7 @@
 import { SurveyData, SurveyType } from '../types';
 import { formatDateROC } from './ROCDatePicker';
 import React, { useMemo, useState, useEffect } from 'react';
-import { FileText, Smartphone, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { GROUP_A_TYPES } from '../constants';
 import { useInterface } from './InterfaceContext';
 
@@ -118,17 +118,7 @@ const TableHeaderRow: React.FC = () => {
     );
 };
 
-const BulletItem: React.FC<{ label: string, value?: string, variant?: 'mobile' | 'a4' }> = ({ label, value, variant = 'a4' }) => {
-    const mode = useInterface();
-    const isStandard = mode === 'standard';
-    return (
-        <div className={`font-bold ${isStandard ? 'text-[16px]' : 'text-[20px]'} ${isStandard ? 'mt-0.5' : 'mt-1.5'} flex items-start leading-snug ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`}>
-            <span className={`mr-1.5 shrink-0 text-[#009FE3] ${isStandard ? 'text-[18px]' : 'text-[22px]'}`}>•</span>
-            <span className="mr-1 shrink-0">{label}：</span>
-            <span>{value || ''}</span>
-        </div>
-    );
-};
+// removed BulletItem
 
 const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = "" }: { className?: string, textClassName?: string, subTextClassName?: string }) => (
     <div className={`flex flex-col items-center justify-center ${className}`}>
@@ -860,7 +850,7 @@ const FactoryPrintPage1 = ({ data }: { data: SurveyData }) => {
         </>
     );
 };
-const FactoryPrintPage2 = ({ data, parkingSummary, activeMode, hasPage3 = false }: { data: SurveyData, parkingSummary: any, activeMode: any, hasPage3?: boolean }) => {
+const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyData, parkingSummary: any, activeMode: any }) => {
     // UPDATED LOGIC TO MATCH NEW FACTORY PROPERTY TYPES
     const isHiRise = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "園區標準廠房（集合式／分租型）");
     const showSolar = GROUP_A_TYPES.includes(data.propertyType);

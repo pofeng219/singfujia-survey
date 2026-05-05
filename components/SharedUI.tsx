@@ -1,11 +1,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Info, Save, FileInput, Trash2, AlertCircle, ChevronRight, AlertTriangle, ChevronDown, CheckCircle2, X, Eraser, Check, HelpCircle, Mic } from 'lucide-react';
+import { Info, Save, FileInput, Trash2, AlertCircle, ChevronRight, AlertTriangle, ChevronDown, CheckCircle2, X, Eraser, Check, Mic } from 'lucide-react';
 import { ValidationError } from '../types';
 import { useInterface } from './InterfaceContext';
 
 // Helper to determine color based on label content (Heuristic for Safety/Danger)
-const getButtonColorClass = (checked: boolean, label: string, disabled: boolean, isStandard: boolean = false) => {
+const getButtonColorClass = (checked: boolean, disabled: boolean, isStandard: boolean = false) => {
     if (disabled) {
         if (isStandard) return 'border-2 border-b-[4px] bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500';
         return 'border-4 border-b-[6px] md:border-b-[8px] bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500';
@@ -47,7 +47,7 @@ export const CheckBox: React.FC<CheckBoxProps> = ({ checked, label, onClick, dis
                 }
             }} 
             className={`w-full ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} cursor-pointer transition-all duration-200 flex items-center justify-center text-center select-none relative overflow-hidden
-            ${getButtonColorClass(checked, label, disabled, isStandard)}`}
+            ${getButtonColorClass(checked, disabled, isStandard)}`}
         >
             <span className="relative z-10 flex items-center justify-center gap-2">
                 {checked && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
@@ -134,7 +134,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
 
     return (
         <div className={`${isGrid ? `grid ${gridCols}` : 'flex flex-wrap'} gap-2 md:gap-3`}>
-            {options.map((v, idx) => {
+            {options.map(v => {
                 const isSelected = value === v;
                 return (
                     <button
@@ -147,7 +147,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({ options, value, onChange
                             }
                         }}
                         className={`${isGrid ? 'flex-1' : 'flex-auto min-w-[120px]'} ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex items-center justify-center transition-all duration-200 select-none gap-2 md:gap-3 relative overflow-hidden
-                        ${getButtonColorClass(isSelected, v, disabled, isStandard)}
+                        ${getButtonColorClass(isSelected, disabled, isStandard)}
                         ${spanFullOption === v ? 'col-span-full w-full' : ''}`}
                     >
                         {renderLabel(v, isSelected)}
@@ -197,7 +197,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
     return (
         <div className="flex flex-col gap-3 md:gap-4">
             <div className={`${gridClass} gap-2 md:gap-3`}>
-                {options.map((opt, idx) => {
+                {options.map(opt => {
                     const isSelected = value === opt;
                     return (
                         <button 
@@ -209,7 +209,7 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                                 onChange(value === opt ? '' : opt);
                             }} 
                             className={`${isGrid ? 'flex-1' : 'flex-auto min-w-[120px]'} ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex justify-center items-center transition-all duration-200 select-none gap-2 md:gap-4 relative overflow-hidden
-                            ${getButtonColorClass(isSelected, opt, disabled, isStandard)}`}
+                            ${getButtonColorClass(isSelected, disabled, isStandard)}`}
                         >
                             <span className="flex items-center gap-2">
                                 {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
@@ -293,7 +293,7 @@ export const SurveySection: React.FC<{
     className?: string;
     hasActiveContent?: boolean; // Deprecated in favor of status, but kept for backward compatibility if needed
     status?: SectionStatus;
-}> = ({ id, title, children, highlighted = false, className = '', hasActiveContent = false, status = 'neutral' }) => {
+}> = ({ id, title, children, highlighted = false, className = '', status = 'neutral' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const titleSize = isStandard ? 'text-[18px] md:text-[24px]' : 'text-[1.75rem] md:text-[2.25rem]';
@@ -940,10 +940,9 @@ interface PreviewResultProps {
     label: string;
     suffix?: string;
     forceShow?: boolean;
-    isLandStyle?: boolean; // New prop for Land category V-icon
     variant?: 'default' | 'mobile'; // New prop to control dark mode behavior
 }
-export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, suffix = "", forceShow = false, isLandStyle = false, variant = 'default' }) => {
+export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, suffix = "", forceShow = false, variant = 'default' }) => {
     if (!checked && !forceShow) return null;
     
     // In mobile mode, we use Tailwind classes for dark mode support.

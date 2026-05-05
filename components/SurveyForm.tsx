@@ -94,6 +94,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const formScrollRef = useRef<HTMLDivElement>(null);
     const previewWrapperRef = useRef<HTMLDivElement>(null);
     const dataRef = useRef(data);
+    const isJumpingToError = useRef(false);
 
     // Scroll to Top Logic
     useEffect(() => {
@@ -371,6 +372,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const toggleArr = useCallback((key: keyof SurveyData, val: string) => setData(p => { const arr = Array.isArray(p[key]) ? p[key] as string[] : []; return { ...p, [key]: arr.includes(val) ? arr.filter(i => i !== val) : [...arr, val] }; }), []);
 
     useEffect(() => { 
+        if (isJumpingToError.current) return;
         const scrollToTop = () => {
             if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' }); 
             if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'auto' }); 
@@ -394,16 +396,27 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const handleJumpToError = (id: string, step: number) => {
         setAlertModalOpen(false);
         setMobileTab('edit'); // Ensure we switch to edit mode on mobile
+        isJumpingToError.current = true;
         setActiveStep(step);
-        // Increase timeout to 350ms to allow mobile transition (300ms) to finish
-        setTimeout(() => {
+        
+        let attempts = 0;
+        const findAndScroll = () => {
             const el = document.getElementById(id);
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 setHighlightedField(id);
-                setTimeout(() => setHighlightedField(null), 2000);
+                setTimeout(() => {
+                    setHighlightedField(null);
+                    isJumpingToError.current = false;
+                }, 2000);
+            } else if (attempts < 15) { // Try for up to 750ms
+                attempts++;
+                setTimeout(findAndScroll, 50);
+            } else {
+                isJumpingToError.current = false;
             }
-        }, 350);
+        };
+        findAndScroll();
     };
 
     const handleBackHome = () => {
@@ -483,35 +496,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         parkingLogic
     };
 
-    // Validation Logic for Pulse Effect
-    const isCurrentStepValid = useMemo(() => {
-        // Basic validation logic based on activeStep and type
-        // This is a simplified check. For full validation, we might need to expose the getStatus functions from steps.
-        // However, since those are internal to steps, we can use a heuristic or move validation logic up.
-        // For now, we will rely on the fact that if there are no errors, it's likely valid enough to proceed.
-        // A better approach is to check if the 'Next' button would trigger an alert.
-        
-        // Since we can't easily access the internal status of child components without refactoring,
-        // we will assume the user is filling it out. 
-        // To truly implement "Pulse when complete", we need to lift the validation status.
-        // Given the constraints, we will apply a gentle pulse to the button ALWAYS to encourage action,
-        // OR we can try to replicate some basic checks.
-        
-        // Let's apply a gentle pulse always for "Next" to guide them, as requested "suggesting they can continue".
-        // If we want it strictly "only when complete", we'd need to refactor FormSteps to bubble up status.
-        // Let's stick to the user request: "When all required items are complete... pulse".
-        
-        // Since lifting state is complex, let's use a visual cue that is always active but subtle,
-        // OR we can check the data against the schema.
-        
-        const errors = validateForm(data, type);
-        // Filter errors relevant to the current step
-        // This is an approximation as validateForm checks the WHOLE form.
-        // But it's a good proxy. If there are no errors, definitely pulse.
-        if (errors.length === 0) return true;
-        
-        return false; 
-    }, [data, type]);
+    // isCurrentStepValid useMemo removed
 
     return (
         <div className="relative w-full flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300" style={highlightStyles}>
@@ -599,7 +584,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </ErrorBoundary>
 
                     {/* Progress Bar */}
-                    <div className="w-full relative pt-10 pb-10 mt-2 md:pt-12 md:pb-12 border-t-2 border-slate-200/60 dark:border-slate-800/60">
+                    <div className="w-full relative pt-6 pb-6 mt-1 md:pt-7 md:pb-7 border-t-2 border-slate-200/60 dark:border-slate-800/60">
                         <div className="w-full max-w-[240px] md:max-w-[360px] lg:max-w-[420px] mx-auto relative">
                             {/* Track */}
                             <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
@@ -624,7 +609,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             className="group relative flex flex-col items-center focus:outline-none cursor-pointer"
                                         >
                                             {/* Page Label (Above) */}
-                                            <span className={`absolute -top-7 md:-top-9 ${isStandard ? 'text-[11px] md:text-sm' : 'text-[14px] md:text-base'} font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
+                                            <span className={`absolute -top-6 md:-top-7 ${isStandard ? 'text-[11px] md:text-sm' : 'text-[14px] md:text-base'} font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
                                                 {pageLabel}
                                             </span>
                                             
@@ -634,7 +619,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             </div>
                                             
                                             {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-7 md:-bottom-9 w-max max-w-[80px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px] md:text-sm' : 'text-[15px] md:text-lg') + ' font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px] md:text-xs' : 'text-[13px] md:text-sm') + ' font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
+                                            <span className={`absolute -bottom-6 md:-bottom-7 w-max max-w-[80px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px] md:text-sm' : 'text-[15px] md:text-lg') + ' font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px] md:text-xs' : 'text-[13px] md:text-sm') + ' font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
                                                 {label}
                                             </span>
                                         </button>

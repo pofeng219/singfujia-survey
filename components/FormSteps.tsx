@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { CheckCircle2, ImageIcon } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import { SurveyData, SurveyType } from '../types';
 import { 
     EXT_LIST, LEAK_LOCATIONS, STRUCTURAL_ISSUES, UTILITY_ISSUES, FACILITY_OPTIONS, 
     ACCESS_SUB_OPTIONS, ACCESS_SUB_OPTIONS_LAND, ACCESS_SUB_OPTIONS_PARKING, ACCESS_SUB_OPTIONS_FACTORY, 
-    PROPERTY_TYPE_OPTIONS, FACTORY_FLOOR_OPTS, FACTORY_FIRE_OPTS, FACTORY_WASTE_OPTS, FACTORY_DOCK_OPTS, FACTORY_TRUCK_OPTS,
+    FACTORY_FLOOR_OPTS, FACTORY_FIRE_OPTS, FACTORY_WASTE_OPTS, FACTORY_DOCK_OPTS, FACTORY_TRUCK_OPTS,
     STAIR_ISSUES, HOUSE_PROPERTY_TYPE_OPTIONS, LAND_PROPERTY_TYPE_OPTIONS, FACTORY_PROPERTY_TYPE_OPTIONS,
     WATER_BOOSTER_ITEMS_B, FACILITIES_GROUP_A, FACILITIES_LAND_BASE, FACILITIES_LAND_FARM_EXTRA, FACILITIES_LAND_BUILD_IND_EXTRA,
     LAND_WATER_BOOSTER_ITEMS, GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A,
@@ -13,7 +13,7 @@ import {
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
-    AccordionRadio, QuestionBlock, BooleanReveal, UnitInput, FormInput, LandNumberInputs, SignaturePad,
+    AccordionRadio, QuestionBlock, BooleanReveal, UnitInput, FormInput, SignaturePad,
     SectionStatus, ImageModal
 } from './SharedUI';
 import { UtilitiesSection, ParkingSection, EnvironmentSection, NotesSection, LandQuestionsGroup, BuildingLandAccessSection } from './ComplexSections';
@@ -710,7 +710,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     );
 });
 
-export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, type, highlightedField, themeText, themeBorder, parkingLogic }) => {
+export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, type, highlightedField, themeText, parkingLogic }) => {
     
     const isGroupA = GROUP_A_TYPES.includes(data.propertyType);
 

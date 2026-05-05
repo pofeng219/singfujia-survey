@@ -5,7 +5,7 @@ import { GROUP_A_TYPES } from '../constants';
 class SurveyValidator {
     private errors: ValidationError[] = [];
 
-    constructor(private d: SurveyData) {}
+    constructor() {}
 
     // Generic check: adds error if condition is true
     check(condition: boolean, id: string, message: string, step: number) {
@@ -42,7 +42,7 @@ class SurveyValidator {
 }
 
 export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[] => {
-    const v = new SurveyValidator(d);
+    const v = new SurveyValidator();
     const isGroupA = GROUP_A_TYPES.includes(d.propertyType);
 
     // --- STEP 1: Basic Info (All Types) ---

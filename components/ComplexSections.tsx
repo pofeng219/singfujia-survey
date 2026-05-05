@@ -1,19 +1,18 @@
 
 import React, { useState } from 'react';
-import { CheckCircle2, ImageIcon } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import { SurveyData, SurveyType } from '../types';
 import { 
     PARK_TYPES, CAR_USAGE_OPTS, Q11_OPTS, ENV_CATEGORIES,
     PROTECTION_OPTS_PUBLIC, PROTECTION_OPTS_PRIVATE,
-    GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A, WATER_BOOSTER_ITEMS_B,
-    FACILITIES_GROUP_A, FACILITY_OPTIONS, FACILITIES_LAND_BASE, FACILITIES_LAND_FARM_EXTRA, FACILITIES_LAND_BUILD_IND_EXTRA,
-    LAND_WATER_BOOSTER_ITEMS, RESISTANCE_FACILITIES_OPTIONS,
+    GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A,
+    RESISTANCE_FACILITIES_OPTIONS,
     ACCESS_STATUS_OPTIONS, BUILDING_LINE_OPTIONS, DRAINAGE_OPTIONS
 } from '../constants';
 import { 
     CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
     InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs,
-    SectionStatus, FormInput, ImageModal
+    SectionStatus, ImageModal
 } from './SharedUI';
 
 export const UtilitiesSection = ({ 
@@ -717,7 +716,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
     );
 };
 
-export const BuildingLandAccessSection = ({ data, setData, update, prefix, title, id, highlightedId, type, status = 'neutral' }: any) => {
+export const BuildingLandAccessSection = ({ data, setData, update, title, id, highlightedId, type, status = 'neutral' }: any) => {
     const isHouse = type === 'house';
     const accessKey = isHouse ? 'q14_access' : 'land_q2_access';
     const abnormalDescKey = isHouse ? 'q14_abnormalDesc' : 'land_q2_access_desc';
