@@ -545,6 +545,51 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
 
             <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[5rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
+                {/* Top Action Bar */}
+                <div className={`p-3 md:p-4 ${themeBg} flex flex-col gap-2 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300 z-40`}>
+                    <div className="flex justify-between items-center w-full gap-2 relative z-10 overflow-hidden">
+                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] border-yellow-500 px-3 md:px-4 py-2 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1 shadow-sm dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
+                            <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                            <span className="font-bold text-sm whitespace-nowrap">回首頁</span>
+                        </button>
+                        
+                        <div className="flex gap-2 flex-grow justify-center overflow-x-auto no-scrollbar">
+                            <button 
+                                onClick={() => {
+                                    if (activeStep > 1) {
+                                        setActiveStep(prev => prev - 1);
+                                        if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }
+                                }}
+                                className={`flex-1 min-w-[70px] max-w-[120px] px-2 py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center transition-all ${activeStep > 1 ? 'bg-amber-100 text-amber-900 border-[2px] border-amber-400 shadow-sm hover:bg-amber-200 active:scale-95 dark:bg-amber-900/50 dark:text-amber-200' : 'bg-sky-700/50 text-sky-100 border border-sky-400 opacity-60 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-600'}`}
+                                disabled={activeStep === 1}
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-1 hidden sm:block" /> 上一步
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    if (activeStep < stepsToShow) {
+                                        setActiveStep(prev => prev + 1);
+                                        if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                    } else {
+                                        setMobileTab('preview');
+                                    }
+                                }}
+                                className={`flex-1 min-w-[70px] max-w-[120px] px-2 py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center transition-all shadow-md border-[2px] active:scale-95 text-white ${activeStep === stepsToShow ? 'bg-emerald-500 hover:bg-emerald-600 border-white' : 'bg-orange-500 hover:bg-orange-600 border-white'}`}
+                            >
+                                {activeStep === stepsToShow ? '預覽' : '下一步'} <ChevronRight className="w-4 h-4 ml-1 hidden sm:block" />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                            <span className="hidden sm:inline-block bg-black/20 px-2 py-1 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider">{data?.version}</span>
+                            <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
+                                {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-8 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
@@ -554,13 +599,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </ErrorBoundary>
 
                     {/* Progress Bar */}
-                    <div className="w-full relative pt-12 pb-10 mt-6 md:pt-14 md:pb-12 md:mt-8 border-t-2 border-slate-200/60 dark:border-slate-800/60">
-                        <div className="w-full max-w-[240px] md:max-w-[380px] lg:max-w-[460px] mx-auto relative">
+                    <div className="w-full relative pt-8 pb-8 mt-2 md:pt-10 md:pb-10 border-t-2 border-slate-200/60 dark:border-slate-800/60">
+                        <div className="w-full max-w-[220px] md:max-w-[340px] lg:max-w-[420px] mx-auto relative">
                             {/* Track */}
-                            <div className="absolute left-0 top-1/2 w-full h-1.5 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
+                            <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
                             {/* Progress Line */}
                             <div 
-                                className="absolute left-0 top-1/2 h-1.5 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
+                                className="absolute left-0 top-1/2 h-1 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
                                 style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
                             ></div>
                             
@@ -576,20 +621,20 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             key={stepNum} 
                                             type="button"
                                             onClick={() => setActiveStep(stepNum)}
-                                            className="group relative flex flex-col items-center focus:outline-none"
+                                            className="group relative flex flex-col items-center focus:outline-none cursor-pointer"
                                         >
                                             {/* Page Label (Above) */}
-                                            <span className={`absolute -top-7 md:-top-10 ${isStandard ? 'text-[13px]' : 'text-[15px]'} md:text-lg font-black whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
+                                            <span className={`absolute -top-6 md:-top-8 ${isStandard ? 'text-[11px]' : 'text-[13px]'} md:text-sm font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
                                                 {pageLabel}
                                             </span>
                                             
                                             {/* Dot */}
-                                            <div className={`w-9 h-9 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black ${isStandard ? 'text-base' : 'text-lg'} md:text-2xl transition-all duration-300 border-[3px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-lg dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')}`}>
-                                                {isCompleted ? <Check className="w-5 h-5 md:w-7 md:h-7" strokeWidth={3} /> : stepNum}
+                                            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-lg transition-all duration-300 border-[2px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-md dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')}`}>
+                                                {isCompleted ? <Check className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3} /> : stepNum}
                                             </div>
                                             
                                             {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-8 md:-bottom-10 w-max max-w-[80px] md:max-w-[140px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[13px]' : 'text-[16px]') + ' md:text-xl font-black text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[11px]' : 'text-[14px]') + ' md:text-lg font-bold text-slate-500 dark:text-slate-300 opacity-80'}`}>
+                                            <span className={`absolute -bottom-6 md:-bottom-8 w-max max-w-[70px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px]' : 'text-[13px]') + ' md:text-sm font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px]' : 'text-[12px]') + ' md:text-xs font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
                                                 {label}
                                             </span>
                                         </button>
@@ -600,30 +645,16 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div className={`p-4 ${themeBg} flex flex-col gap-3 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.2)] shrink-0 relative overflow-hidden transition-colors duration-300 z-40 mt-auto`}>
-                    <div className="flex justify-between items-center gap-2 relative z-10 w-full overflow-hidden">
-                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] border-yellow-500 px-3 md:px-5 py-2 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1.5 shadow-md dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
-                            <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
-                            <span className="font-black text-sm md:text-base tracking-wide whitespace-nowrap">回首頁</span>
-                        </button>
-                        <div className="flex items-center gap-2 shrink-0 overflow-hidden">
-                            <span className="bg-black/20 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider shadow-sm border border-white/10 shrink-0 truncate max-w-[120px] md:max-w-none">{data?.version}</span>
-                            <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
-                                {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
-                            </button>
-                        </div>
-                    </div>
-                    <div className="flex justify-between gap-3 w-full relative z-10">
-                        <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-white/90 text-emerald-700 py-2.5 rounded-xl transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:translate-y-[2px] shadow-sm hover:bg-white dark:bg-slate-800 dark:text-emerald-400">
-                            <FileInput className="w-5 h-5" strokeWidth={2.5} /> 讀檔
-                        </button>
-                        <button onClick={saveDraft} className="flex-1 bg-white/90 text-sky-700 py-2.5 rounded-xl transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:translate-y-[2px] shadow-sm hover:bg-white dark:bg-slate-800 dark:text-sky-400">
-                            <Save className="w-5 h-5" strokeWidth={2.5} /> 存檔
-                        </button>
-                        <button onClick={clearDraft} className="flex-1 bg-white/90 text-rose-700 py-2.5 rounded-xl transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:translate-y-[2px] shadow-sm hover:bg-white dark:bg-slate-800 dark:text-rose-400">
-                            <Trash2 className="w-5 h-5" strokeWidth={2.5} /> 清空
-                        </button>
-                    </div>
+                <div className={`p-3 md:p-4 bg-white border-t border-slate-200 dark:bg-slate-900 dark:border-slate-800 flex justify-between gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.1)] shrink-0 relative z-40 mt-auto`}>
+                    <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-amber-50 text-amber-700 border-2 border-amber-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-700">
+                        <FileInput className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 讀檔
+                    </button>
+                    <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
+                        <Save className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 存檔
+                    </button>
+                    <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
+                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 清空
+                    </button>
                 </div>
             </div>
 
