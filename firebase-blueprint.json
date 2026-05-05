@@ -1,23 +1,22 @@
 {
   "entities": {
-    "Survey": {
-      "title": "Survey",
-      "description": "A property survey document",
+    "UserDraft": {
+      "title": "User Draft",
+      "description": "Stores user survey drafts",
       "type": "object",
       "properties": {
-        "ownerId": { "type": "string" },
-        "type": { "type": "string" },
-        "data": { "type": "object" },
-        "createdAt": { "type": "timestamp" },
-        "updatedAt": { "type": "timestamp" }
-      },
-      "required": ["ownerId", "type", "data", "createdAt"]
+        "house": { "type": "object" },
+        "land": { "type": "object" },
+        "factory": { "type": "object" },
+        "parking": { "type": "object" },
+        "updatedAt": { "type": "object" }
+      }
     }
   },
   "firestore": {
-    "/surveys/{surveyId}": {
-      "schema": { "$ref": "#/entities/Survey" },
-      "description": "User's saved surveys"
+    "/userDrafts/{userId}": {
+      "schema": { "$ref": "#/entities/UserDraft" },
+      "description": "User's draft data"
     }
   }
 }

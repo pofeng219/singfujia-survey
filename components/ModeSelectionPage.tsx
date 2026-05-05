@@ -1,7 +1,6 @@
 import React from 'react';
-import { Sun, Moon, User as UserIcon, Users } from 'lucide-react';
+import { Sun, Moon, User, Users } from 'lucide-react';
 import { InterfaceMode } from './InterfaceContext';
-import { UserMenu } from './UserMenu';
 
 interface ModeSelectionPageProps {
     onSelect: (mode: InterfaceMode) => void;
@@ -13,8 +12,7 @@ export const ModeSelectionPage: React.FC<ModeSelectionPageProps> = ({ onSelect, 
     return (
         <div className="h-full w-full bg-slate-50 dark:bg-slate-950 overflow-y-auto overflow-x-hidden relative transition-colors duration-300">
             {/* Theme Toggle */}
-            <div className="absolute top-4 right-4 z-50 flex gap-3 items-center">
-                <UserMenu />
+            <div className="absolute top-4 right-4 z-50">
                 <button 
                     onClick={toggleTheme}
                     className="p-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-xl shadow-md border border-slate-200 dark:border-slate-700 transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-800"
@@ -86,7 +84,7 @@ export const ModeSelectionPage: React.FC<ModeSelectionPageProps> = ({ onSelect, 
                         >
                             <div className="flex items-center gap-5">
                                 <div className="bg-amber-200/50 dark:bg-amber-800/50 p-3 rounded-xl group-hover:scale-105 transition-transform duration-300">
-                                    <UserIcon className="w-7 h-7 text-amber-700 dark:text-amber-300" strokeWidth={2.5} />
+                                    <User className="w-7 h-7 text-amber-700 dark:text-amber-300" strokeWidth={2.5} />
                                 </div>
                                 <div className="flex flex-col items-start">
                                     <span className="text-xl md:text-2xl font-black tracking-wide">
