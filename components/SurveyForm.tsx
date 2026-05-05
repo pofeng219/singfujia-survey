@@ -599,8 +599,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </ErrorBoundary>
 
                     {/* Progress Bar */}
-                    <div className="w-full relative pt-8 pb-8 mt-2 md:pt-10 md:pb-10 border-t-2 border-slate-200/60 dark:border-slate-800/60">
-                        <div className="w-full max-w-[220px] md:max-w-[340px] lg:max-w-[420px] mx-auto relative">
+                    <div className="w-full relative pt-10 pb-10 mt-2 md:pt-12 md:pb-12 border-t-2 border-slate-200/60 dark:border-slate-800/60">
+                        <div className="w-full max-w-[240px] md:max-w-[360px] lg:max-w-[420px] mx-auto relative">
                             {/* Track */}
                             <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
                             {/* Progress Line */}
@@ -624,17 +624,17 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             className="group relative flex flex-col items-center focus:outline-none cursor-pointer"
                                         >
                                             {/* Page Label (Above) */}
-                                            <span className={`absolute -top-6 md:-top-8 ${isStandard ? 'text-[11px]' : 'text-[13px]'} md:text-sm font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
+                                            <span className={`absolute -top-7 md:-top-9 ${isStandard ? 'text-[11px] md:text-sm' : 'text-[14px] md:text-base'} font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
                                                 {pageLabel}
                                             </span>
                                             
                                             {/* Dot */}
-                                            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-lg transition-all duration-300 border-[2px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-md dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')}`}>
-                                                {isCompleted ? <Check className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3} /> : stepNum}
+                                            <div className={`rounded-full flex items-center justify-center font-bold transition-all duration-300 border-[2px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-md dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')} ${isStandard ? 'w-8 h-8 md:w-10 md:h-10 text-sm md:text-lg' : 'w-10 h-10 md:w-12 md:h-12 text-lg md:text-xl'}`}>
+                                                {isCompleted ? <Check className={`w-4 h-4 md:w-5 md:h-5 ${!isStandard && 'scale-125'}`} strokeWidth={3} /> : stepNum}
                                             </div>
                                             
                                             {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-6 md:-bottom-8 w-max max-w-[70px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px]' : 'text-[13px]') + ' md:text-sm font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px]' : 'text-[12px]') + ' md:text-xs font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
+                                            <span className={`absolute -bottom-7 md:-bottom-9 w-max max-w-[80px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px] md:text-sm' : 'text-[15px] md:text-lg') + ' font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px] md:text-xs' : 'text-[13px] md:text-sm') + ' font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
                                                 {label}
                                             </span>
                                         </button>
