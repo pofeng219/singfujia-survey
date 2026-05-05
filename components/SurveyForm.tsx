@@ -399,24 +399,26 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         isJumpingToError.current = true;
         setActiveStep(step);
         
-        let attempts = 0;
-        const findAndScroll = () => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setHighlightedField(id);
-                setTimeout(() => {
-                    setHighlightedField(null);
+        setTimeout(() => {
+            let attempts = 0;
+            const findAndScroll = () => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setHighlightedField(id);
+                    setTimeout(() => {
+                        setHighlightedField(null);
+                        isJumpingToError.current = false;
+                    }, 2000);
+                } else if (attempts < 15) { // Try for up to 750ms
+                    attempts++;
+                    setTimeout(findAndScroll, 50);
+                } else {
                     isJumpingToError.current = false;
-                }, 2000);
-            } else if (attempts < 15) { // Try for up to 750ms
-                attempts++;
-                setTimeout(findAndScroll, 50);
-            } else {
-                isJumpingToError.current = false;
-            }
-        };
-        findAndScroll();
+                }
+            };
+            findAndScroll();
+        }, 300);
     };
 
     const handleBackHome = () => {
@@ -529,7 +531,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             <ImagePreviewModal isOpen={showImageModal} imageUrl={generatedImage} onClose={() => setShowImageModal(false)} />
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
 
-            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[5rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
+            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[6rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
                 {/* Top Action Bar */}
                 <div className={`p-3 md:p-4 ${themeBg} flex flex-col gap-2 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300 z-40`}>
                     <div className="flex justify-between items-center w-full gap-2 relative z-10 overflow-hidden">
@@ -575,7 +577,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-8 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
+                <div ref={formScrollRef} className="flex-grow overflow-y-auto min-h-0 p-4 md:p-6 space-y-6 pb-8 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
                         {activeStep === 2 && <Step2 {...stepProps} />}
@@ -584,7 +586,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </ErrorBoundary>
 
                     {/* Progress Bar */}
-                    <div className="w-full relative pt-6 pb-6 mt-1 md:pt-7 md:pb-7 border-t-2 border-slate-200/60 dark:border-slate-800/60">
+                    <div className="w-full relative pt-5 pb-5 mt-1 md:pt-6 md:pb-6 border-t-2 border-slate-200/60 dark:border-slate-800/60">
                         <div className="w-full max-w-[240px] md:max-w-[360px] lg:max-w-[420px] mx-auto relative">
                             {/* Track */}
                             <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
@@ -609,7 +611,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             className="group relative flex flex-col items-center focus:outline-none cursor-pointer"
                                         >
                                             {/* Page Label (Above) */}
-                                            <span className={`absolute -top-6 md:-top-7 ${isStandard ? 'text-[11px] md:text-sm' : 'text-[14px] md:text-base'} font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
+                                            <span className={`absolute -top-5 md:-top-6 ${isStandard ? 'text-[11px] md:text-sm' : 'text-[14px] md:text-base'} font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
                                                 {pageLabel}
                                             </span>
                                             
@@ -619,7 +621,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                             </div>
                                             
                                             {/* Content Label (Below) */}
-                                            <span className={`absolute -bottom-6 md:-bottom-7 w-max max-w-[80px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px] md:text-sm' : 'text-[15px] md:text-lg') + ' font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px] md:text-xs' : 'text-[13px] md:text-sm') + ' font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
+                                            <span className={`absolute -bottom-5 md:-bottom-6 w-max max-w-[80px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px] md:text-sm' : 'text-[15px] md:text-lg') + ' font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px] md:text-xs' : 'text-[13px] md:text-sm') + ' font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
                                                 {label}
                                             </span>
                                         </button>

@@ -81,7 +81,7 @@ const AppContent = () => {
 
     if (!interfaceMode) {
         return (
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col h-[100dvh]">
                 <TopAuthBar />
                 <div className="flex-1 overflow-hidden">
                     <ModeSelectionPage onSelect={setInterfaceMode} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
@@ -92,7 +92,7 @@ const AppContent = () => {
 
     if (!systemType) {
         return (
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col h-[100dvh]">
                 <TopAuthBar />
                 <div className="flex-1 overflow-hidden">
                     <InterfaceContext.Provider value={interfaceMode}>
@@ -104,7 +104,7 @@ const AppContent = () => {
     }
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-[100dvh]">
             <TopAuthBar />
             <div className="flex-1 overflow-hidden relative">
                 <InterfaceContext.Provider value={interfaceMode}>
