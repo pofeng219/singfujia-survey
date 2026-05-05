@@ -1,10 +1,20 @@
-import React from 'react';
-import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LogIn, LogOut, User as UserIcon, AlertCircle } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
 import { signIn, signOut } from '../utils/firebase';
 
 export const UserMenu: React.FC = () => {
     const { user, loading } = useAuth();
+    const [errorMsg, setErrorMsg] = useState('');
+    const [isInIframe, setIsInIframe] = useState(false);
+    
+    useEffect(() => {
+        try {
+            setIsInIframe(window !== window.parent);
+        } catch (e) {
+            setIsInIframe(true);
+        }
+    }, []);
     
     if (loading) {
         return <div className="text-sm px-4 py-2 opacity-50">載入中...</div>;
@@ -33,21 +43,34 @@ export const UserMenu: React.FC = () => {
     }
 
     const handleSignIn = async () => {
+        if (isInIframe) {
+            window.open(window.location.href, '_blank');
+            return;
+        }
         try {
+            setErrorMsg('');
             await signIn();
         } catch (error: any) {
             console.error('Sign in error:', error);
-            alert('登入失敗，可能是因為瀏覽器隱私權設定阻擋了彈出視窗（例如在預覽畫面中）。\n\n解決方法：\n請點擊預覽畫面右上角的「Open in new tab」按鈕，在新分頁中重新開啟應用程式再進行登入。');
+            setErrorMsg('登入失敗，請重試');
         }
     };
 
     return (
-        <button 
-            onClick={handleSignIn}
-            className="flex items-center gap-2 px-4 py-2 bg-[#009FE3] hover:bg-sky-600 text-white rounded-full font-bold transition-all shadow-md active:scale-95"
-        >
-            <LogIn className="w-5 h-5" />
-            <span className="text-sm">雲端登入</span>
-        </button>
+        <div className="flex items-center gap-2 relative">
+            {errorMsg && (
+                <div className="absolute right-full mr-3 whitespace-nowrap bg-rose-100 dark:bg-rose-900/80 text-rose-700 dark:text-rose-200 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm border border-rose-200 dark:border-rose-800 animate-in fade-in slide-in-from-right-2">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    {errorMsg}
+                </div>
+            )}
+            <button 
+                onClick={handleSignIn}
+                className="flex items-center gap-2 px-4 py-2 bg-[#009FE3] hover:bg-sky-600 text-white rounded-full font-bold transition-all shadow-md active:scale-95"
+            >
+                <LogIn className="w-5 h-5" />
+                <span className="text-sm">{isInIframe ? '在新分頁開啟登入' : '雲端登入'}</span>
+            </button>
+        </div>
     );
 };
