@@ -32,9 +32,18 @@ export const UserMenu: React.FC = () => {
         );
     }
 
+    const handleSignIn = async () => {
+        try {
+            await signIn();
+        } catch (error: any) {
+            console.error('Sign in error:', error);
+            alert('登入失敗，可能是因為瀏覽器隱私權設定阻擋了彈出視窗（例如在預覽畫面中）。\n\n解決方法：\n請點擊預覽畫面右上角的「Open in new tab」按鈕，在新分頁中重新開啟應用程式再進行登入。');
+        }
+    };
+
     return (
         <button 
-            onClick={signIn}
+            onClick={handleSignIn}
             className="flex items-center gap-2 px-4 py-2 bg-[#009FE3] hover:bg-sky-600 text-white rounded-full font-bold transition-all shadow-md active:scale-95"
         >
             <LogIn className="w-5 h-5" />
