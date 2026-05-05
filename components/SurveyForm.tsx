@@ -544,34 +544,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             <ImagePreviewModal isOpen={showImageModal} imageUrl={generatedImage} onClose={() => setShowImageModal(false)} />
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
 
-            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
-                <div className={`p-5 ${themeBg} flex flex-col gap-4 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300`}>
-                    <div className="flex justify-between items-center gap-2 relative z-10 w-full overflow-hidden">
-                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] md:border-b-4 border-yellow-500 px-3 md:px-5 py-2 md:py-3 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1.5 shadow-md dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
-                            <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
-                            <span className="font-black text-lg md:text-xl tracking-wide whitespace-nowrap">回首頁</span>
-                        </button>
-                        <div className="flex items-center gap-2 shrink-0 overflow-hidden">
-                            <span className="bg-black/20 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider shadow-sm border border-white/10 shrink-0 truncate max-w-[120px] md:max-w-none">{data?.version}</span>
-                            <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
-                                {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
-                            </button>
-                        </div>
-                    </div>
-                    <div className="flex justify-between gap-4 w-full relative z-10">
-                        <button onClick={() => setDraftFoundModalOpen(true)} className={`flex-1 bg-white/90 text-emerald-700 border-b-4 border-emerald-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-emerald-400`}>
-                            <FileInput className="w-5 h-5" strokeWidth={2.5} /> 讀檔
-                        </button>
-                        <button onClick={saveDraft} className={`flex-1 bg-white/90 text-sky-700 border-b-4 border-sky-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-sky-400`}>
-                            <Save className="w-5 h-5" strokeWidth={2.5} /> 存檔
-                        </button>
-                        <button onClick={clearDraft} className={`flex-1 bg-white/90 text-rose-700 border-b-4 border-rose-600/20 py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 font-bold text-lg active:border-b-0 active:translate-y-[2px] shadow-lg hover:bg-white dark:bg-slate-800 dark:text-rose-400`}>
-                            <Trash2 className="w-5 h-5" strokeWidth={2.5} /> 清空
-                        </button>
-                    </div>
-                </div>
-
-                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-40 lg:pb-10 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
+            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[5rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
+                <div ref={formScrollRef} className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 pb-8 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
                         {activeStep === 2 && <Step2 {...stepProps} />}
@@ -626,37 +600,30 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div className="hidden lg:flex shrink-0 w-full gap-4 p-4 bg-white/95 backdrop-blur-md border-t-2 border-slate-200 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900/95 dark:border-slate-800">
-                    {activeStep > 1 && (
-                        <button 
-                            onClick={() => {
-                                if (activeStep > 1) {
-                                    setActiveStep(prev => prev - 1);
-                                    if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                                }
-                            }}
-                            className="flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all active:scale-95 bg-slate-100 text-slate-600 border-2 border-slate-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
-                        >
-                            <ArrowLeft className="w-6 h-6" /> 上一步
+                <div className={`p-4 ${themeBg} flex flex-col gap-3 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.2)] shrink-0 relative overflow-hidden transition-colors duration-300 z-40 mt-auto`}>
+                    <div className="flex justify-between items-center gap-2 relative z-10 w-full overflow-hidden">
+                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] border-yellow-500 px-3 md:px-5 py-2 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1.5 shadow-md dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
+                            <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
+                            <span className="font-black text-sm md:text-base tracking-wide whitespace-nowrap">回首頁</span>
                         </button>
-                    )}
-                    <button 
-                        onClick={() => {
-                            if (activeStep < stepsToShow) {
-                                setActiveStep(prev => prev + 1);
-                                if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                            } else {
-                                setMobileTab('preview');
-                            }
-                        }}
-                        className={`flex-1 py-4 rounded-2xl font-bold text-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-b-4 active:border-b-0 active:translate-y-[2px] ${isCurrentStepValid ? 'animate-pulse ring-4 ring-sky-200 dark:ring-sky-900' : ''} ${activeStep === stepsToShow ? 'bg-emerald-600 text-white border-emerald-800' : 'bg-sky-600 text-white border-sky-800'}`}
-                    >
-                        {activeStep === stepsToShow ? (
-                            <>預覽匯出 <FileText className="w-6 h-6" /></>
-                        ) : (
-                            <>下一步 <ChevronRight className="w-6 h-6" /></>
-                        )}
-                    </button>
+                        <div className="flex items-center gap-2 shrink-0 overflow-hidden">
+                            <span className="bg-black/20 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider shadow-sm border border-white/10 shrink-0 truncate max-w-[120px] md:max-w-none">{data?.version}</span>
+                            <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
+                                {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex justify-between gap-3 w-full relative z-10">
+                        <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-white/90 text-emerald-700 py-2.5 rounded-xl transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:translate-y-[2px] shadow-sm hover:bg-white dark:bg-slate-800 dark:text-emerald-400">
+                            <FileInput className="w-5 h-5" strokeWidth={2.5} /> 讀檔
+                        </button>
+                        <button onClick={saveDraft} className="flex-1 bg-white/90 text-sky-700 py-2.5 rounded-xl transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:translate-y-[2px] shadow-sm hover:bg-white dark:bg-slate-800 dark:text-sky-400">
+                            <Save className="w-5 h-5" strokeWidth={2.5} /> 存檔
+                        </button>
+                        <button onClick={clearDraft} className="flex-1 bg-white/90 text-rose-700 py-2.5 rounded-xl transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:translate-y-[2px] shadow-sm hover:bg-white dark:bg-slate-800 dark:text-rose-400">
+                            <Trash2 className="w-5 h-5" strokeWidth={2.5} /> 清空
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -670,42 +637,6 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     <button onClick={() => handleExport('pdf')} className="w-full lg:w-auto px-10 py-5 bg-red-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-red-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-red-700 dark:border-red-900"><FileText className="w-8 h-8" /> 匯出 PDF 文件</button>
                 </div>
             </div>
-
-            {isMobile && mobileTab === 'edit' && (
-                <div className="lg:hidden fixed bottom-[88px] left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 flex items-center justify-between gap-3 z-40 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900/95 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300">
-                    {activeStep > 1 && (
-                        <button 
-                            onClick={() => {
-                                if (activeStep > 1) {
-                                    setActiveStep(prev => prev - 1);
-                                    if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                                }
-                            }}
-                            className="flex-1 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95 bg-slate-100 text-slate-600 border-2 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-                        >
-                            <ArrowLeft className="w-5 h-5" /> 上一步
-                        </button>
-                    )}
-
-                    <button 
-                        onClick={() => {
-                            if (activeStep < stepsToShow) {
-                                setActiveStep(prev => prev + 1);
-                                if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                            } else {
-                                setMobileTab('preview');
-                            }
-                        }}
-                        className={`flex-1 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-b-4 active:border-b-0 active:translate-y-[2px] ${isCurrentStepValid ? 'animate-pulse ring-4 ring-sky-200 dark:ring-sky-900' : ''} ${activeStep === stepsToShow ? 'bg-emerald-600 text-white border-emerald-800' : 'bg-sky-600 text-white border-sky-800'}`}
-                    >
-                        {activeStep === stepsToShow ? (
-                            <>預覽匯出 <FileText className="w-5 h-5" /></>
-                        ) : (
-                            <>下一步 <ChevronRight className="w-5 h-5" /></>
-                        )}
-                    </button>
-                </div>
-            )}
 
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 flex justify-around items-center pb-safe pt-1 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
                 <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-400'}`}>

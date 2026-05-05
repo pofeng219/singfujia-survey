@@ -34,6 +34,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error("Login error", error);
             if (error.code === 'auth/popup-blocked') {
                 alert("登入視窗被瀏覽器阻擋了，請允許開啟彈出視窗，或者嘗試「在新分頁開啟」此網站。");
+            } else if (error.code === 'auth/unauthorized-domain') {
+                alert("登入失敗：此網域未獲授權。\n\n請前往 Firebase 控制台 (Authentication -> Settings -> Authorized domains) 將此網頁的網址加入授權清單中。");
             } else {
                 alert("登入失敗，請重試。詳細錯誤：" + error.message);
             }
