@@ -70,12 +70,15 @@ const OPTIONS: MenuOption[] = [
     },
 ];
 
+import { UserMenu } from './UserMenu';
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, toggleTheme, onBack }) => {
     return (
         // Changed container to allow scrolling: h-full, overflow-y-auto ensures content is reachable
         <div className="h-full w-full bg-slate-50 dark:bg-slate-950 overflow-y-auto overflow-x-hidden relative transition-colors duration-300">
             {/* Top Bar */}
-            <div className="absolute top-4 right-4 flex justify-end items-center z-50">
+            <div className="absolute top-4 right-4 flex gap-3 justify-end items-center z-50">
+                <UserMenu />
                 <button 
                     onClick={toggleTheme}
                     className="p-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-xl shadow-md border border-slate-200 dark:border-slate-700 transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-800"

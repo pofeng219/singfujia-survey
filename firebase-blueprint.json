@@ -1,0 +1,23 @@
+{
+  "entities": {
+    "Survey": {
+      "title": "Survey",
+      "description": "A property survey document",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "type": { "type": "string" },
+        "data": { "type": "object" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["ownerId", "type", "data", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/surveys/{surveyId}": {
+      "schema": { "$ref": "#/entities/Survey" },
+      "description": "User's saved surveys"
+    }
+  }
+}

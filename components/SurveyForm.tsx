@@ -11,6 +11,10 @@ import { validateForm } from '../utils/validators';
 import { exportToJPG, exportToPDF } from '../utils/exporter';
 import { Step1, Step2, Step3, Step4 } from './FormSteps';
 import { useInterface } from './InterfaceContext';
+import { db, handleFirestoreError, OperationType } from '../utils/firebase';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { useAuth } from '../utils/AuthContext';
+import { UserMenu } from './UserMenu';
 
 interface ErrorBoundaryProps {
     children?: ReactNode;
@@ -61,7 +65,9 @@ const isDataDirty = (current: SurveyData, initial: SurveyData): boolean => {
 
 // Sticky Action Bar Component removed (inlined)
 
+
 export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode, toggleTheme }) => {
+    const { user } = useAuth();
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const [data, setData] = useState<SurveyData>(INITIAL_STATE);
@@ -220,18 +226,88 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const performSave = (silent: boolean = false) => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(dataRef.current)); if (!silent) setToastMsg("✅ 文字已儲存成功！"); } catch (e) { if (!silent) setToastMsg("儲存失敗：瀏覽器限制存取"); } };
+    const performSave = async (silent: boolean = false) => { 
+        try { 
+            const currentData = JSON.parse(JSON.stringify(dataRef.current));
+            if (user) {
+                // Save to cloud
+                const docRef = doc(db, 'surveys', `${user.uid}_${type}`);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    await updateDoc(docRef, {
+                        data: currentData,
+                        type: type,
+                        updatedAt: serverTimestamp()
+                    });
+                } else {
+                    await setDoc(docRef, {
+                        ownerId: user.uid,
+                        type: type,
+                        data: currentData,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                }
+                if (!silent) setToastMsg("☁️ 已儲存至雲端草稿！");
+            } else {
+                // Save to local
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(currentData)); 
+                if (!silent) setToastMsg("✅ 文字已本機儲存成功！"); 
+            }
+        } catch (error) { 
+            if (!silent) setToastMsg("儲存失敗！請確認網路及登入狀態"); 
+            if (user && error instanceof Error && error.message.includes('permission')) {
+                handleFirestoreError(error, OperationType.WRITE, `surveys/${user.uid}_${type}`);
+            }
+        } 
+    };
+
     const saveDraft = () => performSave(false);
-    useEffect(() => { const timer = setInterval(() => { if (isDataDirty(dataRef.current, INITIAL_STATE)) performSave(true); }, 5000); return () => clearTimeout(timer); }, []);
-    const loadDraft = () => { try { const saved = localStorage.getItem(DRAFT_KEY); if (saved) { setData(JSON.parse(saved)); setToastMsg("已讀取暫存檔"); } setDraftFoundModalOpen(false); } catch (e) { } };
+    useEffect(() => { const timer = setInterval(() => { if (isDataDirty(dataRef.current, INITIAL_STATE)) performSave(true); }, 5000); return () => clearTimeout(timer); }, [user]);
     
-    const performReset = () => {
+    const loadDraft = async () => { 
+        try { 
+            if (user) {
+                const docRef = doc(db, 'surveys', `${user.uid}_${type}`);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const savedData = docSnap.data().data;
+                    setData(savedData); 
+                    setToastMsg("☁️ 已讀取雲端暫存檔"); 
+                } else {
+                    setToastMsg("雲端無暫存檔");
+                }
+            } else {
+                const saved = localStorage.getItem(DRAFT_KEY); 
+                if (saved) { 
+                    setData(JSON.parse(saved)); 
+                    setToastMsg("已讀取本機暫存檔"); 
+                } 
+            }
+            setDraftFoundModalOpen(false); 
+        } catch (error) { 
+            console.error(error);
+            if (user && error instanceof Error && error.message.includes('permission')) {
+                handleFirestoreError(error, OperationType.GET, `surveys/${user.uid}_${type}`);
+            }
+        } 
+    };
+    
+    const performReset = async () => {
         try {
+            if (user) {
+                const docRef = doc(db, 'surveys', `${user.uid}_${type}`);
+                await deleteDoc(docRef);
+            }
             localStorage.removeItem(DRAFT_KEY);
             setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
             setActiveStep(1);
-            setToastMsg("暫存檔已清空，畫面已重置");
-        } catch (e) { }
+            setToastMsg(user ? "雲端暫存檔已清空，畫面已重置" : "暫存檔已清空，畫面已重置");
+        } catch (error) { 
+            if (user && error instanceof Error && error.message.includes('permission')) {
+                handleFirestoreError(error, OperationType.DELETE, `surveys/${user.uid}_${type}`);
+            }
+        }
     };
 
     const clearDraft = () => { 
@@ -239,16 +315,27 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     };
     
     useEffect(() => { 
-        try { 
-            const saved = localStorage.getItem(DRAFT_KEY); 
-            if (saved) {
-                const savedObj = JSON.parse(saved);
-                if (isDataDirty(savedObj, INITIAL_STATE)) {
-                    setDraftFoundModalOpen(true); 
+        const checkExistingDraft = async () => {
+            try { 
+                if (user) {
+                    const docRef = doc(db, 'surveys', `${user.uid}_${type}`);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists() && isDataDirty(docSnap.data().data, INITIAL_STATE)) {
+                        setDraftFoundModalOpen(true);
+                    }
+                } else {
+                    const saved = localStorage.getItem(DRAFT_KEY); 
+                    if (saved) { 
+                        const savedObj = JSON.parse(saved); 
+                        if (isDataDirty(savedObj, INITIAL_STATE)) { 
+                            setDraftFoundModalOpen(true); 
+                        }
+                    } 
                 }
-            }
-        } catch (e) { } 
-    }, [DRAFT_KEY]);
+            } catch (e) { console.error(e); }
+        };
+        checkExistingDraft();
+    }, [DRAFT_KEY, user]);
 
     useEffect(() => {
         let inactivityTimer: ReturnType<typeof setTimeout>;
@@ -479,6 +566,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                             <span className="font-black text-lg md:text-xl tracking-wide whitespace-nowrap">回首頁</span>
                         </button>
                         <div className="flex items-center gap-2 shrink-0 overflow-hidden">
+                            <UserMenu />
                             <span className="bg-black/20 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider shadow-sm border border-white/10 shrink-0 truncate max-w-[120px] md:max-w-none">{data?.version}</span>
                             <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/20 active:scale-95 hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
                                 {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
