@@ -212,8 +212,8 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                 {options.map(opt => {
                     const isSelected = value === opt;
                     return (
+                        <React.Fragment key={opt}>
                         <button 
-                            key={opt}
                             type="button" 
                             disabled={disabled} 
                             onClick={() => {
@@ -231,14 +231,15 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                                 </span>
                             )}
                         </button>
+                        {isSelected && renderDetail && renderDetail(opt) && (
+                            <div className={`${isGrid ? 'col-span-full' : 'w-full'} mt-1 mb-2 animate-in slide-in-from-top-4 fade-in duration-300`}>
+                                {renderDetail(opt)}
+                            </div>
+                        )}
+                        </React.Fragment>
                     );
                 })}
             </div>
-            {value && renderDetail && renderDetail(value) && (
-                <div className={`mt-3 w-full animate-in slide-in-from-top-4 fade-in duration-300`}>
-                    {renderDetail(value)}
-                </div>
-            )}
         </div>
     );
 };
@@ -297,8 +298,8 @@ export const AccordionCheckBox: React.FC<AccordionCheckBoxProps> = ({ options, v
                 {options.map(opt => {
                     const isSelected = value.includes(opt);
                     return (
+                        <React.Fragment key={opt}>
                         <button 
-                            key={opt}
                             type="button" 
                             disabled={disabled} 
                             onClick={() => {
@@ -316,19 +317,15 @@ export const AccordionCheckBox: React.FC<AccordionCheckBoxProps> = ({ options, v
                                 </span>
                             )}
                         </button>
+                        {isSelected && renderDetail && renderDetail(opt) && (
+                            <div className={`${isGrid ? 'col-span-full' : 'w-full'} mt-1 mb-2 animate-in slide-in-from-top-4 fade-in duration-300`}>
+                                {renderDetail(opt)}
+                            </div>
+                        )}
+                        </React.Fragment>
                     );
                 })}
             </div>
-            {value.map(opt => {
-                if (renderDetail && renderDetail(opt)) {
-                    return (
-                        <div key={opt} className={`mt-3 w-full animate-in slide-in-from-top-4 fade-in duration-300`}>
-                            {renderDetail(opt)}
-                        </div>
-                    );
-                }
-                return null;
-            })}
         </div>
     );
 };

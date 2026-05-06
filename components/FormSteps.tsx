@@ -72,16 +72,13 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     return (
         <StepContainer title="第一步：基本資料" type={type} themeText={themeText}>
             <div className={`space-y-4 md:space-y-6 warm-card p-4 md:p-8 rounded-2xl md:rounded-[2rem] shadow-sm ${themeBorder}`}>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                    <FormInput id="field-caseName" label="物件案名" value={data?.caseName || ''} onChange={v => update('caseName', v)} placeholder="輸入案名" highlighted={highlightedField === 'field-caseName'} />
-                    <FormInput id="field-authNumber" label="委託書編號" value={data?.authNumber || ''} onChange={v => update('authNumber', v)} placeholder="輸入編號" highlighted={highlightedField === 'field-authNumber'} />
-                </div>
+                <FormInput id="field-caseName" label="物件案名" value={data?.caseName || ''} onChange={v => update('caseName', v)} placeholder="輸入案名" highlighted={highlightedField === 'field-caseName'} />
+                <FormInput id="field-address" label={type === 'land' ? '坐落位置' : (type === 'parking' ? '標的位置' : '標的地址')} value={data?.address || ''} onChange={v => update('address', v)} placeholder={type === 'land' ? "輸入坐落位置或相關位置" : "輸入地址／位置"} highlighted={highlightedField === 'field-address'} />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     <FormInput id="field-storeName" label="所屬店名" value={data?.storeName || ''} onChange={v => update('storeName', v)} placeholder="輸入店名" highlighted={highlightedField === 'field-storeName'} />
                     <FormInput id="field-agentName" label="調查業務" value={data?.agentName || ''} onChange={v => update('agentName', v)} placeholder="輸入姓名" highlighted={highlightedField === 'field-agentName'} />
                 </div>
                 <div className="space-y-3"><label className="block text-slate-800 font-black mb-2 dynamic-text-h2 text-left leading-normal">填寫日期</label><div className="mt-1"><ROCDatePicker value={data?.fillDate || ''} onChange={(d) => update('fillDate', d)} /></div></div>
-                <FormInput id="field-address" label={type === 'land' ? '坐落位置' : (type === 'parking' ? '標的位置' : '標的地址')} value={data?.address || ''} onChange={v => update('address', v)} placeholder={type === 'land' ? "輸入坐落位置或相關位置" : "輸入地址／位置"} highlighted={highlightedField === 'field-address'} />
             </div>
             <SurveySection id="section-access" highlighted={highlightedField === 'section-access'} title={type === 'factory' || type === 'house' || type === 'land' ? "本物件型態與現況" : "本物件現況"} className={themeBorder} status={getAccessStatus()}>
                 {type === 'factory' && (
