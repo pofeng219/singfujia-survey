@@ -859,11 +859,8 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
     const getElevatorStr = () => {
         if (!data.factory_elevator) return '';
         if (data.factory_elevator === '無') return '無';
-        const status = data.factory_elevator_working ? '可運作' : '故障';
-        // Use the actual value (純貨梯/客貨兩用梯) instead of hardcoded "有"
-        let s = `${data.factory_elevator} （${status}`;
-        if (data.factory_elevator_separate) s += '／客貨分';
-        s += '）';
+        const status = data.factory_elevator_status || (data.factory_elevator_working ? '可運作' : '故障');
+        let s = `${data.factory_elevator} （${status}）`;
         const parts = [];
         if (data.factory_elevator_capacity) parts.push(`${data.factory_elevator_capacity}噸/kg`);
         if (data.factory_elevator_dim) parts.push(data.factory_elevator_dim);
@@ -875,8 +872,8 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
         if (data.factory_crane === '無') return '無';
         if (data.factory_crane === '僅預留牛腿') return '預留牛腿';
         if (data.factory_crane === '有軌道／樑，無主機') return '有軌道無主機';
-        const status = data.factory_crane_working ? '可運作' : '故障';
-        let s = `有 （${status}`;
+        const status = data.factory_crane_status || (data.factory_crane_working ? '可運作' : '故障');
+        let s = `有 （${status}）`;
         const parts = [];
         if (data.factory_crane_tonnage) parts.push(`${data.factory_crane_tonnage}噸`);
         if (data.factory_crane_quantity) parts.push(data.factory_crane_quantity);

@@ -163,11 +163,14 @@ interface AccordionRadioProps {
     options: string[];
     value: string;
     onChange: (val: string) => void;
-    renderDetail: (opt: string) => React.ReactNode;
+    renderDetail?: (opt: string) => React.ReactNode;
     disabled?: boolean;
+    layout?: 'flex' | 'grid';
     cols?: number;
+    spanFullOption?: string;
+    renderLabel?: (opt: string, isSelected: boolean) => React.ReactNode;
 }
-export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, cols = 0 }) => {
+export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, onChange, renderDetail, disabled = false, layout, cols = 0, spanFullOption, renderLabel }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
@@ -175,28 +178,37 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
     const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
     const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
 
-    // Stage 2: Intelligent Layout Detection
-    // 題目的選項按鈕若只有兩個且字數短(不超過5個字)，例如 無 有 ，則維持水平排序；超過三個以上的選項則改為垂直排序
+    const gridColsOptions: Record<number, string> = {
+        1: 'grid grid-cols-1',
+        2: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
+        3: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+        4: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+    };
+
     const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 5);
+    const shouldUseGrid = isShortAndSimple ? true : (layout === 'grid' || cols > 0 || options.length > 2 || (options.length === 2 && !isShortAndSimple));
     
     let finalCols = cols || 2;
-
-    if (options.length >= 3) {
-        finalCols = 1;
-    } else if (isShortAndSimple) {
-        finalCols = 2;
-    } else if (options.length === 2) {
-        finalCols = 1;
-    } else {
-        finalCols = 1;
+    if (!cols) {
+        if (options.length >= 3) {
+            finalCols = 1;
+        } else if (isShortAndSimple) {
+            finalCols = 2;
+        } else if (options.length === 2) {
+            finalCols = 1;
+        } else {
+            finalCols = 1;
+        }
     }
 
-    const isGrid = true;
-    const gridClass = finalCols === 1 ? 'grid grid-cols-1' : (finalCols === 2 ? 'grid grid-cols-2' : `grid grid-cols-${finalCols}`);
+    const isGrid = shouldUseGrid;
+    const containerClass = shouldUseGrid
+        ? `${gridColsOptions[finalCols] || 'grid-cols-1'} gap-2 md:gap-3 lg:gap-4`
+        : "flex flex-wrap gap-2 md:gap-3 lg:gap-4";
 
     return (
-        <div className="flex flex-col gap-3 md:gap-4">
-            <div className={`${gridClass} gap-2 md:gap-3`}>
+        <div className="w-full">
+            <div className={containerClass}>
                 {options.map(opt => {
                     const isSelected = value === opt;
                     return (
@@ -209,21 +221,114 @@ export const AccordionRadio: React.FC<AccordionRadioProps> = ({ options, value, 
                                 onChange(value === opt ? '' : opt);
                             }} 
                             className={`${isGrid ? 'flex-1' : 'flex-auto min-w-[120px]'} ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex justify-center items-center transition-all duration-200 select-none gap-2 md:gap-4 relative overflow-hidden
-                            ${getButtonColorClass(isSelected, disabled, isStandard)}`}
+                            ${getButtonColorClass(isSelected, disabled, isStandard)}
+                            ${spanFullOption === opt ? 'col-span-full w-full' : ''}`}
                         >
-                            <span className="flex items-center gap-2">
-                                {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
-                                <span>{opt}</span>
-                            </span>
+                            {renderLabel ? renderLabel(opt, isSelected) : (
+                                <span className="flex items-center gap-2">
+                                    {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
+                                    <span>{opt}</span>
+                                </span>
+                            )}
                         </button>
                     );
                 })}
             </div>
-            {value && renderDetail(value) && (
-                <div className="animate-in slide-in-from-top-4 fade-in duration-300 w-full">
+            {value && renderDetail && renderDetail(value) && (
+                <div className={`mt-3 w-full animate-in slide-in-from-top-4 fade-in duration-300`}>
                     {renderDetail(value)}
                 </div>
             )}
+        </div>
+    );
+};
+
+// === Accordion CheckBox ===
+interface AccordionCheckBoxProps {
+    options: string[];
+    value: string[];
+    onChange: (val: string) => void;
+    renderDetail?: (opt: string) => React.ReactNode;
+    disabled?: boolean;
+    layout?: 'flex' | 'grid';
+    cols?: number;
+    spanFullOption?: string;
+    renderLabel?: (opt: string, isSelected: boolean) => React.ReactNode;
+}
+export const AccordionCheckBox: React.FC<AccordionCheckBoxProps> = ({ options, value, onChange, renderDetail, disabled = false, layout, cols = 0, spanFullOption, renderLabel }) => {
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const paddingClass = isStandard ? 'py-1.5 px-3 md:py-2 md:px-3' : 'py-3 px-4 md:py-4 md:px-5';
+    const roundedClass = isStandard ? 'rounded-md md:rounded-lg' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
+    const textClass = isStandard ? 'text-[18px] md:text-[20px]' : 'text-xl md:text-2xl';
+    const iconSize = isStandard ? 'w-4 h-4' : 'w-6 h-6 md:w-8 md:h-8';
+
+    const gridColsOptions: Record<number, string> = {
+        1: 'grid grid-cols-1',
+        2: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
+        3: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+        4: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+    };
+
+    const isShortAndSimple = options.length === 2 && options.every(o => o.length <= 5);
+    const shouldUseGrid = isShortAndSimple ? true : (layout === 'grid' || cols > 0 || options.length > 2 || (options.length === 2 && !isShortAndSimple));
+    
+    let finalCols = cols || 2;
+    if (!cols) {
+        if (options.length >= 3) {
+            finalCols = 1;
+        } else if (isShortAndSimple) {
+            finalCols = 2;
+        } else if (options.length === 2) {
+            finalCols = 1;
+        } else {
+            finalCols = 1;
+        }
+    }
+
+    const isGrid = shouldUseGrid;
+    const containerClass = shouldUseGrid
+        ? `${gridColsOptions[finalCols] || 'grid-cols-1'} gap-2 md:gap-3 lg:gap-4`
+        : "flex flex-wrap gap-2 md:gap-3 lg:gap-4";
+
+    return (
+        <div className="w-full">
+            <div className={containerClass}>
+                {options.map(opt => {
+                    const isSelected = value.includes(opt);
+                    return (
+                        <button 
+                            key={opt}
+                            type="button" 
+                            disabled={disabled} 
+                            onClick={() => {
+                                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+                                onChange(opt);
+                            }} 
+                            className={`${isGrid ? 'flex-1' : 'flex-auto min-w-[120px]'} ${paddingClass} ${roundedClass} font-bold tracking-wide ${textClass} text-center flex justify-center items-center transition-all duration-200 select-none gap-2 md:gap-4 relative overflow-hidden
+                            ${getButtonColorClass(isSelected, disabled, isStandard)}
+                            ${spanFullOption === opt ? 'col-span-full w-full' : ''}`}
+                        >
+                            {renderLabel ? renderLabel(opt, isSelected) : (
+                                <span className="flex items-center gap-2">
+                                    {isSelected && <CheckCircle2 className={`${iconSize} text-emerald-500 fill-white`} strokeWidth={2.5} />}
+                                    <span>{opt}</span>
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+            {value.map(opt => {
+                if (renderDetail && renderDetail(opt)) {
+                    return (
+                        <div key={opt} className={`mt-3 w-full animate-in slide-in-from-top-4 fade-in duration-300`}>
+                            {renderDetail(opt)}
+                        </div>
+                    );
+                }
+                return null;
+            })}
         </div>
     );
 };
@@ -463,8 +568,6 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
     const isStandard = mode === 'standard';
     const labelSize = isStandard ? 'text-[18px] md:text-[20px]' : 'dynamic-text-h2';
     const labelMarginClass = isStandard ? 'mb-1.5 md:mb-2' : 'mb-3 md:mb-4';
-
-    const isTriggered = Array.isArray(trigger) ? trigger.includes(value) : value === trigger;
     
     return (
         <QuestionBlock className={disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}>
@@ -473,19 +576,21 @@ export const BooleanReveal: React.FC<BooleanRevealProps> = ({
                     {typeof label === 'string' ? <p className={`${labelSize} font-black text-slate-700 dark:text-slate-200`}>{label}</p> : label}
                 </div>
             )}
-            <RadioGroup 
+            <AccordionRadio 
                 options={options} 
                 value={value || ''} 
                 onChange={onChange} 
                 disabled={disabled}
                 cols={cols}
-                layout="grid"
+                renderDetail={(opt) => {
+                    const isTrig = Array.isArray(trigger) ? trigger.includes(opt) : opt === trigger;
+                    return isTrig && children ? (
+                        <div className="pt-2">
+                            <SubItemHighlight disabled={disabled}>{children}</SubItemHighlight>
+                        </div>
+                    ) : null;
+                }}
             />
-            {isTriggered && children && (
-                <SubItemHighlight disabled={disabled}>
-                    {children}
-                </SubItemHighlight>
-            )}
         </QuestionBlock>
     );
 };
@@ -817,16 +922,16 @@ export const SignaturePad: React.FC<{ value: string; onChange: (val: string) => 
 };
 
 // === UI Helpers ===
-export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: boolean }> = ({ children, disabled = false }) => {
+export const SubItemHighlight: React.FC<{ children: React.ReactNode, disabled?: boolean, className?: string }> = ({ children, disabled = false, className = '' }) => {
     const mode = useInterface();
     const isStandard = mode === 'standard';
     const paddingClass = isStandard ? 'p-2 md:p-3' : 'p-4 md:p-5';
     const roundedClass = isStandard ? 'rounded-lg md:rounded-xl' : 'rounded-[1.25rem] md:rounded-[1.5rem]';
     const borderClass = isStandard ? 'border-l-[3px] md:border-l-[4px]' : 'border-l-[6px] md:border-l-[8px]';
-    const marginClass = isStandard ? 'mt-2 mb-2' : 'mt-2 mb-3';
+    const marginClass = isStandard ? '!mt-1 !mb-1' : '!mt-1.5 !mb-2';
 
     return (
-        <div className={`${marginClass} ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
+        <div className={`${marginClass} ${paddingClass} ${isStandard ? 'bg-slate-100/80 border-sky-400 dark:bg-slate-800/80 dark:border-sky-500' : 'bg-orange-50/80 border-orange-400 dark:bg-orange-900/20 dark:border-orange-500'} ${roundedClass} ${borderClass} shadow-inner animate-in slide-in-from-top-4 fade-in duration-300 ${disabled ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''} ${className}`}>
             <div className="pl-1 md:pl-2">{children}</div>
         </div>
     );
