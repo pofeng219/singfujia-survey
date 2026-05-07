@@ -477,9 +477,9 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         
         // Hiding Logic for Validation
         const isHiRise = (d.propertyType === "立體化廠辦大樓"); 
-        const hideLandDetails = (d.propertyType === "立體化廠辦大樓" || d.propertyType === "園區標準廠房（集合式／分租型）");
+        const hideLandDetails = (d.propertyType === "立體化廠辦大樓" || d.propertyType === "連棟／分組式標準廠房");
         const hideSoil = isHiRise;
-        const hideBuildingLine = ['立體化廠辦大樓', '園區標準廠房（集合式／分租型）'].includes(d.propertyType);
+        const hideBuildingLine = ['立體化廠辦大樓', '連棟／分組式標準廠房'].includes(d.propertyType);
         const hideDitch = ['立體化廠辦大樓'].includes(d.propertyType);
         
         // Numbering variables to match FormSteps

@@ -204,8 +204,8 @@ export const UtilitiesSection = ({
                     />
                 </QuestionBlock>
 
-                {/* Solar Equipment for Factory - New Requirement */}
-                {type === 'factory' && (
+                {/* Solar Equipment for Factory - Hide for Group B (multistory buildings) as they move to section 10 */}
+                {type === 'factory' && GROUP_A_TYPES.includes(data.propertyType) && (
                      <QuestionBlock>
                         <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                         <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
@@ -763,7 +763,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
     const numberKey = isHouse ? 'q14_number' : 'land_q2_access_number';
 
     // Hiding Logic
-    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '園區標準廠房（集合式／分租型）'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
+    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '連棟／分組式標準廠房'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
     const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
 
     return (

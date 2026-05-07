@@ -852,7 +852,7 @@ const FactoryPrintPage1 = ({ data }: { data: SurveyData }) => {
 };
 const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyData, parkingSummary: any, activeMode: any }) => {
     // UPDATED LOGIC TO MATCH NEW FACTORY PROPERTY TYPES
-    const isHiRise = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "園區標準廠房（集合式／分租型）");
+    const isHiRise = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "連棟／分組式標準廠房");
     const showSolar = GROUP_A_TYPES.includes(data.propertyType);
 
     // Compact Helpers
@@ -1009,7 +1009,7 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
 const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
     // Determine numbering based on what is shown/hidden
     // UPDATED LOGIC TO MATCH NEW FACTORY PROPERTY TYPES
-    const hideLandDetails = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "園區標準廠房（集合式／分租型）");
+    const hideLandDetails = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "連棟／分組式標準廠房");
     const isHiRise = (data.propertyType === "立體化廠辦大樓");
     const hideSoil = isHiRise;
     const labels = getHouseLabels(data); // Reuse house labels logic for q9 facilities
@@ -1072,7 +1072,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
                 </>
             )}
 
-            <CommonExtraQuestions data={data} startIdx={data.propertyType === '立體化廠辦大樓' ? 12 : (['園區標準廠房（集合式／分租型）'].includes(data.propertyType) ? 13 : 15)} type="factory" />
+            <CommonExtraQuestions data={data} startIdx={data.propertyType === '立體化廠辦大樓' ? 12 : (['連棟／分組式標準廠房'].includes(data.propertyType) ? 13 : 15)} type="factory" />
         </>
     );
 };

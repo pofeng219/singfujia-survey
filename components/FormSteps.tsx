@@ -201,8 +201,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!data.land_q1_water) return 'incomplete';
         if (data.land_q1_water === '是' && !data.land_q1_water_cat) return 'incomplete';
         if (data.land_q1_water === '其他未列項目' && !data.land_q1_water_other) return 'incomplete';
-        if (type === 'factory' && !data.house_solar_status) return 'incomplete';
-        if (showWaterBooster && !data.water_booster) return 'incomplete';
+        if (type === 'factory' && isGroupA && !data.house_solar_status) return 'incomplete';
+        if (showWaterBooster && isGroupA && !data.water_booster) return 'incomplete';
         if (!data.land_q1_other_new) return 'incomplete';
         if (data.land_q1_other_new === '是' && !data.land_q1_other_desc) return 'incomplete';
         return 'complete';
@@ -928,10 +928,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             <div className="mt-4 animate-in fade-in slide-in-from-top-2">
                                                 <SubItemHighlight>
                                                     <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">
-                                                        {['透天別墅', '透天店面'].includes(data.propertyType) ? '設置現況：' : '維護方式：'}
+                                                        {isGroupA ? '設置現況：' : '維護方式：'}
                                                     </p>
                                                     <AccordionRadio 
-                                                        options={['透天別墅', '透天店面'].includes(data.propertyType) ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
+                                                        options={isGroupA ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
                                                     />
@@ -1498,10 +1498,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             <div className="mt-4 animate-in fade-in slide-in-from-top-2">
                                                 <SubItemHighlight>
                                                     <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">
-                                                        {['透天獨棟廠房', '倉儲物流廠房'].includes(data.propertyType) ? '設置現況：' : '維護方式：'}
+                                                        {isGroupA ? '設置現況：' : '維護方式：'}
                                                     </p>
                                                     <AccordionRadio 
-                                                        options={['透天獨棟廠房', '倉儲物流廠房'].includes(data.propertyType) ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
+                                                        options={isGroupA ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
                                                     />
@@ -1550,7 +1550,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     
     // Factory logic variables
     const isHiRise = (data.propertyType === "立體化廠辦大樓");
-    const hideLandDetails = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "園區標準廠房（集合式／分租型）");
+    const hideLandDetails = (data.propertyType === "立體化廠辦大樓" || data.propertyType === "連棟／分組式標準廠房");
     const hideSoil = isHiRise;
 
     let accessNum = 11;
