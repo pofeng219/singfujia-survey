@@ -12,7 +12,7 @@ import {
     GAS_SUPPLY_OPTIONS
 } from '../constants';
 import { 
-    CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
+    CheckBox, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
     AccordionRadio, QuestionBlock, BooleanReveal, UnitInput, FormInput, SignaturePad,
     SectionStatus, ImageModal
 } from './SharedUI';
@@ -115,7 +115,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 {type === 'land' && (
                      <QuestionBlock id="section-propertyType" className={`flex flex-col gap-4 md:gap-6 mb-6 md:mb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <RadioGroup options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                        <AccordionRadio options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
                     </QuestionBlock>
                 )}
                 {type !== 'factory' && (
@@ -607,7 +607,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                      {/* 1. Gas Supply Type - Top */}
                                      <QuestionBlock>
                                          <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">瓦斯供應類型</p>
-                                         <RadioGroup 
+                                         <AccordionRadio 
                                              options={GAS_SUPPLY_OPTIONS} 
                                              value={data.q7_gasType || ''} 
                                              onChange={v => update('q7_gasType', v)} 
@@ -652,7 +652,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                          <QuestionBlock>
                                             <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                                             <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
-                                            <RadioGroup 
+                                            <AccordionRadio 
                                                 options={['無設置', '合法設置', '私下設置']} 
                                                 value={data.house_solar_status || ''} 
                                                 onChange={v => update('house_solar_status', v)} 
@@ -668,7 +668,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                              <div className="mb-6">
                                                 <InlineWarning>※本項由使用者自行管理維護</InlineWarning>
                                              </div>
-                                             <RadioGroup 
+                                             <AccordionRadio 
                                                 options={['無設置', '有設置']} 
                                                 value={data.water_booster === '無設置' || data.water_booster === '無' ? '無設置' : (data.water_booster === '有設置' || data.water_booster === '有' ? '有設置' : '')} 
                                                 onChange={v => {
@@ -679,22 +679,21 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                         water_booster_items: (v === '無設置' || v === '') ? [] : prev.water_booster_items 
                                                     }));
                                                 }} 
-                                                
+                                                renderDetail={(opt) => opt === '有設置' ? (
+                                                    <SubItemHighlight>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            {WATER_BOOSTER_ITEMS_A.map(item => (
+                                                                <CheckBox 
+                                                                    key={item} 
+                                                                    checked={data.water_booster_items?.includes(item) || false} 
+                                                                    label={item} 
+                                                                    onClick={() => toggleArr('water_booster_items', item)} 
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </SubItemHighlight>
+                                                ) : null}
                                              />
-                                             {data.water_booster === '有設置' && (
-                                                <SubItemHighlight>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        {WATER_BOOSTER_ITEMS_A.map(item => (
-                                                            <CheckBox 
-                                                                key={item} 
-                                                                checked={data.water_booster_items?.includes(item) || false} 
-                                                                label={item} 
-                                                                onClick={() => toggleArr('water_booster_items', item)} 
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </SubItemHighlight>
-                                             )}
                                          </QuestionBlock>
                                      )}
                                  </div>
@@ -931,7 +930,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                     <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">
                                                         {['透天別墅', '透天店面'].includes(data.propertyType) ? '設置現況：' : '維護方式：'}
                                                     </p>
-                                                    <RadioGroup 
+                                                    <AccordionRadio 
                                                         options={['透天別墅', '透天店面'].includes(data.propertyType) ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
@@ -992,7 +991,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 <SurveySection id="section-land-q6" highlighted={highlightedField === 'section-land-q6'} title="5. 目前禁建與限建現況" status={getLandQ6Status()}>
                     <QuestionBlock>
                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">目前禁建與限建現況</p>
-                        <RadioGroup 
+                        <AccordionRadio 
                             options={['無', '有']} 
                             value={data.land_q6_limit === '否' ? '無' : (data.land_q6_limit === '是' ? '有' : '')} 
                             onChange={v => {
@@ -1000,14 +999,12 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 const val = v === '無' ? '否' : (v === '有' ? '是' : '');
                                 setData(p => ({...p, land_q6_limit: val, land_q6_limit_desc: val === '是' ? p.land_q6_limit_desc : ''}))
                             }} 
-                            
-                            
+                            renderDetail={(opt) => opt === '有' ? (
+                                <SubItemHighlight>
+                                    <DetailInput value={data.land_q6_limit_desc || ''} onChange={v => update('land_q6_limit_desc', v)} placeholder="說明現況" />
+                                </SubItemHighlight>
+                            ) : null}
                         />
-                        {data.land_q6_limit === '是' && (
-                            <SubItemHighlight>
-                                <DetailInput value={data.land_q6_limit_desc || ''} onChange={v => update('land_q6_limit_desc', v)} placeholder="說明現況" />
-                            </SubItemHighlight>
-                        )}
                     </QuestionBlock>
                 </SurveySection>
 
@@ -1015,116 +1012,113 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <div className="space-y-8">
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">現況使用人</p>
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無', '所有權人自用', '非所有權人使用']} 
                                 value={data.land_q7_user === '無' ? '無' : (data.land_q7_user || '')} 
                                 onChange={v => setData(p => ({...p, land_q7_user: v === '無' ? '無' : v, land_q7_user_detail: v === '非所有權人使用' ? p.land_q7_user_detail : '', land_q7_user_desc: v === '非所有權人使用' ? p.land_q7_user_desc : ''}))} 
-                                 
+                                renderDetail={(opt) => opt === '非所有權人使用' ? (
+                                    <SubItemHighlight>
+                                        <div className="space-y-4">
+                                            <AccordionRadio 
+                                                options={['承租中', '無償借用', '被占用', '共有分管', '其他未列項目']} 
+                                                value={data.land_q7_user_detail || ''} 
+                                                onChange={v => {
+                                                    setData(prev => ({...prev, land_q7_user_detail: v, land_q7_user_desc: ''})); // Reset desc on change
+                                                }} 
+                                                renderDetail={(opt2) => {
+                                                    if (['承租中', '無償借用', '被占用', '其他未列項目'].includes(opt2)) {
+                                                        return (
+                                                            <DetailInput 
+                                                                value={data.land_q7_user_desc || ''} 
+                                                                onChange={v => update('land_q7_user_desc', v)} 
+                                                                placeholder={
+                                                                    opt2 === '承租中' ? "如租金／押金、期限等" :
+                                                                    opt2 === '無償借用' ? "如借用對象、約定事項等" :
+                                                                    opt2 === '被占用' ? "說明現況" :
+                                                                    "說明現況"
+                                                                } 
+                                                            />
+                                                        );
+                                                    }
+                                                    return null;
+                                                }}
+                                            />
+                                        </div>
+                                    </SubItemHighlight>
+                                ) : null}
                             />
-                            {data.land_q7_user === '非所有權人使用' && (
-                                <SubItemHighlight>
-                                    <div className="space-y-4">
-                                        <AccordionRadio 
-                                            options={['承租中', '無償借用', '被占用', '共有分管', '其他未列項目']} 
-                                            value={data.land_q7_user_detail || ''} 
-                                            onChange={v => {
-                                                setData(prev => ({...prev, land_q7_user_detail: v, land_q7_user_desc: ''})); // Reset desc on change
-                                            }} 
-                                            renderDetail={(opt) => {
-                                                if (['承租中', '無償借用', '被占用', '其他未列項目'].includes(opt)) {
-                                                    return (
-                                                        <DetailInput 
-                                                            value={data.land_q7_user_desc || ''} 
-                                                            onChange={v => update('land_q7_user_desc', v)} 
-                                                            placeholder={
-                                                                opt === '承租中' ? "如租金／押金、期限等" :
-                                                                opt === '無償借用' ? "如借用對象、約定事項等" :
-                                                                opt === '被占用' ? "說明現況" :
-                                                                "說明現況"
-                                                            } 
-                                                        />
-                                                    );
-                                                }
-                                                return null;
-                                            }}
-                                        />
-                                    </div>
-                                </SubItemHighlight>
-                            )}
                         </QuestionBlock>
 
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">地上定著物-農作物</p>
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無', '有農作物／植栽']} 
                                 value={data.land_q7_crops === '無' ? '無' : (data.land_q7_crops || '')} 
                                 onChange={v => setData(p => ({...p, land_q7_crops: v === '無' ? '無' : v}))} 
-                                 
+                                renderDetail={(opt) => opt === '有農作物／植栽' ? (
+                                    <SubItemHighlight>
+                                        <div className="space-y-6">
+                                            <AccordionRadio 
+                                                options={['經濟作物', '景觀植栽', '雜樹／荒廢', '其他未列項目']} 
+                                                value={data.land_q7_crops_type || ''} 
+                                                onChange={v => update('land_q7_crops_type', v)} 
+                                                renderDetail={(opt2) => {
+                                                    if (opt2 === '經濟作物' || opt2 === '景觀植栽') {
+                                                        return (
+                                                            <div className="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-4">
+                                                                <div className="flex items-center gap-4">
+                                                                    <span className="font-bold text-xl shrink-0">預計收成月份：</span>
+                                                                    <div className="w-32"><input type="number" className="full-width-input !mt-0 text-center" value={data.land_q7_crops_month || ''} onChange={e => update('land_q7_crops_month', e.target.value)} placeholder="輸入月份" /></div>
+                                                                    <span className="font-bold text-xl shrink-0">月</span>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-bold text-xl mb-2">處理方式：</p>
+                                                                    <AccordionRadio options={['賣方移除', '列冊點交', '協議補貼']} value={data.land_q7_crops_detail || ''} onChange={v => update('land_q7_crops_detail', v)} />
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                }}
+                                            />
+                                            
+                                            {data.land_q7_crops_type === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q7_crops_other || ''} onChange={v => update('land_q7_crops_other', v)} placeholder="說明現況" /></SubItemHighlight>}
+                                        </div>
+                                    </SubItemHighlight>
+                                ) : null}
                             />
-                            {data.land_q7_crops === '有農作物／植栽' && (
-                                <SubItemHighlight>
-                                    <div className="space-y-6">
-                                        <AccordionRadio 
-                                            options={['經濟作物', '景觀植栽', '雜樹／荒廢', '其他未列項目']} 
-                                            value={data.land_q7_crops_type || ''} 
-                                            onChange={v => update('land_q7_crops_type', v)} 
-                                            renderDetail={(opt) => {
-                                                if (opt === '經濟作物' || opt === '景觀植栽') {
-                                                    return (
-                                                        <div className="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-4">
-                                                            <div className="flex items-center gap-4">
-                                                                <span className="font-bold text-xl shrink-0">預計收成月份：</span>
-                                                                <div className="w-32"><input type="number" className="full-width-input !mt-0 text-center" value={data.land_q7_crops_month || ''} onChange={e => update('land_q7_crops_month', e.target.value)} placeholder="輸入月份" /></div>
-                                                                <span className="font-bold text-xl shrink-0">月</span>
-                                                            </div>
-                                                            <div>
-                                                                <p className="font-bold text-xl mb-2">處理方式：</p>
-                                                                <AccordionRadio options={['賣方移除', '列冊點交', '協議補貼']} value={data.land_q7_crops_detail || ''} onChange={v => update('land_q7_crops_detail', v)} />
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            }}
-                                        />
-                                        
-                                        {data.land_q7_crops_type === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q7_crops_other || ''} onChange={v => update('land_q7_crops_other', v)} placeholder="說明現況" /></SubItemHighlight>}
-                                    </div>
-                                </SubItemHighlight>
-                            )}
                         </QuestionBlock>
 
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">地上定著物-建築物／工作物</p>
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無', '有建築物／工作物']} 
                                 value={data.land_q7_build === '無' ? '無' : (data.land_q7_build || '')} 
                                 onChange={v => setData(p => ({...p, land_q7_build: v === '無' ? '無' : v}))} 
-                                 
+                                renderDetail={(opt) => opt === '有建築物／工作物' ? (
+                                    <SubItemHighlight>
+                                        <div className="space-y-6">
+                                            <AccordionRadio 
+                                                options={['有保存登記', '未保存登記', '宗教／殯葬設施', '其他未列項目']} 
+                                                value={data.land_q7_build_type || ''} 
+                                                onChange={v => update('land_q7_build_type', v)} 
+                                                renderDetail={(opt2) => {
+                                                    if (opt2 === '有保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>;
+                                                    if (opt2 === '未保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>;
+                                                    if (opt2 === '宗教／殯葬設施') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['小廟', '墳墓']} value={data.land_q7_build_rel_detail || ''} onChange={v => update('land_q7_build_rel_detail', v)} /></div>;
+                                                    if (opt2 === '其他未列項目') return <DetailInput value={data.land_q7_build_other || ''} onChange={v => update('land_q7_build_other', v)} placeholder="說明現況" />;
+                                                    return null;
+                                                }}
+                                            />
+                                        </div>
+                                    </SubItemHighlight>
+                                ) : null}
                             />
-                            {data.land_q7_build === '有建築物／工作物' && (
-                                <SubItemHighlight>
-                                    <div className="space-y-6">
-                                        <AccordionRadio 
-                                            options={['有保存登記', '未保存登記', '宗教／殯葬設施', '其他未列項目']} 
-                                            value={data.land_q7_build_type || ''} 
-                                            onChange={v => update('land_q7_build_type', v)} 
-                                            renderDetail={(opt) => {
-                                                if (opt === '有保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>;
-                                                if (opt === '未保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>;
-                                                if (opt === '宗教／殯葬設施') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['小廟', '墳墓']} value={data.land_q7_build_rel_detail || ''} onChange={v => update('land_q7_build_rel_detail', v)} /></div>;
-                                                if (opt === '其他未列項目') return <DetailInput value={data.land_q7_build_other || ''} onChange={v => update('land_q7_build_other', v)} placeholder="說明現況" />;
-                                                return null;
-                                            }}
-                                        />
-                                    </div>
-                                </SubItemHighlight>
-                            )}
                         </QuestionBlock>
 
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">太陽能光電發電設備</p>
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無', '合法設置', '私下設置']} 
                                 value={data.land_q7_solar === '無' ? '無' : (data.land_q7_solar || '')} 
                                 onChange={v => setData(p => ({...p, land_q7_solar: v === '無' ? '無' : v}))} 
@@ -1137,7 +1131,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <div className="mb-6">
                                 <InlineWarning>※本項由使用者自行管理維護，若物件型態為道路用地／公設地，確認是否為自來水公司之公共設施，或鄰地非法佔用</InlineWarning>
                             </div>
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無設置', '有設置']} 
                                 value={data.land_water_booster === '無設置' || data.land_water_booster === '無' ? '無設置' : (data.land_water_booster === '有設置' || data.land_water_booster === '有' ? '有設置' : '')} 
                                 onChange={v => {
@@ -1147,29 +1141,28 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                         land_water_booster_items: (v === '無設置' || v === '') ? [] : prev.land_water_booster_items 
                                     }));
                                 }} 
-                                
+                                renderDetail={(opt) => opt === '有設置' ? (
+                                    <SubItemHighlight>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {LAND_WATER_BOOSTER_ITEMS.map(item => (
+                                                <CheckBox 
+                                                    key={item} 
+                                                    checked={data.land_water_booster_items?.includes(item) || false} 
+                                                    label={item} 
+                                                    onClick={() => toggleArr('land_water_booster_items', item)} 
+                                                />
+                                            ))}
+                                        </div>
+                                    </SubItemHighlight>
+                                ) : null}
                             />
-                            {data.land_water_booster === '有設置' && (
-                                <SubItemHighlight>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {LAND_WATER_BOOSTER_ITEMS.map(item => (
-                                            <CheckBox 
-                                                key={item} 
-                                                checked={data.land_water_booster_items?.includes(item) || false} 
-                                                label={item} 
-                                                onClick={() => toggleArr('land_water_booster_items', item)} 
-                                            />
-                                        ))}
-                                    </div>
-                                </SubItemHighlight>
-                            )}
                         </QuestionBlock>
 
                         {data.propertyType === '農地' && (
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black text-slate-700 mb-2 leading-normal">土地鋪面現況</p>
                                 <div className="mb-4"><InlineWarning>※私自鋪設水泥、柏油或填土，違者將面臨罰鍰並被勒令拆除、恢復原狀（如罰鍰 6 至 30 萬元或 3 至 15 萬元不等）</InlineWarning></div>
-                                <RadioGroup 
+                                <AccordionRadio 
                                     options={['無', '有']} 
                                     value={data.land_q7_illegal_paving === '否' ? '無' : (data.land_q7_illegal_paving === '是' ? '有' : '')} 
                                     onChange={v => {
@@ -1186,7 +1179,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black text-slate-700 mb-2 leading-normal">防火間隔與區劃現況</p>
                                 <div className="mb-4"><InlineWarning>※須符合消防法規，更直接關係到這塊地能否合法進行「工廠登記」以及未來的營運安全</InlineWarning></div>
-                                <RadioGroup 
+                                <AccordionRadio 
                                     options={['無', '有']} 
                                     value={data.land_q7_fire_setback === '否' ? '無' : (data.land_q7_fire_setback === '是' ? '有' : '')} 
                                     onChange={v => {
@@ -1202,7 +1195,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         {data.propertyType === '其他（道路用地／公設地）' && (
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">計畫道路開闢現況</p>
-                                <RadioGroup 
+                                <AccordionRadio 
                                     options={['無', '有']} 
                                     value={data.land_q7_road_opened === '否' ? '無' : (data.land_q7_road_opened === '是' ? '有' : '')} 
                                     onChange={v => {
@@ -1415,7 +1408,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 renderDetail={(opt) => (opt === '純貨梯' || opt === '客貨兩用梯' || opt === '客貨梯分離') ? (
                                     <SubItemHighlight>
                                         <div className="space-y-6">
-                                            <RadioGroup options={['可運作', '故障／停用']} value={data.factory_elevator_status || ''} onChange={v => update('factory_elevator_status', v)} />
+                                            <AccordionRadio options={['可運作', '故障／停用']} value={data.factory_elevator_status || ''} onChange={v => update('factory_elevator_status', v)} />
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <UnitInput unit="噸/kg" value={data.factory_elevator_capacity || ''} onChange={v => update('factory_elevator_capacity', v)} placeholder="載重" />
                                                 <UnitInput unit="公分" value={data.factory_elevator_dim || ''} onChange={v => update('factory_elevator_dim', v)} placeholder="尺寸(長x寬x高)" />
@@ -1466,11 +1459,11 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <div className="space-y-8">
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6">卸貨碼頭</p>
-                            <RadioGroup options={FACTORY_DOCK_OPTS} value={data.factory_loading_dock || ''} onChange={v => update('factory_loading_dock', v)}   />
+                            <AccordionRadio options={FACTORY_DOCK_OPTS} value={data.factory_loading_dock || ''} onChange={v => update('factory_loading_dock', v)}   />
                         </QuestionBlock>
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6">大車進出</p>
-                            <RadioGroup options={FACTORY_TRUCK_OPTS} value={data.factory_truck_access || ''} onChange={v => update('factory_truck_access', v)}   />
+                            <AccordionRadio options={FACTORY_TRUCK_OPTS} value={data.factory_truck_access || ''} onChange={v => update('factory_truck_access', v)}   />
                             <div className="mt-4">
                                 <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200">迴轉空間／緩衝區</p>
                                 <DetailInput value={data.factory_truck_buffer || ''} onChange={v => update('factory_truck_buffer', v)} placeholder="說明狀況..." />
@@ -1507,7 +1500,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                     <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">
                                                         {['透天獨棟廠房', '倉儲物流廠房'].includes(data.propertyType) ? '設置現況：' : '維護方式：'}
                                                     </p>
-                                                    <RadioGroup 
+                                                    <AccordionRadio 
                                                         options={['透天獨棟廠房', '倉儲物流廠房'].includes(data.propertyType) ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
@@ -1702,21 +1695,20 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                      </p>
                                  </div>
                             </div>
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無', '有', '待查證']} 
                                 value={data.q17_homicide || ''} 
                                 onChange={v => update('q17_homicide', v)} 
-                                 
+                                renderDetail={(opt) => (opt === '有' || opt === '待查證') ? (
+                                    <SubItemHighlight>
+                                        <DetailInput 
+                                            value={data.q17_homicide_desc || ''} 
+                                            onChange={v => update('q17_homicide_desc', v)} 
+                                            placeholder="說明現況" 
+                                        />
+                                    </SubItemHighlight>
+                                ) : null}
                             />
-                            {(data.q17_homicide === '有' || data.q17_homicide === '待查證') && (
-                                <SubItemHighlight>
-                                    <DetailInput 
-                                        value={data.q17_homicide_desc || ''} 
-                                        onChange={v => update('q17_homicide_desc', v)} 
-                                        placeholder="說明現況" 
-                                    />
-                                </SubItemHighlight>
-                            )}
                         </QuestionBlock>
                     )}
 
@@ -1733,7 +1725,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                              </div>
                         </div>
                         
-                        <RadioGroup 
+                        <AccordionRadio 
                             options={['無', '有']} 
                             value={type === 'land' ? (data.land_q8_special === '是' ? '有' : (data.land_q8_special === '否' ? '無' : '')) : (data.q17_issue === '是' ? '有' : (data.q17_issue === '否' ? '無' : ''))} 
                             onChange={v => {
@@ -1744,18 +1736,16 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     setData(prev => ({ ...prev, q17_issue: val, q17_desc: val === '否' ? '' : prev.q17_desc }));
                                 }
                             }} 
-                             
+                            renderDetail={(opt) => opt === '有' ? (
+                                <SubItemHighlight>
+                                    <DetailInput 
+                                        value={type === 'land' ? (data.land_q8_special_desc || '') : (data.q17_desc || '')} 
+                                        onChange={v => update(type === 'land' ? 'land_q8_special_desc' : 'q17_desc', v)} 
+                                        placeholder="說明現況" 
+                                    />
+                                </SubItemHighlight>
+                            ) : null}
                         />
-                        
-                        {((type === 'land' && data.land_q8_special === '是') || (type !== 'land' && data.q17_issue === '是')) && (
-                            <SubItemHighlight>
-                                <DetailInput 
-                                    value={type === 'land' ? (data.land_q8_special_desc || '') : (data.q17_desc || '')} 
-                                    onChange={v => update(type === 'land' ? 'land_q8_special_desc' : 'q17_desc', v)} 
-                                    placeholder="說明現況" 
-                                />
-                            </SubItemHighlight>
-                        )}
                     </QuestionBlock>
                 </div>
             </SurveySection>

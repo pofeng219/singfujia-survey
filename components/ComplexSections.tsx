@@ -10,7 +10,7 @@ import {
     ACCESS_STATUS_OPTIONS, BUILDING_LINE_OPTIONS, DRAINAGE_OPTIONS
 } from '../constants';
 import { 
-    CheckBox, RadioGroup, SurveySection, SubItemHighlight, DetailInput, 
+    CheckBox, SurveySection, SubItemHighlight, DetailInput, 
     InlineWarning, AccordionRadio, UnitInput, QuestionBlock, BooleanReveal, LandNumberInputs,
     SectionStatus, ImageModal
 } from './SharedUI';
@@ -73,7 +73,7 @@ export const UtilitiesSection = ({
 
                     {type === 'factory' ? (
                         <div className="space-y-6">
-                            <RadioGroup 
+                            <AccordionRadio 
                                 options={['無電力(需自行申請)', '一般用電(單相 110V／220V，僅供照明冷氣)', '動力用電(三相電)', '高壓電供電', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} 
                                 value={data?.land_q1_elec || ''} 
                                 onChange={v => {
@@ -90,50 +90,52 @@ export const UtilitiesSection = ({
                                         };
                                     });
                                 }} 
-                                
-                                
-                            />
-                            {data?.land_q1_elec === '其他未列項目' && (
-                                <SubItemHighlight><DetailInput value={data.land_q1_elec_other || ''} onChange={v => update('land_q1_elec_other', v)} placeholder="如：發電機、太陽能" /></SubItemHighlight>
-                            )}
-                            
-                            {(data.land_q1_elec?.includes('一般用電') || data.land_q1_elec?.includes('動力用電') || data.land_q1_elec === '高壓電供電') && (
-                                <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                                    <SubItemHighlight>
-                                        <div className="space-y-8">
-                                            <div>
-                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電錶型態？</p>
-                            <AccordionRadio 
-                                options={['獨立電錶', '共用電錶']} 
-                                value={data.land_q1_elec_meter || ''} 
-                                onChange={v => update('land_q1_elec_meter', v)} 
-                            />
-                        </div>
-                        
-                        {(data.land_q1_elec?.includes('動力用電') || data.land_q1_elec === '高壓電供電') && (
-                            <div>
-                                <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電壓規格</p>
-                                <AccordionRadio 
-                                    options={['三相 220V', '三相 380V／三相四線式', '高壓電供電', '其他/待查證']} 
-                                    value={data.land_q1_elec_voltage || ''} 
-                                    onChange={v => update('land_q1_elec_voltage', v)} 
-                                />
-                            </div>
-                        )}
+                                renderDetail={(opt) => {
+                                    if (opt === '其他未列項目') {
+                                        return <SubItemHighlight><DetailInput value={data.land_q1_elec_other || ''} onChange={v => update('land_q1_elec_other', v)} placeholder="如：發電機、太陽能" /></SubItemHighlight>;
+                                    }
+                                    if (opt.includes('一般用電') || opt.includes('動力用電') || opt === '高壓電供電') {
+                                        return (
+                                            <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                                                <SubItemHighlight>
+                                                    <div className="space-y-8">
+                                                        <div>
+                                                            <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電錶型態？</p>
+                                                            <AccordionRadio 
+                                                                options={['獨立電錶', '共用電錶']} 
+                                                                value={data.land_q1_elec_meter || ''} 
+                                                                onChange={v => update('land_q1_elec_meter', v)} 
+                                                            />
+                                                        </div>
+                                                        
+                                                        {(opt.includes('動力用電') || opt === '高壓電供電') && (
+                                                            <div>
+                                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電壓規格</p>
+                                                                <AccordionRadio 
+                                                                    options={['三相 220V', '三相 380V／三相四線式', '高壓電供電', '其他/待查證']} 
+                                                                    value={data.land_q1_elec_voltage || ''} 
+                                                                    onChange={v => update('land_q1_elec_voltage', v)} 
+                                                                />
+                                                            </div>
+                                                        )}
 
-                        <div>
-                            <p className="dynamic-text-h2 font-black text-slate-700 mb-2 dark:text-slate-200 leading-normal">契約容量 (馬力數)</p>
-                            <p className="text-slate-600 text-xl font-bold mb-4 dark:text-slate-300">提示：若看到變壓器通常為高壓電；若電錶有倍數標示通常為大馬力</p>
-                            <AccordionRadio 
-                                options={['一般用電(無契約容量)', '99馬力(HP)以下(無須設置配電室)', '100馬力(HP)以上(可能需設置高壓變電站)', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} 
-                                value={data.land_q1_elec_capacity || ''} 
-                                onChange={v => update('land_q1_elec_capacity', v)} 
-                            />
+                                                        <div>
+                                                            <p className="dynamic-text-h2 font-black text-slate-700 mb-2 dark:text-slate-200 leading-normal">契約容量 (馬力數)</p>
+                                                            <p className="text-slate-600 text-xl font-bold mb-4 dark:text-slate-300">提示：若看到變壓器通常為高壓電；若電錶有倍數標示通常為大馬力</p>
+                                                            <AccordionRadio 
+                                                                options={['一般用電(無契約容量)', '99馬力(HP)以下(無須設置配電室)', '100馬力(HP)以上(可能需設置高壓變電站)', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} 
+                                                                value={data.land_q1_elec_capacity || ''} 
+                                                                onChange={v => update('land_q1_elec_capacity', v)} 
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </SubItemHighlight>
                                             </div>
-                                        </div>
-                                    </SubItemHighlight>
-                                </div>
-                            )}
+                                        );
+                                    }
+                                    return null;
+                                }}
+                            />
                         </div>
                     ) : (
                         <AccordionRadio 
@@ -207,7 +209,7 @@ export const UtilitiesSection = ({
                      <QuestionBlock>
                         <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                         <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
-                        <RadioGroup 
+                        <AccordionRadio 
                             options={['無設置', '合法設置', '私下設置']} 
                             value={data.house_solar_status || ''} 
                             onChange={v => update('house_solar_status', v)} 
@@ -223,7 +225,7 @@ export const UtilitiesSection = ({
                             <InlineWarning>※本項由使用者自行管理維護，若物件型態為道路用地／公設地，確認是否為自來水公司之公共設施，或鄰地非法佔用</InlineWarning>
                         </div>
                         
-                        <RadioGroup 
+                        <AccordionRadio 
                             options={['無設置', '有設置']} 
                             value={data.water_booster === '無設置' || data.water_booster === '無' ? '無設置' : (data.water_booster === '有設置' || data.water_booster === '有' ? '有設置' : '')} 
                             onChange={v => {
@@ -234,23 +236,21 @@ export const UtilitiesSection = ({
                                     water_booster_items: val === '無設置' ? [] : prev.water_booster_items 
                                 }));
                             }} 
-                            
+                            renderDetail={(opt) => opt === '有設置' ? (
+                                <SubItemHighlight>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {WATER_BOOSTER_ITEMS_A.map(item => (
+                                            <CheckBox 
+                                                key={item} 
+                                                checked={data.water_booster_items?.includes(item) || false} 
+                                                label={item} 
+                                                onClick={() => toggleArr('water_booster_items', item)} 
+                                            />
+                                        ))}
+                                    </div>
+                                </SubItemHighlight>
+                            ) : null}
                         />
-
-                        {data.water_booster === '有設置' && (
-                            <SubItemHighlight>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {WATER_BOOSTER_ITEMS_A.map(item => (
-                                        <CheckBox 
-                                            key={item} 
-                                            checked={data.water_booster_items?.includes(item) || false} 
-                                            label={item} 
-                                            onClick={() => toggleArr('water_booster_items', item)} 
-                                        />
-                                    ))}
-                                </div>
-                            </SubItemHighlight>
-                        )}
                     </QuestionBlock>
                 )}
                 
@@ -399,24 +399,28 @@ export const ParkingSection = ({
                             <p className="font-black dynamic-text-h2 text-slate-800 text-left dark:text-blue-100 leading-normal">汽車車位尺寸 (公尺)</p>
                             
                             <div className="mb-4">
-                                <RadioGroup 
+                                <AccordionRadio 
                                     options={['實際測量', '依車位資訊告示牌', '無法測量也無相關資訊']} 
                                     value={data?.q10_measureType || ''} 
                                     onChange={v => update('q10_measureType', v)} 
                                     disabled={parkingLogic.disableCarSize} 
-                                    
-                                    
-                                    spanFullOption="無法測量也無相關資訊" // New prop usage
+                                    spanFullOption="無法測量也無相關資訊"
+                                    renderDetail={(opt) => {
+                                        if (opt === '實際測量' || opt === '依車位資訊告示牌') {
+                                            return (
+                                                <SubItemHighlight>
+                                                    <div className="flex gap-4 md:gap-6 flex-wrap md:flex-nowrap">
+                                                        <UnitInput unit="米" placeholder="長" value={data?.q10_dimL || ''} onChange={v => update('q10_dimL', v)} disabled={parkingLogic.disableCarSize} />
+                                                        <UnitInput unit="米" placeholder="寬" value={data?.q10_dimW || ''} onChange={v => update('q10_dimW', v)} disabled={parkingLogic.disableCarSize} />
+                                                        <UnitInput unit="米" placeholder="高" value={data?.q10_dimH || ''} onChange={v => update('q10_dimH', v)} disabled={parkingLogic.disableCarSize} />
+                                                    </div>
+                                                </SubItemHighlight>
+                                            );
+                                        }
+                                        return null;
+                                    }}
                                 />
                             </div>
-
-                            {data?.q10_measureType !== '無法測量也無相關資訊' && (
-                                <div className="flex gap-4 md:gap-6 animate-in slide-in-from-top-4 flex-wrap md:flex-nowrap">
-                                    <UnitInput unit="米" placeholder="長" value={data?.q10_dimL || ''} onChange={v => update('q10_dimL', v)} disabled={parkingLogic.disableCarSize} />
-                                    <UnitInput unit="米" placeholder="寬" value={data?.q10_dimW || ''} onChange={v => update('q10_dimW', v)} disabled={parkingLogic.disableCarSize} />
-                                    <UnitInput unit="米" placeholder="高" value={data?.q10_dimH || ''} onChange={v => update('q10_dimH', v)} disabled={parkingLogic.disableCarSize} />
-                                </div>
-                            )}
 
                             {!isFactory && !parkingLogic.disableWeight && (
                                 <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
@@ -452,7 +456,7 @@ export const ParkingSection = ({
                 <div className={`space-y-10 ${parkingLogic.disableCharging ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400' : ''}`}>
                     <QuestionBlock>
                         <p className="dynamic-text-h2 font-black text-slate-700 mb-8 dark:text-slate-200 leading-normal">車位充電設備配置</p>
-                        <RadioGroup options={['無', '有', '僅預留管線／孔位', '須經管委會同意']} value={data?.q10_charging === '否' ? '無' : (data?.q10_charging === '是' ? '有' : (data?.q10_charging || ''))} onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); if (val === '僅預留管線／孔位' || val === '須經管委會同意') { update('q10_charging', val); update('q10_chargingOther', ''); } else { setData(p => ({ ...p, q10_charging: val, q10_chargingOther: '' })); } }}   disabled={parkingLogic.disableCharging} />
+                        <AccordionRadio options={['無', '有', '僅預留管線／孔位', '須經管委會同意']} value={data?.q10_charging === '否' ? '無' : (data?.q10_charging === '是' ? '有' : (data?.q10_charging || ''))} onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); if (val === '僅預留管線／孔位' || val === '須經管委會同意') { update('q10_charging', val); update('q10_chargingOther', ''); } else { setData(p => ({ ...p, q10_charging: val, q10_chargingOther: '' })); } }}   disabled={parkingLogic.disableCharging} />
                     </QuestionBlock>
                 </div>
                 
@@ -813,7 +817,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                                 {!hideBuildingLine && (
                                                     <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                                          <p className="font-bold text-lg mb-2 text-slate-600">建築線指定狀況</p>
-                                                         <RadioGroup options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
+                                                         <AccordionRadio options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
                                                     </div>
                                                 )}
                                             </div>
