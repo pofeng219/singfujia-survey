@@ -372,8 +372,12 @@ const getHouseLabels = (data: SurveyData) => {
     const q9 = () => {
         const labels = data?.q9_items?.map(i => {
             if (i === "太陽能光電發電設備" && data.q9_solar_maintenance) return `太陽能光電發電設備（${data.q9_solar_maintenance}）`;
-            // Updated logic for Group B water booster items display
-            if (i === "加壓受水設備" && data.q9_water_booster_items && data.q9_water_booster_items.length > 0) return `加壓受水設備（${data.q9_water_booster_items.join('、')}）`;
+            if (i === "加壓受水設備") {
+                const itemsStr = (data.q9_water_booster_items && data.q9_water_booster_items.length > 0) ? data.q9_water_booster_items.join('、') : '';
+                const maintStr = data.q9_water_booster_maintenance ? `維護：${data.q9_water_booster_maintenance}` : '';
+                const parts = [itemsStr, maintStr].filter(Boolean);
+                return `加壓受水設備${parts.length > 0 ? `（${parts.join('；')}）` : ''}`;
+            }
             return i;
         }) || [];
         if (data?.q9_hasOther && data.q9_otherDesc) labels.push(`其他：${data.q9_otherDesc}`);

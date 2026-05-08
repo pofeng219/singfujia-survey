@@ -95,6 +95,7 @@ export interface SurveyData {
     q9_hasOther: boolean;
     q9_otherDesc: string;
     q9_solar_maintenance: string; // New: Solar PV maintenance type (Group B / Original logic)
+    q9_water_booster_maintenance: string; // New: Water booster maintenance type
     q9_water_booster_opt: string; // Legacy: Water booster sub-option for Facilities section (Group B)
     q9_water_booster_items: string[]; // New: Multiple selection for Group B
 

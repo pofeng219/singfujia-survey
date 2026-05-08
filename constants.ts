@@ -31,7 +31,7 @@ export const INITIAL_STATE: SurveyData = {
     water_booster: '', water_booster_desc: '', water_booster_items: [], // New
 
     q8_stairIssue: '', q8_stairItems: [], q8_stairOther: '', q8_stairDesc: '',
-    q9_hasIssue: '', q9_items: [], q9_hasOther: false, q9_otherDesc: '', q9_solar_maintenance: '', q9_water_booster_opt: '', q9_water_booster_items: [],
+    q9_hasIssue: '', q9_items: [], q9_hasOther: false, q9_otherDesc: '', q9_solar_maintenance: '', q9_water_booster_maintenance: '', q9_water_booster_opt: '', q9_water_booster_items: [],
     publicFacilities: '', publicFacilitiesReason: '',
     
 

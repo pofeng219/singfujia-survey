@@ -748,7 +748,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (data.q9_hasIssue === '是') {
             if (!data.q9_items || data.q9_items.length === 0) return 'incomplete';
             if (data.q9_items.includes('太陽能光電發電設備') && !data.q9_solar_maintenance) return 'incomplete';
-            if (data.q9_items.includes('加壓受水設備') && (!data.q9_water_booster_items || data.q9_water_booster_items.length === 0)) return 'incomplete';
+            if (data.q9_items.includes('加壓受水設備')) {
+                if (!data.q9_water_booster_items || data.q9_water_booster_items.length === 0) return 'incomplete';
+                if (type === 'factory' && !isGroupA && !data.q9_water_booster_maintenance) return 'incomplete';
+            }
             if (data.q9_hasOther && !data.q9_otherDesc) return 'incomplete';
         }
         return 'complete';
@@ -1501,7 +1504,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                         {isGroupA ? '設置現況：' : '維護方式：'}
                                                     </p>
                                                     <AccordionRadio 
-                                                        options={isGroupA ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
+                                                        options={isGroupA ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護', '使用者自行管理維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
                                                     />
@@ -1511,23 +1514,25 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                         {i === '加壓受水設備' && data?.q9_items?.includes(i) && (
                                             <div className="mt-4 animate-in fade-in slide-in-from-top-2">
                                                 <SubItemHighlight>
-                                                    <div className="mb-4">
-                                                        <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
-                                                            <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
-                                                                ※加壓受水設備由管委會／全體住戶共同管理維護
-                                                            </p>
+                                                    <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">維護方式：</p>
+                                                    <AccordionRadio 
+                                                        options={['管委會維護', '全體住戶維護', '使用者自行管理維護']} 
+                                                        value={data.q9_water_booster_maintenance || ''} 
+                                                        onChange={v => update('q9_water_booster_maintenance', v)} 
+                                                    />
+                                                    
+                                                    <div className="mt-8">
+                                                        <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">設置現況：</p>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            {WATER_BOOSTER_ITEMS_B.map(item => (
+                                                                <CheckBox 
+                                                                    key={item} 
+                                                                    checked={data.q9_water_booster_items?.includes(item) || false} 
+                                                                    label={item} 
+                                                                    onClick={() => toggleArr('q9_water_booster_items', item)} 
+                                                                />
+                                                            ))}
                                                         </div>
-                                                    </div>
-                                                    <p className="font-bold text-xl text-slate-700 mb-3 dark:text-slate-200">設置現況：</p>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        {WATER_BOOSTER_ITEMS_B.map(item => (
-                                                            <CheckBox 
-                                                                key={item} 
-                                                                checked={data.q9_water_booster_items?.includes(item) || false} 
-                                                                label={item} 
-                                                                onClick={() => toggleArr('q9_water_booster_items', item)} 
-                                                            />
-                                                        ))}
                                                     </div>
                                                 </SubItemHighlight>
                                             </div>
