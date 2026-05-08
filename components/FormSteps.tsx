@@ -477,19 +477,22 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                     options={['滲漏水', '壁癌', '兩者皆有']} 
                                                     value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' ? '' : (data.q3_leakType || '')} 
                                                     onChange={v => setData(prev => ({ ...prev, q3_leakType: v }))} 
+                                                    renderDetail={opt => {
+                                                        if (!data.q3_leakType || data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆（無法檢查）') return null;
+                                                        if (opt !== data.q3_leakType) return null;
+                                                        return (
+                                                            <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 md:space-y-8 mt-6">
+                                                                <div>
+                                                                    <p className="dynamic-text-h2 font-black mb-6 leading-normal text-left">發生位置：</p>
+                                                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">{LEAK_LOCATIONS.map(i => <CheckBox key={i} checked={data?.q3_locations?.includes(i) || false} label={i} onClick={() => toggleArr('q3_locations', i)} />)}</div>
+                                                                </div>
+                                                                <div className="space-y-3 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <SubItemHighlight><DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" /></SubItemHighlight>}</div>
+                                                                <div className="space-y-3 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => update('q3_suspected', !data.q3_suspected)} />{data?.q3_suspected && <SubItemHighlight><DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" /></SubItemHighlight>}</div>
+                                                            </div>
+                                                        );
+                                                    }}
                                                 />
                                             </div>
-                                            
-                                            {(data.q3_leakType && data.q3_leakType !== '全屋天花板包覆' && data.q3_leakType !== '全屋天花板包覆（無法檢查）') && (
-                                                <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 md:space-y-8">
-                                                    <div>
-                                                        <p className="dynamic-text-h2 font-black mb-6 leading-normal">發生位置：</p>
-                                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">{LEAK_LOCATIONS.map(i => <CheckBox key={i} checked={data?.q3_locations?.includes(i) || false} label={i} onClick={() => toggleArr('q3_locations', i)} />)}</div>
-                                                    </div>
-                                                    <div className="space-y-3 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <SubItemHighlight><DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" /></SubItemHighlight>}</div>
-                                                    <div className="space-y-3 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => update('q3_suspected', !data.q3_suspected)} />{data?.q3_suspected && <SubItemHighlight><DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" /></SubItemHighlight>}</div>
-                                                </div>
-                                            )}
                                         </div>
                                     </SubItemHighlight>
                                 );
