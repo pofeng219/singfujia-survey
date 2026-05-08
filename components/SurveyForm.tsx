@@ -86,6 +86,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false); // New state for scroll button
+    const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
+    const lastScrollY = useRef(0);
 
     const DRAFT_KEY = `survey_draft_${type}`;
     const page1Ref = useRef<HTMLDivElement>(null);
@@ -100,7 +102,15 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     useEffect(() => {
         const handleScroll = () => {
             if (formScrollRef.current) {
-                setShowScrollTop(formScrollRef.current.scrollTop > 100);
+                const currentScrollY = formScrollRef.current.scrollTop;
+                setShowScrollTop(currentScrollY > 100);
+                
+                if (currentScrollY > lastScrollY.current + 10 && currentScrollY > 60) {
+                    setScrollDirection('down');
+                } else if (currentScrollY < lastScrollY.current - 10) {
+                    setScrollDirection('up');
+                }
+                lastScrollY.current = currentScrollY;
             }
         };
 
@@ -533,8 +543,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[6rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
                 {/* Top Action Bar */}
-                <div className={`p-3 md:p-4 ${themeBg} flex flex-col gap-2 shadow-md shrink-0 relative overflow-hidden transition-colors duration-300 z-40`}>
-                    <div className="flex justify-between items-center w-full gap-2 relative z-10 overflow-hidden">
+                <div className={`${themeBg} flex flex-col gap-2 shadow-md shrink-0 relative overflow-hidden transition-all duration-300 z-40 ${scrollDirection === 'down' ? 'max-h-1.5 p-0 opacity-80' : 'max-h-32 p-3 md:p-4 opacity-100'}`}>
+                    <div className={`flex justify-between items-center w-full gap-2 relative z-10 transition-transform duration-300 ${scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'}`}>
                         <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] border-yellow-500 px-3 md:px-4 py-2 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1 shadow-sm dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
                             <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
                             <span className="font-bold text-sm whitespace-nowrap">回首頁</span>
@@ -632,7 +642,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div className={`p-3 md:p-4 bg-white border-t border-slate-200 dark:bg-slate-900 dark:border-slate-800 flex justify-between gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.1)] shrink-0 relative z-40 mt-auto`}>
+                <div className={`p-3 md:p-4 bg-white/80 backdrop-blur-md border-t border-slate-200/50 dark:bg-slate-900/80 dark:border-slate-800/50 flex justify-between gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto`}>
                     <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-amber-50 text-amber-700 border-2 border-amber-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-700">
                         <FileInput className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 讀檔
                     </button>
