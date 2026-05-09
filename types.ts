@@ -179,15 +179,16 @@ export interface SurveyData {
     q17_homicide_desc?: string; // New: Homicide description
 
     // Factory Specific - Phase 1 Expansion
+    factory_spec_unknown: boolean;
     factory_height: string; // 滴水高度
-    factory_column_spacing: string; // 柱距
-    factory_floor_load: string; // 樓板載重
-    factory_floor_load_unknown: boolean; // New: Floor load unknown/refer to license
-    // REMOVED: factory_floor_load_docs: boolean; 
-    factory_floor_condition: string; // 地坪狀況
+    factory_width: string; // New: 面寬
+    factory_depth: string; // New: 深度
+    factory_floor_height: string; // New: 樓板高度
+    factory_floor_condition: string; // 地板狀況
     factory_floor_condition_other: string;
     factory_fire_safety: string[]; // 消防設施
     factory_fire_safety_other: string;
+    factory_fire_inspection: string; // New: 定期做消防檢測
     
     factory_elevator: string; // 貨梯
     factory_elevator_status: string; // New: Status string (Working/Broken/Off)
@@ -197,12 +198,14 @@ export interface SurveyData {
     factory_elevator_dim: string;
     
     factory_crane: string; // 天車
+    factory_crane_desc: string; // New: 天車說明 (如：天車噸數)
     factory_crane_status: string; // New: Status string (Working/Broken/Off)
     factory_crane_working: boolean; // Legacy: Working status
     factory_crane_tonnage: string;
     factory_crane_quantity: string;
     
     factory_waste: string; // 工業排水／廢氣
+    factory_waste_has_detail: string; // New: 已納管/自有處理
     factory_waste_desc: string;
     
     factory_loading_dock: string; // 卸貨碼頭
@@ -251,14 +254,16 @@ export interface SurveyData {
     // Land Category - NEW GRANULAR FIELDS (v2)
     land_q1_elec: string; 
     land_q1_elec_detail: string; 
+    land_q1_elec_detail_other: string;
     land_q1_elec_other: string;
     land_q1_elec_meter: string; // New: Meter Type
     land_q1_elec_voltage: string; // New: Voltage
     land_q1_elec_capacity: string; // New: Contract Capacity
 
     land_q1_water: string;
-    land_q1_water_cat: string; 
+    land_q1_water_cat: string[]; 
     land_q1_water_tap_detail: string;
+    land_q1_water_tap_other: string;
     land_q1_water_ground_detail: string;
     land_q1_water_irr_detail: string;
     land_q1_water_other: string;
@@ -310,8 +315,9 @@ export interface SurveyData {
 
     land_q7_crops: string;
     land_q7_crops_month: string;
-    land_q7_crops_type: string;
+    land_q7_crops_type: string[];
     land_q7_crops_detail: string;
+    land_q7_crops_detail_other: string;
     land_q7_crops_other: string;
 
     land_q7_build: string;
@@ -333,7 +339,6 @@ export interface SurveyData {
     land_q7_facilities_other: string;
 
     // New fields for Land Survey Step 3 specific property types
-    land_q7_illegal_paving: string;
     land_q7_fire_setback: string;
     land_q7_road_opened: string;
 

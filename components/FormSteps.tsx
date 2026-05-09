@@ -324,7 +324,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
                     <LandQuestionsGroup 
                         data={data} setData={setData} update={update}
-                        titles={{ q2: '', q3: '2. 土地鑑界與界標現況與產權與使用糾紛現況', q4: '3. 土地徵收與保留地現況與重劃與區段徵收現況' }}
+                        titles={{ q2: '', q3: '2. 土地鑑界與界標現況與產權與使用糾紛現況', q4: '3. 土地徵收預定地與重測區現況' }}
                         ids={{ q2: 'section-land-q2-hidden', q3: 'section-land-q3', q4: 'section-land-q4' }}
                         highlightedId={highlightedField}
                         hideQ2={true}
@@ -656,7 +656,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                                             <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
                                             <AccordionRadio 
-                                                options={['無設置', '合法設置', '私下設置']} 
+                                                options={['無設置', '合法設置', '私人設置']} 
                                                 value={data.house_solar_status || ''} 
                                                 onChange={v => update('house_solar_status', v)} 
                                                 
@@ -775,9 +775,9 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         
         if (!data.land_q7_crops) return 'incomplete';
         if (data.land_q7_crops === '有農作物／植栽') {
-            if (!data.land_q7_crops_type) return 'incomplete';
-            if ((data.land_q7_crops_type === '經濟作物' || data.land_q7_crops_type === '景觀植栽') && (!data.land_q7_crops_month || !data.land_q7_crops_detail)) return 'incomplete';
-            if (data.land_q7_crops_type === '其他未列項目' && !data.land_q7_crops_other) return 'incomplete';
+            if (!data.land_q7_crops_type || data.land_q7_crops_type.length === 0) return 'incomplete';
+            if ((data.land_q7_crops_type.includes('經濟作物') || data.land_q7_crops_type.includes('景觀植栽')) && !data.land_q7_crops_detail) return 'incomplete';
+            if (data.land_q7_crops_type.includes('其他未列項目') && !data.land_q7_crops_other) return 'incomplete';
         }
 
         if (!data.land_q7_build) return 'incomplete';
@@ -860,7 +860,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         return (
             <StepContainer title="第三步：環境與其他" type={type} themeText={themeText}>
                 <EnvironmentSection 
-                    data={data} update={update} toggleArr={toggleArr} id="section-q16" title="2. 重大環境設施／常見環境抗性設施" highlightedId={highlightedField} 
+                    data={data} update={update} toggleArr={toggleArr} id="section-q16" title="2. 重要環境設施／常見環境抗性設施" highlightedId={highlightedField} 
                     warningText="※內政部於 104 年 10 月新版不動產說明書中，房仲業者須對於受託銷售之不動產，應調查周邊半徑 300 公尺範圍內之重要環境設施"
                     status={getEnvStatus()}
                 />
@@ -937,7 +937,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                         {isGroupA ? '設置現況：' : '維護方式：'}
                                                     </p>
                                                     <AccordionRadio 
-                                                        options={isGroupA ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護']} 
+                                                        options={isGroupA ? ['合法設置', '私人設置'] : ['管委會維護', '全體住戶維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
                                                     />
@@ -1064,31 +1064,43 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 renderDetail={(opt) => opt === '有農作物／植栽' ? (
                                     <SubItemHighlight>
                                         <div className="space-y-6">
-                                            <AccordionRadio 
-                                                options={['經濟作物', '景觀植栽', '雜樹／荒廢', '其他未列項目']} 
-                                                value={data.land_q7_crops_type || ''} 
-                                                onChange={v => update('land_q7_crops_type', v)} 
-                                                renderDetail={(opt2) => {
-                                                    if (opt2 === '經濟作物' || opt2 === '景觀植栽') {
-                                                        return (
-                                                            <div className="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-4">
-                                                                <div className="flex items-center gap-4">
-                                                                    <span className="font-bold text-xl shrink-0">預計收成月份：</span>
-                                                                    <div className="w-32"><input type="number" className="full-width-input !mt-0 text-center" value={data.land_q7_crops_month || ''} onChange={e => update('land_q7_crops_month', e.target.value)} placeholder="輸入月份" /></div>
-                                                                    <span className="font-bold text-xl shrink-0">月</span>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="font-bold text-xl mb-2">處理方式：</p>
-                                                                    <AccordionRadio options={['賣方移除', '列冊點交', '協議補貼']} value={data.land_q7_crops_detail || ''} onChange={v => update('land_q7_crops_detail', v)} />
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return null;
-                                                }}
-                                            />
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {['經濟作物', '景觀植栽', '雜樹／荒廢', '其他未列項目'].map(opt2 => (
+                                                    <CheckBox 
+                                                        key={opt2} 
+                                                        checked={data.land_q7_crops_type?.includes(opt2) || false} 
+                                                        label={opt2} 
+                                                        onClick={() => {
+                                                            const arr = Array.isArray(data.land_q7_crops_type) ? data.land_q7_crops_type : [];
+                                                            if (arr.includes(opt2)) {
+                                                                setData(prev => ({ 
+                                                                    ...prev, 
+                                                                    land_q7_crops_type: arr.filter(i => i !== opt2),
+                                                                    land_q7_crops_detail: (opt2 === '經濟作物' || opt2 === '景觀植栽') && !(arr.filter(i => i !== opt2).includes('經濟作物') || arr.filter(i => i !== opt2).includes('景觀植栽')) ? '' : prev.land_q7_crops_detail
+                                                                }));
+                                                            } else {
+                                                                setData(prev => ({ ...prev, land_q7_crops_type: [...arr, opt2] }));
+                                                            }
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
                                             
-                                            {data.land_q7_crops_type === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q7_crops_other || ''} onChange={v => update('land_q7_crops_other', v)} placeholder="說明現況" /></SubItemHighlight>}
+                                            {(data.land_q7_crops_type?.includes('經濟作物') || data.land_q7_crops_type?.includes('景觀植栽')) && (
+                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200">
+                                                    <p className="font-bold text-xl mb-3">處理方式：</p>
+                                                    <AccordionRadio 
+                                                        options={['隨同移轉', '賣方清除', '其他未列項目']} 
+                                                        value={data.land_q7_crops_detail || ''} 
+                                                        onChange={v => { update('land_q7_crops_detail', v); if (v !== '其他未列項目') update('land_q7_crops_detail_other', ''); }} 
+                                                        renderDetail={o => o === '其他未列項目' ? <DetailInput value={data.land_q7_crops_detail_other || ''} onChange={v => update('land_q7_crops_detail_other', v)} placeholder="說明現況" /> : null}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {data.land_q7_crops_type?.includes('其他未列項目') && (
+                                                <SubItemHighlight><DetailInput value={data.land_q7_crops_other || ''} onChange={v => update('land_q7_crops_other', v)} placeholder="說明現況" /></SubItemHighlight>
+                                            )}
                                         </div>
                                     </SubItemHighlight>
                                 ) : null}
@@ -1125,7 +1137,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">太陽能光電發電設備</p>
                             <AccordionRadio 
-                                options={['無', '合法設置', '私下設置']} 
+                                options={['無', '合法設置', '私人設置']} 
                                 value={data.land_q7_solar === '無' ? '無' : (data.land_q7_solar || '')} 
                                 onChange={v => setData(p => ({...p, land_q7_solar: v === '無' ? '無' : v}))} 
                                  
@@ -1163,23 +1175,6 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 ) : null}
                             />
                         </QuestionBlock>
-
-                        {data.propertyType === '農地' && (
-                            <QuestionBlock>
-                                <p className="dynamic-text-h2 font-black text-slate-700 mb-2 leading-normal">土地鋪面現況</p>
-                                <div className="mb-4"><InlineWarning>※私自鋪設水泥、柏油或填土，違者將面臨罰鍰並被勒令拆除、恢復原狀（如罰鍰 6 至 30 萬元或 3 至 15 萬元不等）</InlineWarning></div>
-                                <AccordionRadio 
-                                    options={['無', '有']} 
-                                    value={data.land_q7_illegal_paving === '否' ? '無' : (data.land_q7_illegal_paving === '是' ? '有' : '')} 
-                                    onChange={v => {
-                                        // Fix: Use ternary to allow empty string (deselect)
-                                        const val = v === '無' ? '否' : (v === '有' ? '是' : '');
-                                        update('land_q7_illegal_paving', val);
-                                    }} 
-                                     
-                                />
-                            </QuestionBlock>
-                        )}
 
                         {data.propertyType === '工業地' && (
                             <QuestionBlock>
@@ -1259,9 +1254,8 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         };
          
          const getFactoryStructStatus = (): SectionStatus => {
-            if (!data.factory_floor_load_unknown) {
-                if (!data.factory_height || !data.factory_column_spacing) return 'incomplete';
-                if (!data.factory_floor_load) return 'incomplete';
+            if (!data.factory_spec_unknown) {
+                if (!data.factory_height || !data.factory_width || !data.factory_depth || !data.factory_floor_height) return 'incomplete';
             }
             if (!data.factory_floor_condition) return 'incomplete';
             if (data.factory_floor_condition === '其他未列項目' && !data.factory_floor_condition_other) return 'incomplete';
@@ -1330,53 +1324,55 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 <p className="dynamic-text-h2 font-black text-slate-700 m-0 leading-none">廠房規格</p>
                                 <div className="mt-2 sm:mt-0">
                                     <CheckBox 
-                                        checked={data.factory_floor_load_unknown || false} 
+                                        checked={data.factory_spec_unknown || false} 
                                         label="無法確認／依使照為準" 
                                         onClick={() => {
-                                            const newVal = !data.factory_floor_load_unknown;
+                                            const newVal = !data.factory_spec_unknown;
                                             setData(p => ({
                                                 ...p, 
-                                                factory_floor_load_unknown: newVal,
-                                                factory_floor_load: newVal ? '' : p.factory_floor_load,
+                                                factory_spec_unknown: newVal,
                                                 factory_height: newVal ? '' : p.factory_height,
-                                                factory_column_spacing: newVal ? '' : p.factory_column_spacing 
+                                                factory_width: newVal ? '' : p.factory_width,
+                                                factory_depth: newVal ? '' : p.factory_depth,
+                                                factory_floor_height: newVal ? '' : p.factory_floor_height 
                                             }));
                                         }} 
                                     />
                                 </div>
                             </div>
-                            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start transition-opacity duration-300 ${data.factory_floor_load_unknown ? 'opacity-40 pointer-events-none' : ''}`}>
+                            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start transition-opacity duration-300 ${data.factory_spec_unknown ? 'opacity-40 pointer-events-none' : ''}`}>
                                 <div className="w-full">
                                     <UnitInput 
                                         unit="米" 
                                         value={data.factory_height || ''} 
                                         onChange={v => update('factory_height', v)} 
                                         placeholder={getFactoryHeightLabel(data.propertyType)} 
-                                        disabled={data.factory_floor_load_unknown} 
+                                        disabled={data.factory_spec_unknown} 
                                     />
                                     <p className="text-red-500 text-sm mt-1 font-bold">※滴水高度：屋頂最低緣至地面</p>
                                 </div>
                                 <UnitInput 
                                     unit="米" 
-                                    value={data.factory_column_spacing || ''} 
-                                    onChange={v => update('factory_column_spacing', v)} 
-                                    placeholder="柱距" 
-                                    disabled={data.factory_floor_load_unknown} 
+                                    value={data.factory_width || ''} 
+                                    onChange={v => update('factory_width', v)} 
+                                    placeholder="面寬" 
                                 />
-                                <div className="space-y-3">
-                                    <UnitInput 
-                                        unit="kg/m²" 
-                                        value={data.factory_floor_load || ''} 
-                                        onChange={v => update('factory_floor_load', v)} 
-                                        placeholder="樓板載重" 
-                                        disabled={data.factory_floor_load_unknown}
-                                    />
-                                    
-                                </div>
+                                <UnitInput 
+                                    unit="米" 
+                                    value={data.factory_depth || ''} 
+                                    onChange={v => update('factory_depth', v)} 
+                                    placeholder="深度" 
+                                />
+                                <UnitInput 
+                                    unit="米" 
+                                    value={data.factory_floor_height || ''} 
+                                    onChange={v => update('factory_floor_height', v)} 
+                                    placeholder="樓板高度" 
+                                />
                             </div>
                             
                             <div className="mt-8 space-y-4">
-                                <p className="dynamic-text-h2 font-black text-slate-700 dark:text-slate-200">地坪狀況</p>
+                                <p className="dynamic-text-h2 font-black text-slate-700 dark:text-slate-200">地板狀況</p>
                                 <AccordionRadio 
                                     options={FACTORY_FLOOR_OPTS} 
                                     value={data.factory_floor_condition || ''} 
@@ -1384,6 +1380,15 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     renderDetail={(opt) => opt === '其他未列項目' ? <DetailInput value={data.factory_floor_condition_other || ''} onChange={v => update('factory_floor_condition_other', v)} placeholder="說明現況" /> : null}
                                 />
                             </div>
+                        </QuestionBlock>
+
+                        <QuestionBlock>
+                            <p className="dynamic-text-h2 font-black text-slate-700 mb-6">定期做消防檢測</p>
+                            <AccordionRadio 
+                                options={['是', '否']} 
+                                value={data.factory_fire_inspection || ''} 
+                                onChange={v => update('factory_fire_inspection', v)} 
+                            />
                         </QuestionBlock>
 
                         <QuestionBlock>
@@ -1428,19 +1433,13 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-6">天車設施</p>
                             <AccordionRadio 
-                                options={['無', '有', '僅預留牛腿', '有軌道／樑，無主機']} 
+                                options={['無', '有']} 
                                 value={data.factory_crane || ''} 
                                 onChange={v => setData(p => ({...p, factory_crane: v}))} 
                                 renderDetail={(opt) => {
                                     if (opt === '有') return (
                                         <SubItemHighlight>
-                                            <div className="space-y-6">
-                                                <AccordionRadio options={['可運作', '故障／停用']} value={data.factory_crane_status || ''} onChange={v => update('factory_crane_status', v)} />
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <UnitInput unit="噸" value={data.factory_crane_tonnage || ''} onChange={v => update('factory_crane_tonnage', v)} placeholder="噸數" />
-                                                    <UnitInput unit="台" value={data.factory_crane_quantity || ''} onChange={v => update('factory_crane_quantity', v)} placeholder="數量" />
-                                                </div>
-                                            </div>
+                                            <DetailInput value={data.factory_crane_desc || ''} onChange={v => update('factory_crane_desc', v)} placeholder="如：天車噸數" />
                                         </SubItemHighlight>
                                     );
                                     return null;
@@ -1454,7 +1453,27 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 options={FACTORY_WASTE_OPTS} 
                                 value={data.factory_waste || ''} 
                                 onChange={v => update('factory_waste', v)} 
-                                renderDetail={(opt) => opt === '其他未列項目' ? <SubItemHighlight><DetailInput value={data.factory_waste_desc || ''} onChange={v => update('factory_waste_desc', v)} placeholder="說明現況" /></SubItemHighlight> : null}
+                                renderDetail={(opt) => {
+                                    if (opt === '有') {
+                                        return (
+                                            <SubItemHighlight>
+                                                <AccordionRadio 
+                                                    options={['已納管', '自有處理']} 
+                                                    value={data.factory_waste_has_detail || ''} 
+                                                    onChange={v => update('factory_waste_has_detail', v)} 
+                                                />
+                                            </SubItemHighlight>
+                                        );
+                                    }
+                                    if (opt === '其他未列項目') {
+                                        return (
+                                            <SubItemHighlight>
+                                                <DetailInput value={data.factory_waste_desc || ''} onChange={v => update('factory_waste_desc', v)} placeholder="說明現況" />
+                                            </SubItemHighlight>
+                                        );
+                                    }
+                                    return null;
+                                }}
                             />
                         </QuestionBlock>
                     </div>
@@ -1507,7 +1526,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                         {isGroupA ? '設置現況：' : '維護方式：'}
                                                     </p>
                                                     <AccordionRadio 
-                                                        options={isGroupA ? ['合法設置', '私下設置'] : ['管委會維護', '全體住戶維護', '使用者自行管理維護']} 
+                                                        options={isGroupA ? ['合法設置', '私人設置'] : ['管委會維護', '全體住戶維護', '使用者自行管理維護']} 
                                                         value={data.q9_solar_maintenance || ''} 
                                                         onChange={v => update('q9_solar_maintenance', v)} 
                                                     />
@@ -1651,7 +1670,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {type === 'factory' && !hideLandDetails && (
                  <LandQuestionsGroup 
                     data={data} setData={setData} update={update}
-                    titles={{ q3: `${landQ3Num}. 土地鑑界與界標現況與產權與使用糾紛現況`, q4: `${landQ4Num}. 土地徵收與保留地現況與重劃與區段徵收現況` }}
+                    titles={{ q3: `${landQ3Num}. 土地鑑界與界標現況與產權與使用糾紛現況`, q4: `${landQ4Num}. 土地徵收預定地與重測區現況` }}
                     ids={{ q3: "section-land-q3", q4: "section-land-q4" }}
                     highlightedId={highlightedField}
                     hideQ2={true}
@@ -1678,7 +1697,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             {/* Environment */}
             <EnvironmentSection 
                 data={data} update={update} toggleArr={toggleArr} id="section-q16" 
-                title={type === 'house' ? "11. 重大環境設施與常見環境抗性設施" : (type === 'land' ? "10. 重大環境設施與常見環境抗性設施" : `${envNum}. 重大環境設施與常見環境抗性設施`)} 
+                title={type === 'house' ? "11. 重要環境設施與常見環境抗性設施" : (type === 'land' ? "10. 重要環境設施與常見環境抗性設施" : `${envNum}. 重要環境設施與常見環境抗性設施`)} 
                 highlightedId={highlightedField} 
                 warningText="※內政部於 104 年 10 月新版不動產說明書中，房仲業者須對於受託銷售之不動產，應調查周邊半徑 300 公尺範圍內之重要環境設施"
                 status={getEnvStatus()}

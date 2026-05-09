@@ -278,12 +278,19 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
     else if (type === 'land') {
         const s2 = 2;
         v.require(d.land_q1_elec, "section-land-q1", "1. 電力供應未填寫", s2);
+        if (d.land_q1_elec === '是') {
+             v.require(d.land_q1_elec_detail, "section-land-q1", "1. 請選擇電力詳細情況", s2);
+             v.requireIf(d.land_q1_elec_detail === '其他未列項目', d.land_q1_elec_detail_other, "section-land-q1", "1. 請填寫電力「其他」說明", s2);
+        }
         v.requireIf(d.land_q1_elec === '其他未列項目', d.land_q1_elec_other, "section-land-q1", "1. 請填寫電力「其他」說明", s2);
         
         v.require(d.land_q1_water, "section-land-q1", "1. 水源供應未填寫", s2);
         if (d.land_q1_water === '是') {
-             v.require(d.land_q1_water_cat, "section-land-q1", "1. 請選擇水源類別", s2);
-             v.requireIf(d.land_q1_water_cat === '自來水', d.land_q1_water_tap_detail, "section-land-q1", "1. 請選擇自來水詳細情況", s2);
+             v.check((Array.isArray(d.land_q1_water_cat) && d.land_q1_water_cat.length > 0) || (!Array.isArray(d.land_q1_water_cat) && !!d.land_q1_water_cat), "section-land-q1", "1. 請選擇水源類別", s2);
+             if (Array.isArray(d.land_q1_water_cat) ? d.land_q1_water_cat.includes('自來水') : d.land_q1_water_cat === '自來水') {
+                 v.require(d.land_q1_water_tap_detail, "section-land-q1", "1. 請選擇自來水詳細情況", s2);
+                 v.requireIf(d.land_q1_water_tap_detail === '其他未列項目', d.land_q1_water_tap_other, "section-land-q1", "1. 請填寫自來水「其他」說明", s2);
+             }
         }
         v.requireIf(d.land_q1_water === '其他未列項目', d.land_q1_water_other, "section-land-q1", "1. 請填寫水源「其他」說明", s2);
 
@@ -322,9 +329,6 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
             v.check((d.land_water_booster_items?.length || 0) === 0, "section-land-q7", "6. 請勾選加壓受水設備細項", s3);
         }
 
-        if (d.propertyType === '農地') {
-            v.require(d.land_q7_illegal_paving, "section-land-q7", "6. 土地鋪面現況未填寫", s3);
-        }
         if (d.propertyType === '工業地') {
             v.require(d.land_q7_fire_setback, "section-land-q7", "6. 防火間隔與區劃現況未填寫", s3);
         }
@@ -418,12 +422,11 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.requireIf(d.q5_hasTilt === '是', d.q5_desc, "section-q4", "4. 請填寫傾斜說明", s2);
 
         const s3 = 3;
-        v.require(d.factory_height, "section-factory-struct", "5. 高度未填寫", s3);
-        v.require(d.factory_column_spacing, "section-factory-struct", "5. 柱距未填寫", s3);
-        
-        // Updated Floor Load Validation: Skip if unknown
-        if (!d.factory_floor_load_unknown) {
-            v.require(d.factory_floor_load, "section-factory-struct", "5. 載重未填寫", s3);
+        if (!d.factory_spec_unknown) {
+            v.require(d.factory_height, "section-factory-struct", "5. 滴水高度未填寫", s3);
+            v.require(d.factory_width, "section-factory-struct", "5. 面寬未填寫", s3);
+            v.require(d.factory_depth, "section-factory-struct", "5. 深度未填寫", s3);
+            v.require(d.factory_floor_height, "section-factory-struct", "5. 樓板高度未填寫", s3);
         }
         
         v.require(d.factory_floor_condition, "section-factory-struct", "5. 地坪狀況未填寫", s3);

@@ -7,7 +7,7 @@ import {
     PROTECTION_OPTS_PUBLIC, PROTECTION_OPTS_PRIVATE,
     GROUP_A_TYPES, WATER_BOOSTER_ITEMS_A,
     RESISTANCE_FACILITIES_OPTIONS,
-    ACCESS_STATUS_OPTIONS, BUILDING_LINE_OPTIONS, DRAINAGE_OPTIONS
+    BUILDING_LINE_OPTIONS, DRAINAGE_OPTIONS
 } from '../constants';
 import { 
     CheckBox, SurveySection, SubItemHighlight, DetailInput, 
@@ -74,12 +74,12 @@ export const UtilitiesSection = ({
                     {type === 'factory' ? (
                         <div className="space-y-6">
                             <AccordionRadio 
-                                options={['無電力(需自行申請)', '一般用電(單相 110V／220V，僅供照明冷氣)', '動力用電(三相電)', '高壓電供電', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} 
+                                options={['無電力(需自行申請)', '一般用電(單相 110V／220V，僅供照明冷氣)', '動力用電(三相電)', '現場無法判斷 (需詳閱電費單)', '其他未列項目']} 
                                 value={data?.land_q1_elec || ''} 
                                 onChange={v => {
                                     setData(prev => {
-                                        const isPower = v.includes('一般用電') || v.includes('動力用電') || v.includes('高壓電供電');
-                                        const needsVoltage = v.includes('動力用電') || v.includes('高壓電供電');
+                                        const isPower = v.includes('一般用電') || v.includes('動力用電');
+                                        const needsVoltage = v.includes('動力用電');
                                         return {
                                             ...prev,
                                             land_q1_elec: v,
@@ -94,7 +94,7 @@ export const UtilitiesSection = ({
                                     if (opt === '其他未列項目') {
                                         return <SubItemHighlight><DetailInput value={data.land_q1_elec_other || ''} onChange={v => update('land_q1_elec_other', v)} placeholder="如：發電機、太陽能" /></SubItemHighlight>;
                                     }
-                                    if (opt.includes('一般用電') || opt.includes('動力用電') || opt === '高壓電供電') {
+                                    if (opt.includes('一般用電') || opt.includes('動力用電')) {
                                         return (
                                             <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
                                                 <SubItemHighlight>
@@ -108,11 +108,11 @@ export const UtilitiesSection = ({
                                                             />
                                                         </div>
                                                         
-                                                        {(opt.includes('動力用電') || opt === '高壓電供電') && (
+                                                        {(opt.includes('動力用電')) && (
                                                             <div>
                                                                 <p className="dynamic-text-h2 font-black text-slate-700 mb-3 dark:text-slate-200 leading-normal">電壓規格</p>
                                                                 <AccordionRadio 
-                                                                    options={['三相 220V', '三相 380V／三相四線式', '高壓電供電', '其他/待查證']} 
+                                                                    options={['三相 220V', '三相 380V', '三相四線式', '其他／待查證']} 
                                                                     value={data.land_q1_elec_voltage || ''} 
                                                                     onChange={v => update('land_q1_elec_voltage', v)} 
                                                                 />
@@ -152,7 +152,22 @@ export const UtilitiesSection = ({
                             }} 
                             renderDetail={(opt) => (
                                 <>
-                                    {opt === '有' && <SubItemHighlight><div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600"><AccordionRadio options={['獨立電錶', '共有電錶']} value={data.land_q1_elec_detail || ''} onChange={v => update('land_q1_elec_detail', v)} /></div></SubItemHighlight>}
+                                    {opt === '有' && (
+                                        <SubItemHighlight>
+                                            <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600">
+                                                <AccordionRadio 
+                                                    options={data.propertyType === '農地' ? ['民生用電', '農業用電', '其他未列項目'] : ['獨立電錶', '共有電錶']} 
+                                                    value={data.land_q1_elec_detail || ''} 
+                                                    onChange={v => { update('land_q1_elec_detail', v); if (v !== '其他未列項目') update('land_q1_elec_detail_other', ''); }} 
+                                                    renderDetail={
+                                                        data.propertyType === '農地' ? (opt2) => (
+                                                            opt2 === '其他未列項目' ? <DetailInput value={data.land_q1_elec_detail_other || ''} onChange={v => update('land_q1_elec_detail_other', v)} placeholder="說明現況" /> : null
+                                                        ) : undefined
+                                                    }
+                                                />
+                                            </div>
+                                        </SubItemHighlight>
+                                    )}
                                     {opt === '其他未列項目' && <SubItemHighlight><DetailInput value={data.land_q1_elec_other || ''} onChange={v => update('land_q1_elec_other', v)} placeholder="如：發電機、太陽能" /></SubItemHighlight>}
                                 </>
                             )} 
@@ -171,7 +186,7 @@ export const UtilitiesSection = ({
                             setData(prev => ({
                                 ...prev,
                                 land_q1_water: val,
-                                land_q1_water_cat: val === '是' ? prev.land_q1_water_cat : '',
+                                land_q1_water_cat: val === '是' ? prev.land_q1_water_cat : [],
                                 land_q1_water_tap_detail: val === '是' ? prev.land_q1_water_tap_detail : '',
                                 land_q1_water_ground_detail: val === '是' ? prev.land_q1_water_ground_detail : '',
                                 land_q1_water_irr_detail: val === '是' ? prev.land_q1_water_irr_detail : '',
@@ -183,17 +198,52 @@ export const UtilitiesSection = ({
                                 {opt === '有' && (
                                     <SubItemHighlight>
                                         <div className="space-y-6">
-                                            <AccordionRadio 
-                                                options={filteredWaterOptions} 
-                                                value={data.land_q1_water_cat || ''} 
-                                                onChange={v => setData(prev => ({ ...prev, land_q1_water_cat: v, land_q1_water_tap_detail: v === '自來水' ? prev.land_q1_water_tap_detail : '', land_q1_water_ground_detail: v === '地下水' ? prev.land_q1_water_ground_detail : '', land_q1_water_irr_detail: v === '水利溝渠' ? prev.land_q1_water_irr_detail : '' }))} 
-                                                renderDetail={(opt2) => {
-                                                    if (opt2 === '自來水') return <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600"><AccordionRadio options={['獨立水錶', '共有水錶', '無水錶，但管線已臨路', '無水錶，且管線距離遙遠']} value={data.land_q1_water_tap_detail || ''} onChange={v => update('land_q1_water_tap_detail', v)} /></div>;
-                                                    if (opt2 === '地下水') return <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600"><AccordionRadio options={['自然湧出流動', '合法水井', '私設水井']} value={data.land_q1_water_ground_detail || ''} onChange={v => update('land_q1_water_ground_detail', v)} /></div>;
-                                                    if (opt2 === '水利溝渠') return <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600"><AccordionRadio options={['公有', '私人']} value={data.land_q1_water_irr_detail || ''} onChange={v => update('land_q1_water_irr_detail', v)} /></div>;
-                                                    return null;
-                                                }}
-                                            />
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {filteredWaterOptions.map(opt2 => (
+                                                    <CheckBox 
+                                                        key={opt2} 
+                                                        checked={data.land_q1_water_cat?.includes(opt2) || false} 
+                                                        label={opt2} 
+                                                        onClick={() => {
+                                                            const arr = Array.isArray(data.land_q1_water_cat) ? data.land_q1_water_cat : [];
+                                                            if (arr.includes(opt2)) {
+                                                                setData(prev => ({ 
+                                                                    ...prev, 
+                                                                    land_q1_water_cat: arr.filter(i => i !== opt2),
+                                                                    land_q1_water_tap_detail: opt2 === '自來水' ? '' : prev.land_q1_water_tap_detail,
+                                                                    land_q1_water_ground_detail: opt2 === '地下水' ? '' : prev.land_q1_water_ground_detail,
+                                                                    land_q1_water_irr_detail: opt2 === '水利溝渠' ? '' : prev.land_q1_water_irr_detail
+                                                                }));
+                                                            } else {
+                                                                setData(prev => ({ ...prev, land_q1_water_cat: [...arr, opt2] }));
+                                                            }
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                            {data.land_q1_water_cat?.includes('自來水') && (
+                                                <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600 space-y-4">
+                                                    <p className="font-bold">自來水：</p>
+                                                    <AccordionRadio 
+                                                        options={['獨立水錶', '共有水錶', '其他未列項目']} 
+                                                        value={data.land_q1_water_tap_detail || ''} 
+                                                        onChange={v => { update('land_q1_water_tap_detail', v); if (v !== '其他未列項目') update('land_q1_water_tap_other', ''); }} 
+                                                        renderDetail={o => o === '其他未列項目' ? <DetailInput value={data.land_q1_water_tap_other || ''} onChange={v => update('land_q1_water_tap_other', v)} placeholder="說明現況" /> : null}
+                                                    />
+                                                </div>
+                                            )}
+                                            {data.land_q1_water_cat?.includes('地下水') && (
+                                                <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600 space-y-4">
+                                                    <p className="font-bold">地下水：</p>
+                                                    <AccordionRadio options={['自然湧出流動', '合法水井', '私設水井']} value={data.land_q1_water_ground_detail || ''} onChange={v => update('land_q1_water_ground_detail', v)} />
+                                                </div>
+                                            )}
+                                            {data.land_q1_water_cat?.includes('水利溝渠') && (
+                                                <div className="p-4 md:p-6 bg-white rounded-[1.5rem] border-3 border-slate-200 dark:bg-slate-900/50 dark:border-slate-600 space-y-4">
+                                                    <p className="font-bold">水利溝渠：</p>
+                                                    <AccordionRadio options={['公有', '私人']} value={data.land_q1_water_irr_detail || ''} onChange={v => update('land_q1_water_irr_detail', v)} />
+                                                </div>
+                                            )}
                                         </div>
                                     </SubItemHighlight>
                                 )}
@@ -210,7 +260,7 @@ export const UtilitiesSection = ({
                         <p className="dynamic-text-h2 font-black mb-4 text-slate-800 dark:text-slate-100 leading-normal">太陽能光電發電設備</p>
                         <div className="mb-6"><InlineWarning>※本項由使用者自行管理維護</InlineWarning></div>
                         <AccordionRadio 
-                            options={['無設置', '合法設置', '私下設置']} 
+                            options={['無設置', '合法設置', '私人設置']} 
                             value={data.house_solar_status || ''} 
                             onChange={v => update('house_solar_status', v)} 
                             
@@ -563,10 +613,6 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
         <SurveySection id={id} highlighted={highlightedId === id} title={title} status={status}>
             {warningText && <InlineWarning>{warningText}</InlineWarning>}
             
-            <div className="mb-8">
-                <CheckBox checked={data?.q16_noFacilities || false} label="無重要環境設施" onClick={() => { if (!data.q16_noFacilities) { update('q16_items', []); update('q16_hasOther', false); update('q16_other', ''); } update('q16_noFacilities', !data.q16_noFacilities); }} />
-            </div>
-
             <div className={`space-y-12 transition-all duration-500 ${data?.q16_noFacilities ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                 {ENV_CATEGORIES.map((cat: any) => (
                     <div key={cat.title}>
@@ -576,13 +622,28 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                 ))}
             </div>
 
+            <div className="mt-8 mb-8 flex flex-col items-center w-full">
+                <div className="w-full text-center mb-4">
+                    <span className="inline-block px-4 py-2 bg-yellow-300 text-xl md:text-2xl text-slate-900 font-bold leading-normal dark:bg-yellow-800 dark:text-slate-100 rounded text-center">
+                        物件已確認周邊半徑300公尺內
+                        <br/>
+                        無重要環境設施
+                        <br/>
+                        可點選以下按鈕完成此題<span className="text-red-600 ml-1">⬇</span>
+                    </span>
+                </div>
+                <div className="w-full">
+                    <CheckBox checked={data?.q16_noFacilities || false} label="無重要環境設施" onClick={() => { if (!data.q16_noFacilities) { update('q16_items', []); update('q16_hasOther', false); update('q16_other', ''); } update('q16_noFacilities', !data.q16_noFacilities); }} />
+                </div>
+            </div>
+
             {/* New Section for Resistance Facilities */}
             <div className="mt-12 pt-8 border-t-2 border-slate-200">
                 <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">常見環境抗性設施</p>
                 <div className="mb-6">
                     <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
                         <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
-                            ※未在重大環境設施內，但仍會影響房價的設施
+                            ※未在重要環境設施內，但仍會影響房價的設施
                         </p>
                     </div>
                 </div>
@@ -726,7 +787,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                     </QuestionBlock>
 
                     <QuestionBlock>
-                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">重劃與區段徵收現況</p>
+                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">重測區範圍</p>
                         <AccordionRadio 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_resurvey === '否' ? '非範圍內' : (data?.land_q4_resurvey === '是' ? '屬範圍內' : (data?.land_q4_resurvey || ''))} 
@@ -772,13 +833,21 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                 <QuestionBlock>
                     <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">{isHouse ? '進出現況' : '進出通行現況'}</p>
                     <AccordionRadio 
-                        options={ACCESS_STATUS_OPTIONS} 
-                        value={data[accessKey]?.includes('順暢') ? '通行順暢' : (data[accessKey]?.includes('受限') ? '通行受限（如狹窄、有障礙物）' : (data[accessKey]?.includes('袋地') ? '袋地（無合法出入口）' : ''))} 
+                        options={type === 'land' ? ['通行順暢', '通行受限（如狹窄、有障礙物）', '袋地（無合法出入口）'] : ['通行順暢', '通行受限（如狹窄、有障礙物）', '其他未列項目']} 
+                        value={data[accessKey]?.includes('順暢') ? '通行順暢' : (data[accessKey]?.includes('受限') ? '通行受限（如狹窄、有障礙物）' : (data[accessKey]?.includes('袋地') ? '袋地（無合法出入口）' : (data[accessKey] === '其他未列項目' ? '其他未列項目' : '')))} 
                         onChange={v => {
                             const val = v.includes('順暢') ? '通行順暢' : (v.includes('受限') ? '通行受限' : (v.includes('袋地') ? '袋地' : v));
                             setData((prev: any) => ({...prev, [accessKey]: val}));
+                            if (v !== '其他未列項目' && v !== '通行受限（如狹窄、有障礙物）') update(abnormalDescKey, '');
                         }} 
                         renderDetail={(opt) => {
+                            if (opt === '其他未列項目') {
+                                return (
+                                    <SubItemHighlight>
+                                        <DetailInput value={data[abnormalDescKey] || ''} onChange={v => update(abnormalDescKey, v)} placeholder="如：袋地等" />
+                                    </SubItemHighlight>
+                                );
+                            }
                             if (opt === '通行順暢') {
                                 return (
                                     <SubItemHighlight>
@@ -804,17 +873,19 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                                 <LandNumberInputs section={data[sectionKey] || ''} subSection={data[subSectionKey] || ''} number={data[numberKey] || ''} onChangeSection={v => update(sectionKey, v)} onChangeSubSection={v => update(subSectionKey, v)} onChangeNumber={v => update(numberKey, v)} />
                                             </div>
 
-                                            <div className="pt-6 border-t-2 border-slate-200">
-                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
-                                                <AccordionRadio options={['柏油', '水泥', '泥土/石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /> : null} />
-                                            </div>
+                                            {type === 'land' && (
+                                                <div className="pt-6 border-t-2 border-slate-200">
+                                                    <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
+                                                    <AccordionRadio options={['柏油', '水泥', '泥土/石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /> : null} />
+                                                </div>
+                                            )}
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                                                 <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                                      <p className="font-bold text-lg mb-2 text-slate-600">現況路寬</p>
                                                      <UnitInput unit="米" value={data[roadWidthKey] || ''} onChange={v => update(roadWidthKey, v)} placeholder="輸入寬度" />
                                                 </div>
-                                                {!hideBuildingLine && (
+                                                {type === 'land' && !hideBuildingLine && (
                                                     <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                                          <p className="font-bold text-lg mb-2 text-slate-600">建築線指定狀況</p>
                                                          <AccordionRadio options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
@@ -822,7 +893,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                                 )}
                                             </div>
 
-                                            {!hideDitch && (
+                                            {type === 'land' && !hideDitch && (
                                                 <div className="pt-6 border-t-2 border-slate-200">
                                                     <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路排水溝現況</p>
                                                     <AccordionRadio options={DRAINAGE_OPTIONS} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[ditchOtherKey] || ''} onChange={v => update(ditchOtherKey, v)} placeholder="說明現況" /> : null} />
