@@ -78,7 +78,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const [draftFoundModalOpen, setDraftFoundModalOpen] = useState(false);
     const [alertModalOpen, setAlertModalOpen] = useState(false);
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
-    const [generatedImage, setGeneratedImage] = useState<string>('');
+    const [generatedImage, setGeneratedImage] = useState<string[]>([]);
     const [showImageModal, setShowImageModal] = useState(false);
     const [highlightedField, setHighlightedField] = useState<string | null>(null);
     const [showExportSuccessModal, setShowExportSuccessModal] = useState(false);
@@ -461,7 +461,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             fileName,
             page1Ref: page1Ref.current,
             page2Ref: (type !== 'parking' && page2Ref.current) ? page2Ref.current : null,
-            page3Ref: (type === 'factory' && page3Ref.current) ? page3Ref.current : null, // Added Page 3 Support
+            page3Ref: page3Ref.current || null,
             isMobile,
             onSuccess: (msg: string) => setToastMsg(msg),
             onError: (e: any) => { console.error("Export Error:", e); alert("匯出失敗，請重試或縮短案名。"); }
@@ -538,7 +538,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             <DraftFoundModal isOpen={draftFoundModalOpen} onLoad={loadDraft} onClear={() => { setDraftFoundModalOpen(false); clearDraft(); }} onClose={() => setDraftFoundModalOpen(false)} />
             <AlertModal isOpen={alertModalOpen} errors={validationErrors} onClose={() => setAlertModalOpen(false)} onJumpTo={handleJumpToError} />
-            <ImagePreviewModal isOpen={showImageModal} imageUrl={generatedImage} onClose={() => setShowImageModal(false)} />
+            <ImagePreviewModal isOpen={showImageModal} imageUrls={generatedImage} onClose={() => setShowImageModal(false)} />
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
 
             <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[6rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>

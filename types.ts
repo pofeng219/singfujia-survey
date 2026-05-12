@@ -267,6 +267,7 @@ export interface SurveyData {
     land_q1_water_ground_detail: string;
     land_q1_water_irr_detail: string;
     land_q1_water_other: string;
+    land_q1_gas: string; // New: Gas status for land/industrial
     land_q1_other_new: string;
     land_q1_other_desc: string;
 

@@ -45,14 +45,17 @@ const getCanvases = async (page1Ref: HTMLElement, page2Ref?: HTMLElement | null,
  * Handles JPG Export
  * Returns the dataURL if mobile (to show modal), or triggers download if desktop.
  */
-export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMobile, onSuccess, onError }: ExportOptions): Promise<string | null> => {
+export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMobile, onSuccess, onError }: ExportOptions): Promise<string[] | null> => {
     try {
         const { canvas1, canvas2, canvas3 } = await getCanvases(page1Ref, page2Ref, page3Ref);
         const dataUrl1 = canvas1.toDataURL('image/jpeg', 0.9);
+        const dataUrls = [dataUrl1];
+        if (canvas2) dataUrls.push(canvas2.toDataURL('image/jpeg', 0.9));
+        if (canvas3) dataUrls.push(canvas3.toDataURL('image/jpeg', 0.9));
 
         if (isMobile) {
             if (onSuccess) onSuccess("✅ 圖片已產生，請長按圖片儲存");
-            return dataUrl1; // Return URL for modal display
+            return dataUrls; // Return URLs for modal display
         } else {
             // Desktop: Download Page 1
             const link1 = document.createElement('a');
@@ -83,7 +86,7 @@ export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMo
                     document.body.appendChild(link3);
                     link3.click();
                     document.body.removeChild(link3);
-                }, 1000);
+                }, 1000); // adjust timing
             }
 
             if (onSuccess) onSuccess("✅ 圖片下載中...");

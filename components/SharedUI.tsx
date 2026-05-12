@@ -750,65 +750,6 @@ export const InlineWarning: React.FC<{ children: React.ReactNode, center?: boole
 };
 
 // === Preview Result ===
-interface PreviewResultProps {
-    checked: boolean;
-    label: string;
-    suffix?: string;
-    forceShow?: boolean;
-    variant?: 'default' | 'mobile'; // New prop to control dark mode behavior
-}
-export const PreviewResult: React.FC<PreviewResultProps> = ({ checked, label, suffix = "", forceShow = false, variant = 'default' }) => {
-    if (!checked && !forceShow) return null;
-    
-    // In mobile mode, we use Tailwind classes for dark mode support.
-    // In default (A4/Print) mode, we rely on the global CSS (black) which is correct for printing.
-    // MODIFICATION: For default mode, remove 'checked' class to keep white bg, and use Icon.
-    const boxClass = variant === 'mobile' 
-        ? `w-7 h-7 border-[3px] flex items-center justify-center font-black text-xl mr-2 shrink-0 ${checked ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900 dark:border-white' : 'bg-transparent border-slate-800 text-slate-800 dark:border-white dark:text-white'}`
-        : `preview-checkbox-box translate-y-[2px]`; // Added translate-y to align visually
-
-    // Highlight "有" (Yes/Has issue) options in red for quick scanning
-    // Also include common issue keywords to ensure they are caught even without "有/是" prefix
-    const warningKeywords = [
-        '滲漏水', '壁癌', '瑕疵', '異常', '不符', '占用', '剝落', '外露', '龜裂', 
-        '傾斜', '待查證', '受限', '袋地', '糾紛', '越界', '海砂', '輻射', '非自然', 
-        '事故', '違建', '私下', '不明', '不確定', '無法', '外推', '加蓋', '夾層', 
-        '增建', '改建', '損壞', '危險', '破壞', '漏水', '阻塞', '不通'
-    ];
-    const hasWarningKeyword = warningKeywords.some(kw => label.includes(kw));
-    const isWarningOption = checked && (hasWarningKeyword || 
-        ((label.includes('有') || label.includes('是')) && 
-         !label.includes('有保存登記') && 
-         !label.includes('有車位編號') && 
-         !label.includes('有公共設施') && 
-         !label.includes('所有權人自用') && 
-         !label.includes('合法') && 
-         !label.includes('正常') &&
-         !label.includes('有農作物') &&
-         !label.includes('有建築物') &&
-         !label.includes('有設置')));
-    
-    const labelClass = isWarningOption 
-        ? `preview-checkbox-label font-black underline underline-offset-4 decoration-2 text-red-600 dark:text-red-400`
-        : `preview-checkbox-label ${variant === 'mobile' ? 'text-slate-800 dark:text-slate-200' : 'text-black'}`;
-
-    return (
-        <div className="preview-checkbox-wrapper inline-flex items-center">
-            {variant === 'mobile' ? (
-                <div className={boxClass}>
-                    {checked ? 'V' : ''}
-                </div>
-            ) : (
-                <div className={boxClass}>
-                    {checked ? <Check className={`w-5 h-5 ${isWarningOption ? 'text-red-600' : 'text-black'}`} strokeWidth={3} /> : ''}
-                </div>
-            )}
-            <span className={labelClass}>
-                {label}{suffix}
-            </span>
-        </div>
-    );
-};
 
 // --- NEW MODAL AND TOAST COMPONENTS ---
 
@@ -905,19 +846,21 @@ export const AlertModal: React.FC<{ isOpen: boolean; errors: ValidationError[]; 
 };
 
 // ImagePreviewModal
-export const ImagePreviewModal: React.FC<{ isOpen: boolean; imageUrl: string; onClose: () => void }> = ({ isOpen, imageUrl, onClose }) => {
+export const ImagePreviewModal: React.FC<{ isOpen: boolean; imageUrls: string[]; onClose: () => void }> = ({ isOpen, imageUrls, onClose }) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center p-4">
             <button onClick={onClose} className="absolute top-4 right-4 p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors z-50">
                 <X className="w-8 h-8" />
             </button>
-            <div className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white rounded-lg shadow-2xl custom-scrollbar dark:bg-slate-900">
-                <img src={imageUrl} alt="Generated Preview" className="w-full h-auto block" />
+            <div className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white rounded-lg shadow-2xl custom-scrollbar dark:bg-slate-900 flex flex-col gap-4">
+                {imageUrls.map((url, i) => (
+                    <img key={i} src={url} alt={`Generated Preview ${i+1}`} className="w-full h-auto block" />
+                ))}
             </div>
             <p className="text-white/80 mt-6 font-bold text-lg animate-pulse flex items-center gap-2">
                 <Save className="w-5 h-5" />
-                長按上方圖片即可儲存至手機相簿
+                長按上方圖片即可分別儲存至手機相簿
             </p>
         </div>
     );

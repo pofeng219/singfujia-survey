@@ -253,6 +253,15 @@ export const UtilitiesSection = ({
                         
                     />
                 </QuestionBlock>
+                
+                <QuestionBlock>
+                    <p className="dynamic-text-h2 font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">瓦斯供應現況</p>
+                    <AccordionRadio 
+                        options={type === 'factory' ? ['一般瓦斯 (如桶裝瓦斯、天然瓦斯)', '工業用氣 (如大容量儲氣槽)', '完全無設置'] : ['無', '有', '其他未列項目']} 
+                        value={data.land_q1_gas || ''} 
+                        onChange={v => update('land_q1_gas', v)} 
+                    />
+                </QuestionBlock>
 
                 {/* Solar Equipment for Factory - Hide for Group B (multistory buildings) as they move to section 10 */}
                 {type === 'factory' && GROUP_A_TYPES.includes(data.propertyType) && (
@@ -647,10 +656,6 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                         </p>
                     </div>
                 </div>
-                
-                <div className="mb-8">
-                    <CheckBox checked={data?.q16_2_noFacilities || false} label="無常見環境抗性設施" onClick={() => { if (!data.q16_2_noFacilities) { update('q16_2_items', []); update('q16_2_hasOther', false); update('q16_2_other', ''); } update('q16_2_noFacilities', !data.q16_2_noFacilities); }} />
-                </div>
 
                 <div className={`grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 transition-all duration-500 ${data?.q16_2_noFacilities ? '!bg-slate-100 !text-slate-500 pointer-events-none dark:!bg-slate-800 dark:!text-slate-400 p-4 rounded-2xl' : ''}`}>
                     {RESISTANCE_FACILITIES_OPTIONS.map((i: string) => (
@@ -672,6 +677,21 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                                 />
                             </SubItemHighlight>
                         )}
+                    </div>
+                </div>
+                
+                <div className="mt-8 flex flex-col items-center w-full">
+                    <div className="w-full text-center mb-4">
+                        <span className="inline-block px-4 py-2 bg-yellow-300 text-xl md:text-2xl text-slate-900 font-bold leading-normal dark:bg-yellow-800 dark:text-slate-100 rounded text-center">
+                            物件已確認周邊半徑300公尺內
+                            <br/>
+                            無常見環境抗性設施
+                            <br/>
+                            可點選以下按鈕完成此題<span className="text-red-600 ml-1">⬇</span>
+                        </span>
+                    </div>
+                    <div className="w-full">
+                        <CheckBox checked={data?.q16_2_noFacilities || false} label="無常見環境抗性設施" onClick={() => { if (!data.q16_2_noFacilities) { update('q16_2_items', []); update('q16_2_hasOther', false); update('q16_2_other', ''); } update('q16_2_noFacilities', !data.q16_2_noFacilities); }} />
                     </div>
                 </div>
             </div>
@@ -824,7 +844,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
     const numberKey = isHouse ? 'q14_number' : 'land_q2_access_number';
 
     // Hiding Logic
-    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '連棟／分組式標準廠房'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
+    const hideBuildingLine = type === 'factory' ? ['立體化廠辦大樓', '連棟／分組式標準廠房'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : (type === 'land' && data.propertyType === '農地'));
     const hideDitch = type === 'factory' ? ['立體化廠辦大樓'].includes(data.propertyType) : (type === 'house' ? ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(data.propertyType) : false);
 
     return (

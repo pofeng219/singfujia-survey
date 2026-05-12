@@ -48,7 +48,6 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
     // --- STEP 1: Basic Info (All Types) ---
     const s1Prefix = "第一步：基本資料";
     v.require(d.caseName, "field-caseName", `${s1Prefix} - 物件案名`, 1);
-    v.require(d.authNumber, "field-authNumber", `${s1Prefix} - 委託書編號`, 1);
     v.require(d.storeName, "field-storeName", `${s1Prefix} - 所屬店名`, 1);
     v.require(d.agentName, "field-agentName", `${s1Prefix} - 調查業務`, 1);
     v.require(d.address, "field-address", `${s1Prefix} - ${type === 'land' ? '坐落位置' : (type === 'parking' ? '標的位置' : '標的地址')}`, 1);
@@ -159,7 +158,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.requireIf(d.q2_other_occupancy !== '否', d.q2_other_occupancy_desc, "section-q1", "1. 請填寫他戶占用說明", s2);
 
         v.require(d.q6_hasIssue, "section-q6", "2. 面積測量現況未填寫", s2);
-        const q6Issue = d.q6_hasIssue && d.q6_hasIssue !== '相符 (無明顯差異)';
+        const q6Issue = d.q6_hasIssue && d.q6_hasIssue !== '相符 (無明顯差異)' && d.q6_hasIssue !== '實測相符';
         v.requireIf(!!q6Issue, d.q6_desc, "section-q6", "2. 請填寫面積差異／無法測量說明", s2);
 
         v.require(d.q3_hasLeak, "section-q3", "3. 滲漏水現況未填寫", s2);
@@ -239,28 +238,13 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
         const s4 = 4;
         
-        // Hiding Logic for Validation
-        const hideBuildingLine = ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(d.propertyType);
-        const hideDitch = ['大樓（10樓以上有電梯）', '華廈（10樓以下有電梯）', '公寓（5樓以下無電梯）'].includes(d.propertyType);
-
         v.require(d.q14_access, "section-q14", "11. 進出通行與臨路未填寫", s4);
         if (d.q14_access === '通行順暢' || d.q14_access?.includes('順暢')) {
              v.require(d.q14_ownership, "section-q14", "11. 請選擇通行權屬 (公有／私人)", s4);
              v.require(d.q14_protection, "section-q14", "11. 請選擇保障類型", s4);
              const protectionNeedsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(d.q14_protection);
              v.requireIf(protectionNeedsDesc, d.q14_protectionDesc, "section-q14", "11. 請填寫保障類型說明", s4);
-             v.require(d.q14_roadMaterial, "section-q14", "11. 請選擇路面材質", s4);
-             v.requireIf(d.q14_roadMaterial === '其他未列項目', d.q14_roadMaterialOther, "section-q14", "11. 請填寫路面材質說明", s4);
              v.require(d.q14_roadWidth, "section-q14", "11. 現況路寬未填寫", s4);
-             // Skip if hidden
-             if (!hideDitch) {
-                 v.require(d.q14_ditch, "section-q14", "11. 周圍排水溝現況未填寫", s4);
-                 v.requireIf(d.q14_ditch === '其他未列項目', d.q14_ditchOther, "section-q14", "11. 請填寫排水溝說明", s4);
-             }
-             // Skip if hidden
-             if (!hideBuildingLine) {
-                 v.require(d.q14_buildingLine, "section-q14", "11. 建築線指定狀況未填寫", s4);
-             }
         } else if (d.q14_access === '通行受限' || d.q14_access?.includes('受限')) {
              v.require(d.q14_abnormalDesc, "section-q14", "11. 請填寫受限說明", s4);
         }
@@ -352,10 +336,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
              v.require(d.land_q2_protection, "section-land-q2", "8. 請選擇保障類型", s4); // Added Protection Validation
              const protectionNeedsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(d.land_q2_protection);
              v.requireIf(protectionNeedsDesc, d.land_q2_protectionDesc, "section-land-q2", "8. 請填寫保障類型說明", s4);
-             v.require(d.land_q2_material, "section-land-q2", "8. 請選擇路面材質", s4);
              v.require(d.land_q2_roadWidth, "section-land-q2", "8. 現況路寬未填寫", s4);
-             v.require(d.land_q2_buildingLine, "section-land-q2", "8. 建築線指定狀況未填寫", s4);
-             v.require(d.land_q2_ditch, "section-land-q2", "8. 臨路排水溝現況未填寫", s4);
         } else if (d.land_q2_access === '通行受限' || d.land_q2_access?.includes('受限')) {
              v.require(d.land_q2_access_desc, "section-land-q2", "8. 請填寫受限說明", s4);
         }
@@ -390,7 +371,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
         // Q2 Area (Stored as q6)
         v.require(d.q6_hasIssue, "section-q6", "2. 面積測量現況未填寫", s2);
-        const q6Issue = d.q6_hasIssue && d.q6_hasIssue !== '相符 (無明顯差異)';
+        const q6Issue = d.q6_hasIssue && d.q6_hasIssue !== '相符 (無明顯差異)' && d.q6_hasIssue !== '實測相符';
         v.requireIf(!!q6Issue, d.q6_desc, "section-q6", "2. 請填寫面積差異／無法測量說明", s2);
 
         // Q3 Leakage
@@ -482,8 +463,6 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         const isHiRise = (d.propertyType === "立體化廠辦大樓"); 
         const hideLandDetails = (d.propertyType === "立體化廠辦大樓" || d.propertyType === "連棟／分組式標準廠房");
         const hideSoil = isHiRise;
-        const hideBuildingLine = ['立體化廠辦大樓', '連棟／分組式標準廠房'].includes(d.propertyType);
-        const hideDitch = ['立體化廠辦大樓'].includes(d.propertyType);
         
         // Numbering variables to match FormSteps
         let accessNum = 11;
@@ -500,23 +479,14 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
              v.require(d.land_q2_protection, "section-land-q2", `${accessNum}. 請選擇保障類型`, s4); // Added
              const protectionNeedsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(d.land_q2_protection);
              v.requireIf(protectionNeedsDesc, d.land_q2_protectionDesc, "section-land-q2", `${accessNum}. 請填寫保障類型說明`, s4);
-             v.require(d.land_q2_material, "section-land-q2", `${accessNum}. 請選擇路面材質`, s4);
              v.require(d.land_q2_roadWidth, "section-land-q2", `${accessNum}. 現況路寬未填寫`, s4);
-             // Skip if hidden
-             if (!hideDitch) {
-                 v.require(d.land_q2_ditch, "section-land-q2", `${accessNum}. 周圍排水溝現況未填寫`, s4);
-             }
-             // Skip if hidden
-             if (!hideBuildingLine) {
-                 v.require(d.land_q2_buildingLine, "section-land-q2", `${accessNum}. 建築線指定狀況未填寫`, s4);
-             }
         }
         
         if (!hideLandDetails) {
              v.require(d.land_q3_survey, "section-land-q3", `${landQ3Num}. 鑑界紀錄未填寫`, s4);
              v.require(d.land_q3_dispute, "section-land-q3", `${landQ3Num}. 糾紛現況未填寫`, s4);
-             v.require(d.land_q4_expro, "section-land-q4", `${landQ4Num}. 徵收地預定地現況未填寫`, s4);
-             v.require(d.land_q4_resurvey, "section-land-q4", `${landQ4Num}. 重測區域現況未填寫`, s4);
+             v.require(d.land_q4_expro, "section-land-q4", `${landQ4Num}. 位於政府徵收預定地未填寫`, s4);
+             v.require(d.land_q4_resurvey, "section-land-q4", `${landQ4Num}. 位於重測區域範圍未填寫`, s4);
         }
 
         // Numbering adjusts based on hidden sections, but logic remains attached to keys

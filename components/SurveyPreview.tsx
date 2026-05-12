@@ -59,7 +59,7 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
             <div className={`w-4 h-4 mt-0.5 rounded-sm border flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-rose-500 bg-rose-500' : 'border-sky-600 bg-sky-600'}`}>
                 <Check size={12} strokeWidth={4} className="text-white" />
             </div>
-            <span className={`${isStandard ? 'text-[15px]' : 'text-[18px]'} font-black leading-tight tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
+            <span className={`${isStandard ? 'text-[15px]' : 'text-[18px]'} font-black leading-snug tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
                 {label}{suffix}
             </span>
         </div>
@@ -75,15 +75,15 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
     
     return (
         <div className={`flex border-b border-slate-200 last:border-0 transition-colors shrink-0 max-w-full ${isAbnormal ? 'bg-rose-50/80 hover:bg-rose-100/80' : 'bg-white hover:bg-slate-50'}`}>
-            <div className={`w-[85px] md:w-[100px] shrink-0 flex justify-center pt-1 border-r ${isAbnormal ? 'border-rose-200 bg-rose-100/50' : 'border-slate-100 bg-slate-50/50'}`}>
-                <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
-                    {checked && <Check size={10} strokeWidth={3} className="text-white" />}
+            <div className={`w-[85px] md:w-[100px] shrink-0 flex justify-center items-start pt-2 border-r ${isAbnormal ? 'border-rose-200 bg-rose-100/50' : 'border-slate-100 bg-slate-50/50'}`}>
+                <div className={`w-3.5 h-3.5 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'border-sky-500 bg-sky-500 shadow-sm' : 'border-slate-300 bg-white'}`}>
+                    {checked && <Check size={10} strokeWidth={3} className="text-white shrink-0" />}
                 </div>
             </div>
-            <div className={`flex-grow ${isStandard ? 'py-0.5' : 'py-1.5'} px-2 text-left ${isStandard ? 'text-[15px]' : 'text-[20px]'}`}>
-                <div className={`flex flex-col md:flex-row md:flex-wrap items-start md:items-center ${isStandard ? 'gap-x-1 gap-y-0' : 'gap-x-2 gap-y-1'}`}>
+            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-1.5'} px-2 text-left ${isStandard ? 'text-[15px]' : 'text-[20px]'}`}>
+                <div className={`flex flex-col md:flex-row md:flex-wrap items-start ${isStandard ? 'gap-x-1 gap-y-1' : 'gap-x-2 gap-y-1'}`}>
                     {/* Apply small gray question style to the first span child if it's the question label */}
-                    <div className={`[&>span:first-child]:${isStandard ? 'text-[14px]' : 'text-[18px]'} [&>span:first-child]:font-bold ${isAbnormal ? '[&>span:first-child]:text-rose-700' : '[&>span:first-child]:text-slate-500'} [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-center ${isStandard ? 'gap-x-1 gap-y-0' : 'gap-x-2 gap-y-1'} w-full leading-tight`}>
+                    <div className={`[&>span:first-child]:${isStandard ? 'text-[14px]' : 'text-[18px]'} [&>span:first-child]:font-bold ${isAbnormal ? '[&>span:first-child]:text-rose-700' : '[&>span:first-child]:text-slate-500'} [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start ${isStandard ? 'gap-x-1 gap-y-1' : 'gap-x-2 gap-y-1'} w-full leading-normal`}>
                         {children}
                     </div>
                 </div>
@@ -98,9 +98,9 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
     const isStandard = mode === 'standard';
     return (
         <div className={`shrink-0 mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? '' : 'py-1'}`}>
-            <div className={`px-2 ${isStandard ? 'py-0.5 gap-1.5' : 'py-1 gap-2'} flex items-center`}>
-                <div className={`bg-sky-500 rounded-full shrink-0 ${isStandard ? 'w-1 h-3' : 'w-1.5 h-4'}`}></div>
-                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-none pt-0.5 whitespace-normal break-words`}>{title}</span>
+            <div className={`px-2 ${isStandard ? 'py-1 gap-1.5' : 'py-1 gap-2'} flex items-start`}>
+                <div className={`bg-sky-500 rounded-full shrink-0 ${isStandard ? 'w-1 h-3 mt-1.5' : 'w-1.5 h-4 mt-1.5'}`}></div>
+                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-snug whitespace-normal break-words`}>{title}</span>
             </div>
         </div>
     );
@@ -125,7 +125,7 @@ const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = 
         <div className={`font-black tracking-widest text-[#009FE3] leading-none whitespace-nowrap ${textClassName}`} style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
             幸福家不動產
         </div>
-        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-none mt-[2px] whitespace-nowrap ${subTextClassName}`}>
+        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-none mt-1.5 whitespace-nowrap ${subTextClassName}`}>
             SINGFUJIA REALTY INC.
         </div>
     </div>
@@ -172,13 +172,13 @@ const ParkingContent: React.FC<{ data: SurveyData, parkingSummary: any, activeMo
     };
 
     return (
-        <div className={`space-y-1 ${textColor}`}>
+        <div className={`flex flex-col gap-y-1.5 ${textColor}`}>
             {parkingSummary.showMethod && (<div><span className="font-bold mr-2">停車方式</span>{(data?.q10_parkTypes || []).map(pt => (<PreviewResult key={pt} checked={true} label={getParkingTypeLabel(pt)} variant={prVariant} />))}<PreviewResult checked={data?.q10_hasParkTypeOther} label="其他" suffix={'：' + (data?.q10_parkTypeOther || '')} variant={prVariant} /></div>)}
             {parkingSummary.showNumber && (<div><span className="font-bold mr-2">車位編號</span><PreviewResult checked={data?.q10_parkingNumberType === 'number'} label="有車位編號" suffix={'：' + (data?.q10_parkingNumberVal || '')} variant={prVariant} /><PreviewResult checked={data?.q10_parkingNumberType === 'none'} label="無車位編號" variant={prVariant} /></div>)}
             {parkingSummary.showCarStatus && getParkingCarUsageLabel() && (<div><span className="font-bold mr-2">汽車車位使用現況</span><span className="font-medium">{getParkingCarUsageLabel()}</span></div>)}
             {getParkingMotoUsageLabel() && <div><span className="font-bold mr-2">機車車位使用現況</span><span className="font-medium">{getParkingMotoUsageLabel()}</span></div>}
             {(parkingSummary.showCarSize || parkingSummary.showWeight || parkingSummary.showHeight) && (
-                <div className="flex flex-wrap gap-x-4">
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
                     <span className="font-bold">汽車車位尺寸</span>
                     {/* NEW TYPES */}
                     {data?.q10_measureType === '依謄本登記' && <span className="font-medium">[依謄本登記]</span>}
@@ -310,7 +310,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
                         <div className="flex flex-col items-center select-none opacity-100 mb-2">
                              <SingfujiaLogo className="h-8" textClassName="text-[1.5rem]" subTextClassName="text-[0.6rem]" />
                         </div>
-                        <span className="text-[14px] font-black text-red-600 tracking-wider block leading-tight">※本調查內容僅供公司內部參考，實際應以權狀及產調為準</span>
+                        <span className="text-[14px] font-black text-red-600 tracking-wider block leading-tight">※本資訊僅供初步評估參考。鑒於不動產資料之動態特性，所有細節請以實體權狀記載與現場勘察實況為最終依據。</span>
                         <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
                     </div>
                 )}
