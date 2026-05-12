@@ -774,7 +774,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
             <SurveySection id={ids.q4} highlighted={highlightedId === ids.q4} title={titles.q4} status={statusQ4}>
                 <div className="space-y-8">
                     <QuestionBlock>
-                        <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">徵收預定地現況</p>
+                        <p className="dynamic-text-h2 font-black text-slate-700 mb-6 leading-normal">位於政府徵收預定地</p>
                         <AccordionRadio 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_expro === '否' ? '非範圍內' : (data?.land_q4_expro === '是' ? '屬範圍內' : (data?.land_q4_expro || ''))} 
@@ -787,7 +787,7 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                     </QuestionBlock>
 
                     <QuestionBlock>
-                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">重測區範圍</p>
+                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">位於重測區域範圍</p>
                         <AccordionRadio 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_resurvey === '否' ? '非範圍內' : (data?.land_q4_resurvey === '是' ? '屬範圍內' : (data?.land_q4_resurvey || ''))} 
@@ -876,7 +876,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                             {type === 'land' && (
                                                 <div className="pt-6 border-t-2 border-slate-200">
                                                     <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
-                                                    <AccordionRadio options={['柏油', '水泥', '泥土/石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /> : null} />
+                                                    <AccordionRadio options={['柏油', '水泥', '泥土／石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /> : null} />
                                                 </div>
                                             )}
 

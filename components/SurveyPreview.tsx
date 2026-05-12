@@ -233,12 +233,12 @@ const LandDisputeExproPreview = ({ data, titles }: { data: SurveyData, titles: {
 
         <SectionHeader title={titles.q4} />
         <CheckRow checked={data?.land_q4_expro === '否' || data?.land_q4_expro === '非範圍內'}>
-            <span className="font-black mr-2">徵收預定地現況</span>
+            <span className="font-black mr-2">位於政府徵收預定地</span>
             <PreviewResult checked={data?.land_q4_expro === '是' || data?.land_q4_expro === '屬範圍內'} label={`屬範圍內 ${data.land_q4_expro_other}`} />
             <PreviewResult checked={data?.land_q4_expro === '待查證' || data?.land_q4_expro === '查詢中／不確定'} label={`待查證 ${data.land_q4_expro_other}`} />
         </CheckRow>
         <CheckRow checked={data?.land_q4_resurvey === '否' || data?.land_q4_resurvey === '非範圍內'}>
-            <span className="font-black mr-2">重測區範圍</span>
+            <span className="font-black mr-2">位於重測區域範圍</span>
             <PreviewResult checked={data?.land_q4_resurvey === '是' || data?.land_q4_resurvey === '屬範圍內'} label={`屬範圍內 ${data.land_q4_resurvey_other}`} />
             <PreviewResult checked={data?.land_q4_resurvey === '待查證' || data?.land_q4_resurvey === '查詢中／不確定'} label={`待查證 ${data.land_q4_resurvey_other}`} />
         </CheckRow>

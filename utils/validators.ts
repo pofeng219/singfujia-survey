@@ -299,8 +299,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.require(d.land_q3_dispute, "section-land-q3", "2. 糾紛現況未填寫", s2);
 
         // Old Q4 (now Q3)
-        v.require(d.land_q4_expro, "section-land-q4", "3. 徵收預定地現況未填寫", s2);
-        v.require(d.land_q4_resurvey, "section-land-q4", "3. 重測區域現況未填寫", s2);
+        v.require(d.land_q4_expro, "section-land-q4", "3. 位於政府徵收預定地未填寫", s2);
+        v.require(d.land_q4_resurvey, "section-land-q4", "3. 位於重測區域範圍未填寫", s2);
 
         // Old Q5 (now Q4 in Step 2)
         v.require(d.land_q5_encroached, "section-land-q5", "4. 被占用現況未填寫", s2);
