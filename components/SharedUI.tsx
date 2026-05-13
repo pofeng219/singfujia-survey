@@ -391,7 +391,7 @@ export const UnitInput = ({ value, onChange, unit, placeholder, disabled = false
     return (
         <div className="relative w-full">
             <input 
-                type="number" 
+                type="text" 
                 inputMode="decimal"
                 disabled={disabled}
                 className={`full-width-input ${inputSize} pr-16 border-2 border-slate-300 focus:border-sky-400 focus:ring-4 focus:ring-[#E0F2FE] focus:bg-white dark:focus:bg-yellow-900/20 ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700' : ''}`}
