@@ -257,7 +257,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             if (isDataDirty(dataRef.current, INITIAL_STATE)) {
                 performSave(true); 
             }
-        }, 5000); 
+        }, 60000); 
         return () => clearTimeout(timer); 
     }, [user]); // re-bind when user changes
 
