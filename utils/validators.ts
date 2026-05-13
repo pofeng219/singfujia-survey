@@ -177,7 +177,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         }
 
         v.require(d.q4_hasIssue, "section-q4", "4. 結構瑕疵未填寫", s2);
-        if (d.q4_hasIssue === '是') {
+        if (d.q4_hasIssue === '是' && !d.q4_ceilingWrapped) {
             const q4Empty = (d.q4_items?.length || 0) === 0;
             v.check(q4Empty && !d.q4_hasOther && !d.q4_suspected, "section-q4", "4. 請勾選或填寫結構瑕疵項目", s2);
             v.requireOther(d.q4_hasOther, d.q4_otherDesc, "section-q4", "4. 請填寫結構瑕疵「其他」說明", s2);
@@ -186,6 +186,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         
         v.require(d.q5_hasTilt, "section-q4", "4. 傾斜現況未填寫", s2);
         v.requireIf(d.q5_hasTilt === '是', d.q5_desc, "section-q4", "4. 請填寫傾斜說明", s2);
+        v.requireIf(d.q5_hasTilt === '待查證' || d.q5_hasTilt === '待查證（待測量）', d.q5_suspectedDesc, "section-q4", "4. 請填寫待查證說明", s2);
 
         v.require(d.q7_gasType, "section-q7", "5. 瓦斯類型未填寫", s2);
         
@@ -270,7 +271,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         
         v.require(d.land_q1_water, "section-land-q1", "1. 水源供應未填寫", s2);
         if (d.land_q1_water === '是') {
-             v.check((Array.isArray(d.land_q1_water_cat) && d.land_q1_water_cat.length > 0) || (!Array.isArray(d.land_q1_water_cat) && !!d.land_q1_water_cat), "section-land-q1", "1. 請選擇水源類別", s2);
+             const hasWaterCat = (Array.isArray(d.land_q1_water_cat) && d.land_q1_water_cat.length > 0) || (!Array.isArray(d.land_q1_water_cat) && !!d.land_q1_water_cat);
+             v.check(!hasWaterCat, "section-land-q1", "1. 請選擇水源類別", s2);
              if (Array.isArray(d.land_q1_water_cat) ? d.land_q1_water_cat.includes('自來水') : d.land_q1_water_cat === '自來水') {
                  v.require(d.land_q1_water_tap_detail, "section-land-q1", "1. 請選擇自來水詳細情況", s2);
                  v.requireIf(d.land_q1_water_tap_detail === '其他未列項目', d.land_q1_water_tap_other, "section-land-q1", "1. 請填寫自來水「其他」說明", s2);
@@ -392,7 +394,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
         // Q4 Structure
         v.require(d.q4_hasIssue, "section-q4", "4. 結構瑕疵未填寫", s2);
-        if (d.q4_hasIssue === '是') {
+        if (d.q4_hasIssue === '是' && !d.q4_ceilingWrapped) {
             const q4Empty = (d.q4_items?.length || 0) === 0;
             v.check(q4Empty && !d.q4_hasOther && !d.q4_suspected, "section-q4", "4. 請勾選或填寫結構瑕疵項目", s2);
             v.requireOther(d.q4_hasOther, d.q4_otherDesc, "section-q4", "4. 請填寫結構瑕疵「其他」說明", s2);
@@ -401,6 +403,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         
         v.require(d.q5_hasTilt, "section-q4", "4. 傾斜現況未填寫", s2);
         v.requireIf(d.q5_hasTilt === '是', d.q5_desc, "section-q4", "4. 請填寫傾斜說明", s2);
+        v.requireIf(d.q5_hasTilt === '待查證' || d.q5_hasTilt === '待查證（待測量）', d.q5_suspectedDesc, "section-q4", "4. 請填寫待查證說明", s2);
 
         const s3 = 3;
         if (!d.factory_spec_unknown) {

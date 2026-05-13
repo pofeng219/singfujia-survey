@@ -182,8 +182,15 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     const getQ4Status = (): SectionStatus => {
         if (!data.q4_hasIssue && !data.q4_ceilingWrapped) return 'incomplete';
-        if (data.q4_hasIssue === '是' && !data.q4_ceilingWrapped && (!data.q4_items || data.q4_items.length === 0)) return 'incomplete';
+        if (data.q4_hasIssue === '是' && !data.q4_ceilingWrapped) {
+            const hasItems = data.q4_items && data.q4_items.length > 0;
+            if (!hasItems && !data.q4_hasOther && !data.q4_suspected) return 'incomplete';
+            if (data.q4_hasOther && !data.q4_otherDesc) return 'incomplete';
+            if (data.q4_suspected && !data.q4_suspectedDesc) return 'incomplete';
+        }
         if (!data.q5_hasTilt) return 'incomplete';
+        if (data.q5_hasTilt === '是' && !data.q5_desc) return 'incomplete';
+        if (data.q5_hasTilt === '待查證' && !data.q5_suspectedDesc) return 'incomplete';
         return 'complete';
     };
 
