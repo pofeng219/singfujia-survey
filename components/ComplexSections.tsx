@@ -629,6 +629,25 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{cat.items.map((i: string) => <CheckBox key={i} checked={data?.q16_items?.includes(i) || false} label={i} onClick={() => toggleArr('q16_items', i)} disabled={data?.q16_noFacilities} />)}</div>
                     </div>
                 ))}
+                
+                <div className="space-y-3">
+                    <CheckBox 
+                        checked={data?.q16_hasOther || false} 
+                        label="其他未列項目" 
+                        onClick={() => update('q16_hasOther', !data.q16_hasOther)} 
+                        disabled={data?.q16_noFacilities} 
+                    />
+                    {data?.q16_hasOther && (
+                        <SubItemHighlight disabled={data?.q16_noFacilities}>
+                            <DetailInput 
+                                value={data.q16_other || ''} 
+                                onChange={v => update('q16_other', v)} 
+                                placeholder="說明現況" 
+                                disabled={data?.q16_noFacilities}
+                            />
+                        </SubItemHighlight>
+                    )}
+                </div>
             </div>
 
             <div className="mt-8 mb-8 flex flex-col items-center w-full">
@@ -721,6 +740,27 @@ export const NotesSection = ({ data, setData, update, id, title, highlightedId, 
             >
                 <DetailInput value={type === 'land' ? (data.land_q8_special_desc || '') : (data.q17_desc || '')} onChange={v => update(type === 'land' ? 'land_q8_special_desc' : 'q17_desc', v)} placeholder="說明現況" />
             </BooleanReveal>
+
+            {type !== 'land' && type !== 'parking' && (
+                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <BooleanReveal 
+                        label="是否曾發生非自然身故（凶宅）"
+                        value={data?.q17_homicide === '否' ? '無' : (data?.q17_homicide === '是' ? '有' : '')} 
+                        onChange={v => { 
+                            const val = v === '無' ? '否' : (v === '有' ? '是' : ''); 
+                            setData((p: any) => ({
+                                ...p, 
+                                q17_homicide: val, 
+                                q17_homicide_desc: val === '是' ? p.q17_homicide_desc : '' 
+                            })); 
+                        }} 
+                        options={['無', '有']} 
+                        trigger="有"
+                    >
+                        <DetailInput value={data.q17_homicide_desc || ''} onChange={v => update('q17_homicide_desc', v)} placeholder="說明現況" />
+                    </BooleanReveal>
+                </div>
+            )}
         </SurveySection>
     );
 };
@@ -924,10 +964,10 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                 );
                             }
                             
-                            if (opt === '通行受限（如狹窄、有障礙物）') {
+                            if (opt === '通行受限（如狹窄、有障礙物）' || opt === '袋地（無合法出入口）') {
                                 return (
                                     <SubItemHighlight>
-                                        <DetailInput value={data[abnormalDescKey] || ''} onChange={v => update(abnormalDescKey, v)} placeholder="如：遭他人阻擋、路寬不足" />
+                                        <DetailInput value={data[abnormalDescKey] || ''} onChange={v => update(abnormalDescKey, v)} placeholder={opt === '袋地（無合法出入口）' ? "說明現況（如：目前仍由鄰地通行）" : "如：遭他人阻擋、路寬不足"} />
                                     </SubItemHighlight>
                                 );
                             }

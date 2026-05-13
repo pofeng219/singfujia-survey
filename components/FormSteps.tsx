@@ -156,7 +156,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     const getQ1Status = (): SectionStatus => {
         if (!data.q1_hasExt) return 'incomplete';
-        if (data.q1_hasExt === '是' && (!data.q1_items || data.q1_items.length === 0)) return 'incomplete';
+        if (data.q1_hasExt === '是') {
+            const hasItems = data.q1_items && data.q1_items.length > 0;
+            if (!hasItems && !data.q1_hasOther) return 'incomplete';
+            if (data.q1_hasOther && !data.q1_other) return 'incomplete';
+        }
         if (!data.q2_hasOccupancy) return 'incomplete';
         if (data.q2_hasOccupancy !== '否' && data.q2_hasOccupancy !== '無' && !data.q2_desc) return 'incomplete';
         if (!data.q2_other_occupancy) return 'incomplete';
@@ -166,7 +170,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     const getQ6Status = (): SectionStatus => {
         if (!data.q6_hasIssue) return 'incomplete';
-        if ((data.q6_hasIssue === '實測不符' || data.q6_hasIssue === '無法測量') && !data.q6_desc) return 'incomplete';
+        const q6Issue = data.q6_hasIssue && data.q6_hasIssue !== '相符 (無明顯差異)' && data.q6_hasIssue !== '實測相符';
+        if (q6Issue && !data.q6_desc) return 'incomplete';
         return 'complete';
     };
 
@@ -174,9 +179,15 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!data.q3_hasLeak && !data.q3_ceilingWrapped) return 'incomplete';
         if (data.q3_hasLeak === '是') {
             if (!data.q3_leakType) return 'incomplete';
-            if (data.q3_leakType !== '全屋天花板包覆' && (!data.q3_locations || data.q3_locations.length === 0)) return 'incomplete';
+            if (data.q3_leakType !== '全屋天花板包覆' && data.q3_leakType !== '全屋天花板包覆（無法檢查）') {
+                const hasLocations = data.q3_locations && data.q3_locations.length > 0;
+                if (!hasLocations && !data.q3_hasOther && !data.q3_suspected) return 'incomplete';
+                if (data.q3_hasOther && !data.q3_other) return 'incomplete';
+                if (data.q3_suspected && !data.q3_suspectedDesc) return 'incomplete';
+            }
         }
         if (!data.q3_repairHistory) return 'incomplete';
+        if (data.q3_repairHistory === '有修繕紀錄' && !data.q3_repairDesc) return 'incomplete';
         return 'complete';
     };
 
@@ -190,7 +201,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         }
         if (!data.q5_hasTilt) return 'incomplete';
         if (data.q5_hasTilt === '是' && !data.q5_desc) return 'incomplete';
-        if (data.q5_hasTilt === '待查證' && !data.q5_suspectedDesc) return 'incomplete';
+        if ((data.q5_hasTilt === '待查證' || data.q5_hasTilt === '待查證（待測量）') && !data.q5_suspectedDesc) return 'incomplete';
         return 'complete';
     };
 
@@ -204,6 +215,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (isGroupA) {
             if (!data.house_solar_status) return 'incomplete';
             if (!data.water_booster) return 'incomplete';
+            if (data.water_booster === '其他未列項目' && !data.water_booster_desc) return 'incomplete';
             if ((data.water_booster === '有' || data.water_booster === '有設置') && (!data.water_booster_items || data.water_booster_items.length === 0)) return 'incomplete';
         }
         return 'complete';
@@ -211,9 +223,21 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     const getLandQ1Status = (): SectionStatus => {
         if (!data.land_q1_elec) return 'incomplete';
+        if (data.land_q1_elec === '是') {
+             if (!data.land_q1_elec_detail) return 'incomplete';
+             if (data.land_q1_elec_detail === '其他未列項目' && !data.land_q1_elec_detail_other) return 'incomplete';
+        }
         if (data.land_q1_elec === '其他未列項目' && !data.land_q1_elec_other) return 'incomplete';
         if (!data.land_q1_water) return 'incomplete';
         if (data.land_q1_water === '是' && (!data.land_q1_water_cat || data.land_q1_water_cat.length === 0)) return 'incomplete';
+        if (data.land_q1_water === '是') {
+             if (data.land_q1_water_cat?.includes('自來水')) {
+                 if (!data.land_q1_water_tap_detail) return 'incomplete';
+                 if (data.land_q1_water_tap_detail === '其他未列項目' && !data.land_q1_water_tap_other) return 'incomplete';
+             }
+             if (data.land_q1_water_cat?.includes('地下水') && !data.land_q1_water_ground_detail) return 'incomplete';
+             if (data.land_q1_water_cat?.includes('水利溝渠') && !data.land_q1_water_irr_detail) return 'incomplete';
+        }
         if (data.land_q1_water === '其他未列項目' && !data.land_q1_water_other) return 'incomplete';
         if (!data.land_q1_gas) return 'incomplete';
         if (type === 'factory' && isGroupA && !data.house_solar_status) return 'incomplete';
@@ -223,9 +247,16 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         return 'complete';
     };
 
+    const getLandQ5Status = (): SectionStatus => {
+        if (!data.land_q5_encroached || !data.land_q5_encroaching) return 'incomplete';
+        if (data.land_q5_encroached === '是' && !data.land_q5_encroached_desc) return 'incomplete';
+        if (data.land_q5_encroaching === '是' && !data.land_q5_encroaching_desc) return 'incomplete';
+        return 'complete';
+    };
+
     const getLandQ3Status = (): SectionStatus => {
         if (!data.land_q3_survey) return 'incomplete';
-        if (data.land_q3_survey === '是' && !data.land_q3_survey_detail) return 'incomplete';
+        if (data.land_q3_survey === '是' && (!data.land_q3_survey_detail || !data.land_q3_survey_date)) return 'incomplete';
         if (data.land_q3_survey === '待查證' && !data.land_q3_survey_other) return 'incomplete';
         if (!data.land_q3_dispute) return 'incomplete';
         if (data.land_q3_dispute === '是' && !data.land_q3_dispute_desc) return 'incomplete';
@@ -266,7 +297,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         }
         if (!parkingLogic.disableWeight && !data.q10_mechWeight) return 'incomplete';
         if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
-        if (!data.q10_laneSection) return 'incomplete';
+        if (!data.q10_laneSection || !data.q10_laneSubSection || !data.q10_laneNumber) return 'incomplete';
         if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
         if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
         if (!data.q10_charging) return 'incomplete';
@@ -352,7 +383,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         statusQ3={getLandQ3Status()}
                         statusQ4={getLandQ4Status()}
                     />
-                    <SurveySection id="section-land-q5" highlighted={highlightedField === 'section-land-q5'} title="4. 被越界占用與占用鄰地現況" status={data.land_q5_encroached && data.land_q5_encroaching ? 'complete' : 'incomplete'}>
+                    <SurveySection id="section-land-q5" highlighted={highlightedField === 'section-land-q5'} title="4. 被越界占用與占用鄰地現況" status={getLandQ5Status()}>
                         <div className="space-y-8">
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">遭</span>他人<span className="text-red-600">占用</span>現況</p>
@@ -738,11 +769,15 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     // --- Status Logic Helpers for Step 3 ---
     const getEnvStatus = (): SectionStatus => {
-        if (!data.q16_noFacilities && (!data.q16_items || data.q16_items.length === 0) && !data.q16_hasOther) return 'incomplete';
-        if (data.q16_hasOther && !data.q16_other) return 'incomplete';
+        if (!data.q16_noFacilities) {
+            if ((!data.q16_items || data.q16_items.length === 0) && !data.q16_hasOther) return 'incomplete';
+            if (data.q16_hasOther && !data.q16_other) return 'incomplete';
+        }
 
-        if (!data.q16_2_noFacilities && (!data.q16_2_items || data.q16_2_items.length === 0) && !data.q16_2_hasOther) return 'incomplete';
-        if (data.q16_2_hasOther && !data.q16_2_other) return 'incomplete';
+        if (!data.q16_2_noFacilities) {
+            if ((!data.q16_2_items || data.q16_2_items.length === 0) && !data.q16_2_hasOther) return 'incomplete';
+            if (data.q16_2_hasOther && !data.q16_2_other) return 'incomplete';
+        }
 
         return 'complete';
     };
@@ -752,6 +787,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const descKey = type === 'land' ? 'land_q8_special_desc' : 'q17_desc';
         if (!data[issueKey]) return 'incomplete';
         if (data[issueKey] === '是' && !data[descKey]) return 'incomplete';
+        if (type !== 'land' && type !== 'parking') {
+            if (!data.q17_homicide) return 'incomplete';
+            if (data.q17_homicide === '是' && !data.q17_homicide_desc) return 'incomplete';
+        }
         return 'complete';
     };
 
@@ -773,9 +812,9 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     const getFacilityStatus = (): SectionStatus => {
         if (!data.q9_hasIssue) return 'incomplete';
         if (data.q9_hasIssue === '是') {
-            if (!data.q9_items || data.q9_items.length === 0) return 'incomplete';
-            if (data.q9_items.includes('太陽能光電發電設備') && !data.q9_solar_maintenance) return 'incomplete';
-            if (data.q9_items.includes('加壓受水設備')) {
+            if ((!data.q9_items || data.q9_items.length === 0) && !data.q9_hasOther) return 'incomplete';
+            if (data.q9_items?.includes('太陽能光電發電設備') && !data.q9_solar_maintenance) return 'incomplete';
+            if (data.q9_items?.includes('加壓受水設備')) {
                 if (!data.q9_water_booster_items || data.q9_water_booster_items.length === 0) return 'incomplete';
                 if (type === 'factory' && !isGroupA && !data.q9_water_booster_maintenance) return 'incomplete';
             }
@@ -800,7 +839,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!data.land_q7_crops) return 'incomplete';
         if (data.land_q7_crops === '有農作物／植栽') {
             if (!data.land_q7_crops_type || data.land_q7_crops_type.length === 0) return 'incomplete';
-            if ((data.land_q7_crops_type.includes('經濟作物') || data.land_q7_crops_type.includes('景觀植栽')) && !data.land_q7_crops_detail) return 'incomplete';
+            if ((data.land_q7_crops_type.includes('經濟作物') || data.land_q7_crops_type.includes('景觀植栽'))) {
+                if (!data.land_q7_crops_detail) return 'incomplete';
+                if (data.land_q7_crops_detail === '其他未列項目' && !data.land_q7_crops_detail_other) return 'incomplete';
+            }
             if (data.land_q7_crops_type.includes('其他未列項目') && !data.land_q7_crops_other) return 'incomplete';
         }
 
@@ -822,6 +864,9 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!data.land_q7_solar) return 'incomplete';
         if (!data.land_water_booster) return 'incomplete';
         if (data.land_water_booster === '有設置' && (!data.land_water_booster_items || data.land_water_booster_items.length === 0)) return 'incomplete';
+
+        if (!data.land_q7_fire_setback && data.propertyType === '工業地') return 'incomplete';
+        if (!data.land_q7_road_opened && data.propertyType === '其他（道路用地／公設地）') return 'incomplete';
 
         return 'complete';
     };
@@ -864,7 +909,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
 
         // 5. Lane Land Number
-        if (!data.q10_laneSection) return 'incomplete';
+        if (!data.q10_laneSection || !data.q10_laneSubSection || !data.q10_laneNumber) return 'incomplete';
 
         // 6. Motorcycle Usage
         if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
@@ -1273,9 +1318,21 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
          const getLandQ1Status = (): SectionStatus => {
             if (!data.land_q1_elec) return 'incomplete';
+            if (data.land_q1_elec.includes('一般用電') || data.land_q1_elec.includes('動力用電')) {
+                 if (!data.land_q1_elec_meter) return 'incomplete';
+                 if (!data.land_q1_elec_capacity) return 'incomplete';
+                 if (data.land_q1_elec.includes('動力用電') && !data.land_q1_elec_voltage) return 'incomplete';
+            }
             if (data.land_q1_elec === '其他未列項目' && !data.land_q1_elec_other) return 'incomplete';
             if (!data.land_q1_water) return 'incomplete';
             if (data.land_q1_water === '是' && (!data.land_q1_water_cat || data.land_q1_water_cat.length === 0)) return 'incomplete';
+            if (data.land_q1_water === '是') {
+                 if (data.land_q1_water_cat?.includes('自來水')) {
+                     if (!data.land_q1_water_tap_detail) return 'incomplete';
+                     if (data.land_q1_water_tap_detail === '其他未列項目' && !data.land_q1_water_tap_other) return 'incomplete';
+                 }
+                 if (data.land_q1_water_cat?.includes('地下水') && !data.land_q1_water_ground_detail) return 'incomplete';
+            }
             if (data.land_q1_water === '其他未列項目' && !data.land_q1_water_other) return 'incomplete';
             if (!data.land_q1_gas) return 'incomplete';
             if (type === 'factory' && showWaterBooster && !data.house_solar_status) return 'incomplete';
@@ -1285,16 +1342,17 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             return 'complete';
         };
          
-         const getFactoryStructStatus = (): SectionStatus => {
-            if (!data.factory_spec_unknown) {
-                if (!data.factory_height || !data.factory_width || !data.factory_depth || !data.factory_floor_height) return 'incomplete';
-            }
-            if (!data.factory_floor_condition) return 'incomplete';
-            if (data.factory_floor_condition === '其他未列項目' && !data.factory_floor_condition_other) return 'incomplete';
-            if (!data.factory_fire_safety || data.factory_fire_safety.length === 0) return 'incomplete';
-            if (data.factory_fire_safety.includes('其他未列項目') && !data.factory_fire_safety_other) return 'incomplete';
-            return 'complete';
-        };
+    const getFactoryStructStatus = (): SectionStatus => {
+        if (!data.factory_spec_unknown) {
+            if (!data.factory_height || !data.factory_width || !data.factory_depth || !data.factory_floor_height) return 'incomplete';
+        }
+        if (!data.factory_floor_condition) return 'incomplete';
+        if (data.factory_floor_condition === '其他未列項目' && !data.factory_floor_condition_other) return 'incomplete';
+        if (!data.factory_fire_inspection) return 'incomplete';
+        if (!data.factory_fire_safety || data.factory_fire_safety.length === 0) return 'incomplete';
+        if (data.factory_fire_safety.includes('其他未列項目') && !data.factory_fire_safety_other) return 'incomplete';
+        return 'complete';
+    };
 
         const getFactoryHardwareStatus = (): SectionStatus => {
             if (!data.factory_elevator) return 'incomplete';
@@ -1303,9 +1361,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             }
             if (!data.factory_crane) return 'incomplete';
             if (data.factory_crane === '有') {
-                if (!data.factory_crane_status || !data.factory_crane_tonnage || !data.factory_crane_quantity) return 'incomplete';
+                if (!data.factory_crane_desc) return 'incomplete';
             }
             if (!data.factory_waste) return 'incomplete';
+            if (data.factory_waste === '有' && !data.factory_waste_has_detail) return 'incomplete';
             if (data.factory_waste === '其他未列項目' && !data.factory_waste_desc) return 'incomplete';
             return 'complete';
         };
@@ -1335,7 +1394,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             }
             // Factory: Skip weight check as it is hidden
             if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
-            if (!data.q10_laneSection) return 'incomplete';
+            if (!data.q10_laneSection || !data.q10_laneSubSection || !data.q10_laneNumber) return 'incomplete';
             if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
             if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
             if (!data.q10_charging) return 'incomplete';
@@ -1637,6 +1696,11 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const protectionKey = isHouse ? 'q14_protection' : 'land_q2_protection';
         const materialKey = isHouse ? 'q14_roadMaterial' : 'land_q2_material';
         const roadWidthKey = isHouse ? 'q14_roadWidth' : 'land_q2_roadWidth';
+        const sectionKey = isHouse ? 'q14_section' : 'land_q2_access_section';
+        const subSectionKey = isHouse ? 'q14_subSection' : 'land_q2_access_subSection';
+        const numberKey = isHouse ? 'q14_number' : 'land_q2_access_number';
+        const buildingLineKey = isHouse ? 'q14_buildingLine' : 'land_q2_buildingLine';
+        const ditchKey = isHouse ? 'q14_ditch' : 'land_q2_ditch';
         
         const accessVal = data[accessKey as keyof SurveyData] as string;
         
@@ -1645,8 +1709,24 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (accessVal.includes('順暢')) {
             if (!data[ownerKey as keyof SurveyData]) return 'incomplete';
             if (!data[protectionKey as keyof SurveyData]) return 'incomplete';
+            
+            const protectionVal = data[protectionKey as keyof SurveyData] as string;
+            const needsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(protectionVal);
+            const protectionDescKey = isHouse ? 'q14_protectionDesc' : 'land_q2_protectionDesc';
+            if (needsDesc && !data[protectionDescKey as keyof SurveyData]) return 'incomplete';
+            
+            // Land Numbers
+            if (!data[sectionKey as keyof SurveyData] || !data[subSectionKey as keyof SurveyData] || !data[numberKey as keyof SurveyData]) return 'incomplete';
+
             if (type === 'land' && !data[materialKey as keyof SurveyData]) return 'incomplete';
             if (!data[roadWidthKey as keyof SurveyData]) return 'incomplete';
+
+            if (type === 'land') {
+                const hideBuildingLine = data.propertyType === '農地';
+                const hideDitch = false;
+                if (!hideBuildingLine && !data[buildingLineKey as keyof SurveyData]) return 'incomplete';
+                if (!hideDitch && !data[ditchKey as keyof SurveyData]) return 'incomplete';
+            }
         } else if (accessVal.includes('受限') || accessVal === '其他未列項目' || accessVal.includes('袋地')) {
             if (!data[abnormalDescKey as keyof SurveyData]) return 'incomplete';
         }
@@ -1656,7 +1736,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
     const getLandQ3Status = (): SectionStatus => {
         if (!data.land_q3_survey) return 'incomplete';
-        if (data.land_q3_survey === '是' && !data.land_q3_survey_detail) return 'incomplete';
+        if (data.land_q3_survey === '是' && (!data.land_q3_survey_detail || !data.land_q3_survey_date)) return 'incomplete';
         if (data.land_q3_survey === '待查證' && !data.land_q3_survey_other) return 'incomplete';
         if (!data.land_q3_dispute) return 'incomplete';
         if (data.land_q3_dispute === '是' && !data.land_q3_dispute_desc) return 'incomplete';
@@ -1679,11 +1759,15 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     };
 
     const getEnvStatus = (): SectionStatus => {
-        if (!data.q16_noFacilities && (!data.q16_items || data.q16_items.length === 0) && !data.q16_hasOther) return 'incomplete';
-        if (data.q16_hasOther && !data.q16_other) return 'incomplete';
+        if (!data.q16_noFacilities) {
+            if ((!data.q16_items || data.q16_items.length === 0) && !data.q16_hasOther) return 'incomplete';
+            if (data.q16_hasOther && !data.q16_other) return 'incomplete';
+        }
 
-        if (!data.q16_2_noFacilities && (!data.q16_2_items || data.q16_2_items.length === 0) && !data.q16_2_hasOther) return 'incomplete';
-        if (data.q16_2_hasOther && !data.q16_2_other) return 'incomplete';
+        if (!data.q16_2_noFacilities) {
+            if ((!data.q16_2_items || data.q16_2_items.length === 0) && !data.q16_2_hasOther) return 'incomplete';
+            if (data.q16_2_hasOther && !data.q16_2_other) return 'incomplete';
+        }
 
         return 'complete';
     };
@@ -1693,6 +1777,10 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const descKey = type === 'land' ? 'land_q8_special_desc' : 'q17_desc';
         if (!data[issueKey]) return 'incomplete';
         if (data[issueKey] === '是' && !data[descKey]) return 'incomplete';
+        if (type !== 'land' && type !== 'parking') {
+            if (!data.q17_homicide) return 'incomplete';
+            if (data.q17_homicide === '是' && !data.q17_homicide_desc) return 'incomplete';
+        }
         return 'complete';
     };
 
