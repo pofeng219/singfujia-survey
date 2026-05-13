@@ -4,7 +4,7 @@ import { formatDateROC } from './ROCDatePicker';
 import React, { useMemo, useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { GROUP_A_TYPES } from '../constants';
-import { useInterface } from './InterfaceContext';
+
 
 interface SurveyPreviewProps {
     data: SurveyData;
@@ -29,8 +29,8 @@ const formatAccessLandAddress = (section?: string, subSection?: string, number?:
 
 // Local PreviewResult: High contrast, larger text, less vibrant
 const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string; isWarning?: boolean }> = ({ checked, label, suffix, isWarning }) => {
-    const mode = useInterface();
-    const isStandard = mode === 'standard';
+    
+    const isStandard = true;
     if (!checked) return null;
     
     // Highlight "有" (Yes/Has issue) or "是" options in red for quick scanning
@@ -59,7 +59,7 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
             <div className={`w-4 h-4 mt-0.5 rounded-sm border flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? 'border-rose-500 bg-rose-500' : 'border-sky-600 bg-sky-600'}`}>
                 <Check size={12} strokeWidth={4} className="text-white" />
             </div>
-            <span className={`${isStandard ? 'text-[15px]' : 'text-[18px]'} font-black leading-snug tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
+            <span className={`${isStandard ? 'text-[15px]' : 'text-[18px]'} font-bold leading-snug tracking-wide ${isWarningOption ? 'text-rose-600' : 'text-slate-800'}`}>
                 {label}{suffix}
             </span>
         </div>
@@ -68,8 +68,8 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
 
 // Modernized CheckRow: Clean, high readability with card-like row, highlights abnormal fields
 const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ checked, children }) => {
-    const mode = useInterface();
-    const isStandard = mode === 'standard';
+
+    const isStandard = true;
     // If NOT checked, it means there's an abnormality (needs explanation)
     const isAbnormal = !checked;
     
@@ -94,13 +94,13 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({ c
 
 // Professional Section Header: Card Header Style
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
-    const mode = useInterface();
-    const isStandard = mode === 'standard';
+
+    const isStandard = true;
     return (
         <div className={`shrink-0 mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? '' : 'py-1'}`}>
             <div className={`px-2 ${isStandard ? 'py-1 gap-1.5' : 'py-1 gap-2'} flex items-start`}>
                 <div className={`bg-sky-500 rounded-full shrink-0 ${isStandard ? 'w-1 h-3 mt-1.5' : 'w-1.5 h-4 mt-1.5'}`}></div>
-                <span className={`font-black text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-snug whitespace-normal break-words`}>{title}</span>
+                <span className={`font-bold text-slate-800 ${isStandard ? 'text-[16px]' : 'text-[20px]'} tracking-widest leading-snug whitespace-normal break-words`}>{title}</span>
             </div>
         </div>
     );
@@ -108,12 +108,12 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
 
 // Clean Table Header
 const TableHeaderRow: React.FC = () => {
-    const mode = useInterface();
-    const isStandard = mode === 'standard';
+
+    const isStandard = true;
     return (
         <div className="flex border-b-2 border-sky-300 bg-sky-50 rounded-t-xl overflow-hidden shadow-sm shrink-0">
-            <div className={`w-[85px] md:w-[100px] shrink-0 text-center font-black text-sky-800 ${isStandard ? 'py-1' : 'py-1.5'} ${isStandard ? 'text-[14px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
-            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-1.5'} px-2 font-black text-left text-sky-800 ${isStandard ? 'text-[15px]' : 'text-[18px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
+            <div className={`w-[85px] md:w-[100px] shrink-0 text-center font-bold text-sky-800 ${isStandard ? 'py-1' : 'py-1.5'} ${isStandard ? 'text-[14px]' : 'text-[16px]'} whitespace-nowrap tracking-wider border-r border-sky-200`}>確認無須<br/>新增說明</div>
+            <div className={`flex-grow ${isStandard ? 'py-1' : 'py-1.5'} px-2 font-bold text-left text-sky-800 ${isStandard ? 'text-[15px]' : 'text-[18px]'} tracking-[0.2em] flex items-center`}>說明／檢查項目</div>
         </div>
     );
 };
@@ -122,19 +122,19 @@ const TableHeaderRow: React.FC = () => {
 
 const SingfujiaLogo = ({ className = "", textClassName = "", subTextClassName = "" }: { className?: string, textClassName?: string, subTextClassName?: string }) => (
     <div className={`flex flex-col items-center justify-center ${className}`}>
-        <div className={`font-black tracking-widest text-[#009FE3] leading-none whitespace-nowrap ${textClassName}`} style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
+        <div className={`font-bold tracking-widest text-[#009FE3] leading-tight whitespace-nowrap ${textClassName}`} style={{ fontFamily: '"Microsoft JhengHei", "Heiti TC", sans-serif' }}>
             幸福家不動產
         </div>
-        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-none mt-1.5 whitespace-nowrap ${subTextClassName}`}>
+        <div className={`font-bold tracking-[0.1em] text-[#009FE3] leading-tight whitespace-nowrap ${subTextClassName}`}>
             SINGFUJIA REALTY INC.
         </div>
     </div>
 );
 
 const Watermark = () => (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden">
-        <div className="transform -rotate-45 opacity-[0.03] grayscale-0">
-            <SingfujiaLogo className="scale-150" textClassName="text-[100px]" subTextClassName="text-[32px] mt-4" />
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 select-none overflow-hidden mix-blend-multiply">
+        <div className="transform -rotate-45 opacity-[0.06] grayscale-0">
+            <SingfujiaLogo className="scale-150" textClassName="text-[100px]" subTextClassName="text-[32px] mt-6" />
         </div>
     </div>
 );
@@ -209,7 +209,7 @@ const LandDisputeExproPreview = ({ data, titles }: { data: SurveyData, titles: {
             data?.land_q3_survey === '從未鑑界' || 
             data?.land_q3_survey === '否'
         }>
-            <span className="font-black mr-2">土地鑑界與界標現況</span>
+            <span className="font-bold mr-2">土地鑑界與界標現況</span>
             
             <PreviewResult 
                 checked={data?.land_q3_survey === '已鑑界 (標完好)' || data?.land_q3_survey === '是' || data?.land_q3_survey === '界標完整'} 
@@ -226,19 +226,19 @@ const LandDisputeExproPreview = ({ data, titles }: { data: SurveyData, titles: {
             <PreviewResult checked={data?.land_q3_survey === '從未鑑界' || data?.land_q3_survey === '否'} label="從未鑑界" />
         </CheckRow>
         <CheckRow checked={data?.land_q3_dispute === '否' || data?.land_q3_dispute === '無'}>
-            <span className="font-black mr-2">產權與使用糾紛現況</span>
+            <span className="font-bold mr-2">產權與使用糾紛現況</span>
             <PreviewResult checked={data?.land_q3_dispute === '是' || data?.land_q3_dispute === '有'} label={`有（${data.land_q3_dispute_desc}）`} />
             <PreviewResult checked={data?.land_q3_dispute === '待查證' || data?.land_q3_dispute === '疑似／處理中'} label={`待查證（${data.land_q3_dispute_other}）`} />
         </CheckRow>
 
         <SectionHeader title={titles.q4} />
         <CheckRow checked={data?.land_q4_expro === '否' || data?.land_q4_expro === '非範圍內'}>
-            <span className="font-black mr-2">位於政府徵收預定地</span>
+            <span className="font-bold mr-2">位於政府徵收預定地</span>
             <PreviewResult checked={data?.land_q4_expro === '是' || data?.land_q4_expro === '屬範圍內'} label={`屬範圍內 ${data.land_q4_expro_other}`} />
             <PreviewResult checked={data?.land_q4_expro === '待查證' || data?.land_q4_expro === '查詢中／不確定'} label={`待查證 ${data.land_q4_expro_other}`} />
         </CheckRow>
         <CheckRow checked={data?.land_q4_resurvey === '否' || data?.land_q4_resurvey === '非範圍內'}>
-            <span className="font-black mr-2">位於重測區域範圍</span>
+            <span className="font-bold mr-2">位於重測區域範圍</span>
             <PreviewResult checked={data?.land_q4_resurvey === '是' || data?.land_q4_resurvey === '屬範圍內'} label={`屬範圍內 ${data.land_q4_resurvey_other}`} />
             <PreviewResult checked={data?.land_q4_resurvey === '待查證' || data?.land_q4_resurvey === '查詢中／不確定'} label={`待查證 ${data.land_q4_resurvey_other}`} />
         </CheckRow>
@@ -268,7 +268,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
         <>
             <SectionHeader title={title} />
             <CheckRow checked={isNormal}>
-                <span className="font-black mr-2">進出現況</span>
+                <span className="font-bold mr-2">進出現況</span>
                 <PreviewResult checked={isNormal} label={`通行順暢 [${ownership || ''}${protection ? '／' + protection : ''}${protectionDesc ? ` （${protectionDesc}）` : ''}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`} />
                 <PreviewResult checked={isAbnormal} label={`通行受限 （${abnormalDesc}）`} />
                 <PreviewResult checked={isLandlocked} label="袋地" />
@@ -295,7 +295,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
             <div className="mt-auto pt-2 pb-1 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white relative w-full shrink-0">
                 {showSignature ? (
                     <div className="flex flex-col items-start shrink-0">
-                        <span className="text-slate-900 font-black mb-1 text-[14px]">調查業務人員簽章：</span>
+                        <span className="text-slate-900 font-bold mb-1 text-[14px]">調查業務人員簽章：</span>
                         <div className="w-[240px] border-b-2 border-slate-800 flex items-end relative h-[4rem]">
                             {signatureImage ? (
                                 <img src={signatureImage} alt="Signature" className="absolute bottom-1 left-0 max-h-[4rem] max-w-full object-contain" />
@@ -308,9 +308,9 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
                 {!hideBranding && (
                     <div className="flex flex-col items-end shrink-0 text-right max-w-[70%]">
                         <div className="flex flex-col items-center select-none opacity-100 mb-2">
-                             <SingfujiaLogo className="h-8" textClassName="text-[1.5rem]" subTextClassName="text-[0.6rem]" />
+                             <SingfujiaLogo className="h-8" textClassName="text-[1.5rem]" subTextClassName="text-[0.6rem] mt-1" />
                         </div>
-                        <span className="text-[14px] font-black text-red-600 tracking-wider block leading-tight">※本資訊僅供評估參考，所有細節請以權責機關所核發之文件與現場所見實況為最終依據。</span>
+                        <span className="text-[14px] font-bold text-red-600 tracking-wider block leading-tight">※本資訊僅供評估參考，所有細節請以權責機關所核發之文件與現場所見實況為最終依據。</span>
                         <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
                     </div>
                 )}
@@ -394,33 +394,33 @@ const HousePrintPage1Factory = ({ data, hideUtilities = false }: { data: SurveyD
         <>
             <SectionHeader title="1. 增建、占用與被占用現況" />
             <CheckRow checked={data?.q1_hasExt === '否'}>
-                <span className="font-black mr-2">增建（含違建）現況</span>
+                <span className="font-bold mr-2">增建（含違建）現況</span>
                 <PreviewResult checked={data?.q1_hasExt === '是'} label={labels.q1()} />
             </CheckRow>
             
             <CheckRow checked={data?.q2_hasOccupancy === '否'}>
-                <span className="font-black mr-2">占用鄰地</span>
+                <span className="font-bold mr-2">占用鄰地</span>
                 <PreviewResult checked={data?.q2_hasOccupancy !== '否' && !!data?.q2_hasOccupancy} label={data?.q2_hasOccupancy + (data?.q2_desc ? '：' + data.q2_desc : '')} />
             </CheckRow>
             <CheckRow checked={data?.q2_other_occupancy === '否'}>
-                <span className="font-black mr-2">被占用</span>
+                <span className="font-bold mr-2">被占用</span>
                 <PreviewResult checked={data?.q2_other_occupancy !== '否' && !!data?.q2_other_occupancy} label={data?.q2_other_occupancy + (data?.q2_other_occupancy_desc ? '：' + data.q2_other_occupancy_desc : '')} />
             </CheckRow>
             
             <SectionHeader title="2. 現場長寬和建物測量成果圖比對，與建物面積現況評估" />
             <CheckRow checked={data?.q6_hasIssue === '實測相符' || data?.q6_hasIssue === '相符 (無明顯差異)'}>
-                <span className="font-black mr-2">面積測量</span>
+                <span className="font-bold mr-2">面積測量</span>
                 <PreviewResult checked={data?.q6_hasIssue === '實測不符' || data?.q6_hasIssue === '無法測量／現況說明' || data?.q6_hasIssue === '不符 (有明顯差異)'} label={data?.q6_hasIssue + (data?.q6_desc ? '：' + data.q6_desc : '')} />
             </CheckRow>
             
             <SectionHeader title="3. 滲漏水與壁癌現況" />
             <CheckRow checked={data?.q3_hasLeak === '否'}>
-                <span className="font-black mr-2">滲漏水／壁癌</span>
+                <span className="font-bold mr-2">滲漏水／壁癌</span>
                 <PreviewResult checked={data?.q3_hasLeak === '是'} label={labels.q3()} />
                 <PreviewResult checked={data?.q3_hasLeak === '否'} label="無" />
                 <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
                 {data?.q3_repairHistory === '有修繕紀錄' && (
-                    <span className="font-black underline underline-offset-4 decoration-2 ml-2 text-red-600">
+                    <span className="font-bold underline underline-offset-4 decoration-2 ml-2 text-red-600">
                         （曾有修繕：{data.q3_repairDesc}）
                     </span>
                 )}
@@ -428,12 +428,12 @@ const HousePrintPage1Factory = ({ data, hideUtilities = false }: { data: SurveyD
             
             <SectionHeader title="4. 建物結構安全評估（含瑕疵與傾斜）" />
             <CheckRow checked={data?.q4_hasIssue === '否'}>
-                <span className="font-black mr-2">結構瑕疵</span>
+                <span className="font-bold mr-2">結構瑕疵</span>
                 <PreviewResult checked={data?.q4_hasIssue === '是'} label={labels.q4()} />
                 <PreviewResult checked={data?.q4_hasIssue === '否'} label="無" />
             </CheckRow>
             <CheckRow checked={data?.q5_hasTilt === '否'}>
-                <span className="font-black mr-2">傾斜現況</span>
+                <span className="font-bold mr-2">傾斜現況</span>
                 <PreviewResult checked={data?.q5_hasTilt !== '否' && !!data?.q5_hasTilt} label={data?.q5_hasTilt + (data?.q5_desc ? '：' + data.q5_desc : '') + (data?.q5_suspectedDesc ? '：' + data.q5_suspectedDesc : '')} />
                 <PreviewResult checked={data?.q5_hasTilt === '否'} label="無" />
             </CheckRow>
@@ -443,7 +443,7 @@ const HousePrintPage1Factory = ({ data, hideUtilities = false }: { data: SurveyD
                     <SectionHeader title="5. 電、水、瓦斯與其他設施使用現況" />
                     <CheckRow checked={data?.q7_hasIssue === '否'}>
                         {data?.q7_gasType && <div className="mb-1 text-black"><span className="font-bold">瓦斯類型</span>{data.q7_gasType}</div>}
-                        <span className="font-black mr-2">電、水與瓦斯設備現況</span>
+                        <span className="font-bold mr-2">電、水與瓦斯設備現況</span>
                         <PreviewResult checked={data?.q7_hasIssue === '是'} label={labels.q7() || '異常'} />
                     </CheckRow>
                 </>
@@ -458,7 +458,7 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
             <>
                 <SectionHeader title={`${startIdx}. 進出通行與臨路現況`} />
                 <CheckRow checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')}>
-                    <span className="font-black mr-2">進出現況</span>
+                    <span className="font-bold mr-2">進出現況</span>
                     <PreviewResult checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')} label={`通行順暢 [${data.q14_ownership || ''}${data.q14_protection ? '／' + data.q14_protection : ''}${data.q14_protectionDesc ? ` （${data.q14_protectionDesc}）` : ''}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`} />
                     <PreviewResult checked={data?.q14_access === '通行受限' || data?.q14_access?.includes('受限')} label={`通行受限 （${data.q14_abnormalDesc}）`} />
                     <PreviewResult checked={data?.q14_access === '袋地' || data?.q14_access?.includes('袋地')} label="袋地" />
@@ -479,24 +479,24 @@ const CommonExtraQuestions = ({ data, startIdx, type }: { data: SurveyData, star
         
         <SectionHeader title={type === 'house' ? `${startIdx + 1}. 重要環境設施與常見環境抗性設施` : `${type === 'factory' ? startIdx : startIdx + 1}. 重要環境設施與常見環境抗性設施`} />
         <CheckRow checked={!!data?.q16_noFacilities}>
-            <span className="font-black mr-2 shrink-0">重要環境設施</span>
+            <span className="font-bold mr-2 shrink-0">重要環境設施</span>
             <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
         </CheckRow>
         <CheckRow checked={!!data?.q16_2_noFacilities}>
-            <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+            <span className="font-bold mr-2 shrink-0">常見環境抗性設施</span>
             <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
         </CheckRow>
 
         <SectionHeader title={type === 'house' ? `${startIdx + 2}. 本案與社區特殊或影響交易事項` : `${type === 'factory' ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`} />
         <CheckRow checked={data?.q17_homicide === '無'}>
-            <span className="font-black mr-2">重大事故與非自然身故紀錄</span>
-            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-black underline underline-offset-4 decoration-2' : ''}`}>
+            <span className="font-bold mr-2">重大事故與非自然身故紀錄</span>
+            <span className={`font-medium ${data?.q17_homicide !== '無' ? 'text-red-600 font-bold underline underline-offset-4 decoration-2' : ''}`}>
                 {data?.q17_homicide || ''}
                 {(data?.q17_homicide === '有' || data?.q17_homicide === '待查證') && data?.q17_homicide_desc && `：${data.q17_homicide_desc}`}
             </span>
         </CheckRow>
         <CheckRow checked={data?.q17_issue === '否'}>
-             <span className="font-black mr-2">其他特殊或影響交易狀況補充</span>
+             <span className="font-bold mr-2">其他特殊或影響交易狀況補充</span>
             <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
         </CheckRow>
     </>
@@ -511,32 +511,32 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
             <TableHeaderRow />
             <SectionHeader title="1. 增建、占用與被占用現況" />
             <CheckRow checked={data?.q1_hasExt === '否'}>
-                <span className="font-black mr-2">增建（含違建）現況</span>
+                <span className="font-bold mr-2">增建（含違建）現況</span>
                 <PreviewResult checked={data?.q1_hasExt === '是'} label={labels.q1()} />
             </CheckRow>
             
             <CheckRow checked={data?.q2_hasOccupancy === '否'}>
-                <span className="font-black mr-2">占用鄰地</span>
+                <span className="font-bold mr-2">占用鄰地</span>
                 <PreviewResult checked={data?.q2_hasOccupancy !== '否' && !!data?.q2_hasOccupancy} label={data?.q2_hasOccupancy + (data?.q2_desc ? '：' + data.q2_desc : '')} />
             </CheckRow>
             <CheckRow checked={data?.q2_other_occupancy === '否'}>
-                <span className="font-black mr-2">被占用</span>
+                <span className="font-bold mr-2">被占用</span>
                 <PreviewResult checked={data?.q2_other_occupancy !== '否' && !!data?.q2_other_occupancy} label={data?.q2_other_occupancy + (data?.q2_other_occupancy_desc ? '：' + data.q2_other_occupancy_desc : '')} />
             </CheckRow>
             
             <SectionHeader title="2. 現場長寬和建物測量成果圖比對，與建物面積現況評估" />
             <CheckRow checked={data?.q6_hasIssue === '實測相符' || data?.q6_hasIssue === '相符 (無明顯差異)'}>
-                <span className="font-black mr-2">面積測量</span>
+                <span className="font-bold mr-2">面積測量</span>
                 <PreviewResult checked={data?.q6_hasIssue !== '實測相符' && data?.q6_hasIssue !== '相符 (無明顯差異)' && !!data?.q6_hasIssue} label={data?.q6_hasIssue + (data?.q6_desc ? '：' + data.q6_desc : '')} />
             </CheckRow>
             
             <SectionHeader title="3. 滲漏水與壁癌現況" />
             <CheckRow checked={data?.q3_hasLeak === '否'}>
-                <span className="font-black mr-2">滲漏水／壁癌</span>
+                <span className="font-bold mr-2">滲漏水／壁癌</span>
                 <PreviewResult checked={data?.q3_hasLeak === '是'} label={labels.q3()} />
                 <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
                 {data?.q3_repairHistory === '有修繕紀錄' && (
-                    <span className="font-black underline underline-offset-4 decoration-2 ml-2 text-red-600">
+                    <span className="font-bold underline underline-offset-4 decoration-2 ml-2 text-red-600">
                         （曾有修繕：{data.q3_repairDesc}）
                     </span>
                 )}
@@ -544,29 +544,29 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
             
             <SectionHeader title="4. 建物結構安全評估（含瑕疵與傾斜）" />
             <CheckRow checked={data?.q4_hasIssue === '否'}>
-                 <span className="font-black mr-2">結構瑕疵</span>
+                 <span className="font-bold mr-2">結構瑕疵</span>
                  <PreviewResult checked={data?.q4_hasIssue === '是'} label={labels.q4()} />
             </CheckRow>
             <CheckRow checked={data?.q5_hasTilt === '否'}>
-                 <span className="font-black mr-2">傾斜現況</span>
+                 <span className="font-bold mr-2">傾斜現況</span>
                  <PreviewResult checked={data?.q5_hasTilt !== '否' && !!data?.q5_hasTilt} label={data?.q5_hasTilt + (data?.q5_desc ? '：' + data.q5_desc : '') + (data?.q5_suspectedDesc ? '：' + data.q5_suspectedDesc : '')} />
             </CheckRow>
 
             <SectionHeader title="5. 電、水、瓦斯與其他設施使用現況" />
             
             <CheckRow checked={!!data?.q7_gasType}>
-                <span className="font-black mr-2">瓦斯供應類型</span>
+                <span className="font-bold mr-2">瓦斯供應類型</span>
                 <PreviewResult checked={!!data?.q7_gasType} label={data.q7_gasType} />
             </CheckRow>
 
             <CheckRow checked={data?.q7_hasIssue === '否'}>
-                <span className="font-black mr-2">電、水、瓦斯與其他設施使用現況</span>
+                <span className="font-bold mr-2">電、水、瓦斯與其他設施使用現況</span>
                 <PreviewResult checked={data?.q7_hasIssue === '是'} label={labels.q7() || '異常'} />
             </CheckRow>
 
             {showSolar && (
                 <CheckRow checked={data?.house_solar_status === '無設置' || data?.house_solar_status === '無'}>
-                    <span className="font-black mr-2">太陽能光電發電設備</span>
+                    <span className="font-bold mr-2">太陽能光電發電設備</span>
                     <PreviewResult checked={data?.house_solar_status === '合法設置'} label="合法設置" />
                     <PreviewResult checked={data?.house_solar_status === '私人設置'} label="私人設置" />
                     <PreviewResult checked={data?.house_solar_status === '無設置' || data?.house_solar_status === '無'} label="無" />
@@ -575,7 +575,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
 
             {data?.water_booster && (
                 <CheckRow checked={data?.water_booster === '無' || data?.water_booster === '無設置'}>
-                    <span className="font-black mr-2">用戶加壓受水設備現況</span>
+                    <span className="font-bold mr-2">用戶加壓受水設備現況</span>
                     <PreviewResult 
                         checked={data.water_booster === '有設置' || data.water_booster === '有'} 
                         label={`有設置${(data.water_booster_items && data.water_booster_items.length > 0) ? ` （${data.water_booster_items.join('、')}）` : ''}`} 
@@ -594,7 +594,7 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
         <>
             <SectionHeader title="6. 大樓與社區公共設施（可否進入／使用）" />
             <CheckRow checked={data?.publicFacilities === '有公共設施' || data?.publicFacilities === '無公共設施'}>
-                <span className="font-black mr-2">公共設施</span>
+                <span className="font-bold mr-2">公共設施</span>
                 <PreviewResult checked={data?.publicFacilities === '有公共設施'} label="有公共設施" />
                 <PreviewResult checked={data?.publicFacilities === '無公共設施'} label="無公共設施" />
                 <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
@@ -602,7 +602,7 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
 
             <SectionHeader title="7. 公設空間（梯間／地下室）" />
             <CheckRow checked={!!data?.q8_stairIssue}>
-                <span className="font-black mr-2">公設空間（梯間／地下室）</span>
+                <span className="font-bold mr-2">公設空間（梯間／地下室）</span>
                 <PreviewResult checked={data?.q8_stairIssue === '是' || data?.q8_stairIssue === '有異常'} label={labels.q6()} />
                 <PreviewResult checked={data?.q8_stairIssue === '無公共設施'} label="無公共設施" />
                 <PreviewResult checked={data?.q8_stairIssue === '有公共設施'} label="有公共設施" />
@@ -611,7 +611,7 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
             
             <SectionHeader title="8. 物件與社區內須注意的設施" />
             <CheckRow checked={data?.q9_hasIssue === '否'}>
-                 <span className="font-black mr-2">須注意設施</span>
+                 <span className="font-bold mr-2">須注意設施</span>
                 <PreviewResult checked={data?.q9_hasIssue === '是'} label={labels.q9()} />
             </CheckRow>
 
@@ -621,11 +621,11 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
                 {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
             </CheckRow>
             <CheckRow checked={!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')}>
-                <span className="font-black mr-2">車位使用現況</span>
+                <span className="font-bold mr-2">車位使用現況</span>
                 <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他: ${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
             </CheckRow>
             <CheckRow checked={!data?.q10_noParking && data?.q12_hasNote === '否'}>
-                <span className="font-black mr-2">車位與車道其他備註</span>
+                <span className="font-bold mr-2">車位與車道其他備註</span>
                 <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
             </CheckRow>
         </>
@@ -670,15 +670,15 @@ const LandPrintPage1 = ({ data }: { data: SurveyData }) => {
             <TableHeaderRow />
             <SectionHeader title="1. 電、水與其他設施使用現況" />
             <CheckRow checked={data?.land_q1_elec === '否' || data?.land_q1_elec?.startsWith('無電力')}>
-                <span className="font-black mr-2">電力供應現況</span>
+                <span className="font-bold mr-2">電力供應現況</span>
                 <PreviewResult checked={data?.land_q1_elec !== '否' && !data?.land_q1_elec?.startsWith('無電力') && !!data?.land_q1_elec} label={getLandElecSummary()} />
             </CheckRow>
             <CheckRow checked={data?.land_q1_water === '否' || data?.land_q1_water === '無'}>
-                <span className="font-black mr-2">水源供應現況</span>
+                <span className="font-bold mr-2">水源供應現況</span>
                 <PreviewResult checked={data?.land_q1_water !== '否' && data?.land_q1_water !== '無' && !!data?.land_q1_water} label={getLandWaterSummary()} />
             </CheckRow>
             <CheckRow checked={data?.land_q1_other_new === '否'}>
-                <span className="font-black mr-2">其他設施</span>
+                <span className="font-bold mr-2">其他設施</span>
                 <PreviewResult checked={data?.land_q1_other_new === '是'} label={data.land_q1_other_desc} />
             </CheckRow>
 
@@ -686,11 +686,11 @@ const LandPrintPage1 = ({ data }: { data: SurveyData }) => {
             
             <SectionHeader title="4. 被越界占用與占用鄰地現況" />
             <CheckRow checked={data?.land_q5_encroached === '否'}>
-                <span className="font-black mr-2">本案遭他人越界占用</span>
+                <span className="font-bold mr-2">本案遭他人越界占用</span>
                 <PreviewResult checked={data?.land_q5_encroached !== '否' && !!data?.land_q5_encroached} label={data?.land_q5_encroached + (data.land_q5_encroached_desc ? `：${data.land_q5_encroached_desc}` : '')} />
             </CheckRow>
             <CheckRow checked={data?.land_q5_encroaching === '否'}>
-                <span className="font-black mr-2">本案占用鄰地現況</span>
+                <span className="font-bold mr-2">本案占用鄰地現況</span>
                 <PreviewResult checked={data?.land_q5_encroaching !== '否' && !!data?.land_q5_encroaching} label={data?.land_q5_encroaching + (data.land_q5_encroaching_desc ? `：${data.land_q5_encroaching_desc}` : '')} />
             </CheckRow>
         </>
@@ -765,19 +765,19 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
 
             <SectionHeader title="6. 土地使用現況與地上物" />
             <CheckRow checked={data?.land_q7_user === '無'}>
-                <span className="font-black mr-2">現況使用人</span>
+                <span className="font-bold mr-2">現況使用人</span>
                 <PreviewResult checked={data?.land_q7_user !== '無' && !!data?.land_q7_user} label={getLandUserSummary()} />
             </CheckRow>
             <CheckRow checked={data?.land_q7_crops === '無'}>
-                <span className="font-black mr-2">地上定著物-農作物</span>
+                <span className="font-bold mr-2">地上定著物-農作物</span>
                 <PreviewResult checked={data?.land_q7_crops !== '無' && !!data?.land_q7_crops} label={getLandCropsSummary()} />
             </CheckRow>
             <CheckRow checked={data?.land_q7_build === '無'}>
-                <span className="font-black mr-2">地上定著物-建物</span>
+                <span className="font-bold mr-2">地上定著物-建物</span>
                 <PreviewResult checked={data?.land_q7_build !== '無' && !!data?.land_q7_build} label={getLandBuildSummary()} />
             </CheckRow>
             <CheckRow checked={data?.land_q7_solar === '無'}>
-                <span className="font-black mr-2">太陽能光電發電設備</span>
+                <span className="font-bold mr-2">太陽能光電發電設備</span>
                 <PreviewResult checked={data?.land_q7_solar === '合法設置'} label="合法設置" />
                 <PreviewResult checked={data?.land_q7_solar === '私人設置'} label="私人設置" />
                 <PreviewResult checked={data?.land_q7_solar === '無'} label="無" />
@@ -786,7 +786,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
             {/* Land Water Booster */}
             {data?.land_water_booster && (
                 <CheckRow checked={data?.land_water_booster === '無' || data?.land_water_booster === '無設置'}>
-                    <span className="font-black mr-2">用戶加壓受水設備現況</span>
+                    <span className="font-bold mr-2">用戶加壓受水設備現況</span>
                     <PreviewResult 
                         checked={data.land_water_booster === '有設置' || data.land_water_booster === '有'} 
                         label={`有設置${(data.land_water_booster_items && data.land_water_booster_items.length > 0) ? ` （${data.land_water_booster_items.join('、')}）` : ''}`} 
@@ -797,7 +797,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
             
             {data?.propertyType === '工業地' && (
                 <CheckRow checked={false}>
-                    <span className="font-black mr-2">防火間隔與區劃現況</span>
+                    <span className="font-bold mr-2">防火間隔與區劃現況</span>
                     <PreviewResult checked={data?.land_q7_fire_setback === '是'} label="是" />
                     <PreviewResult checked={data?.land_q7_fire_setback === '否'} label="否" />
                 </CheckRow>
@@ -805,7 +805,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
 
             {data?.propertyType === '其他(道路用地／公設地)' && (
                 <CheckRow checked={false}>
-                    <span className="font-black mr-2">計畫道路開闢現況</span>
+                    <span className="font-bold mr-2">計畫道路開闢現況</span>
                     <PreviewResult checked={data?.land_q7_road_opened === '是'} label="是" />
                     <PreviewResult checked={data?.land_q7_road_opened === '否'} label="否" />
                 </CheckRow>
@@ -822,7 +822,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
 
             <SectionHeader title="9. 土壤與地下埋設物現況" />
             <CheckRow checked={data?.soil_q1_status === '無'}>
-                <span className="font-black mr-2">土壤汙染與地下掩埋物現況</span>
+                <span className="font-bold mr-2">土壤汙染與地下掩埋物現況</span>
                 <PreviewResult checked={data?.soil_q1_status === '有'} label={`有 （${data.soil_q1_desc}）`} />
                 <PreviewResult checked={data?.soil_q1_status === '無'} label="無" />
                 <PreviewResult checked={data?.soil_q1_status === '不確定' || data?.soil_q1_status === '待查證'} label="待查證" />
@@ -830,17 +830,17 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
 
             <SectionHeader title="10. 重要環境設施與常見環境抗性設施" />
             <CheckRow checked={!!data?.q16_noFacilities}>
-                <span className="font-black mr-2 shrink-0">重要環境設施</span>
+                <span className="font-bold mr-2 shrink-0">重要環境設施</span>
                 <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
             </CheckRow>
             <CheckRow checked={!!data?.q16_2_noFacilities}>
-                <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+                <span className="font-bold mr-2 shrink-0">常見環境抗性設施</span>
                 <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
             </CheckRow>
 
             <SectionHeader title="11. 本案與社區特殊或影響交易事項" />
             <CheckRow checked={data?.land_q8_special === '否'}>
-                <span className="font-black mr-2">特殊或影響交易事項</span>
+                <span className="font-bold mr-2">特殊或影響交易事項</span>
                 <PreviewResult checked={data?.land_q8_special === '是'} label={data?.land_q8_special_desc} />
             </CheckRow>
         </>
@@ -916,15 +916,15 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             <CheckRow checked={false}>
                 <div className="flex flex-col gap-2 text-black">
                     <div className="flex flex-wrap gap-x-8 gap-y-1">
-                        <div><span className="font-black">{isHiRise ? "樑下淨高／樓層高度" : "滴水高度"}</span>{data.factory_height}米</div>
-                        <div><span className="font-black">面寬</span>{data.factory_width}米</div>
-                        <div><span className="font-black">深度</span>{data.factory_depth}米</div>
-                        <div><span className="font-black">樓板高度</span>{data.factory_floor_height}米</div>
+                        <div><span className="font-bold">{isHiRise ? "樑下淨高／樓層高度" : "滴水高度"}</span>{data.factory_height}米</div>
+                        <div><span className="font-bold">面寬</span>{data.factory_width}米</div>
+                        <div><span className="font-bold">深度</span>{data.factory_depth}米</div>
+                        <div><span className="font-bold">樓板高度</span>{data.factory_floor_height}米</div>
                     </div>
                     <div className="flex flex-wrap gap-x-8 gap-y-1">
-                        <div><span className="font-black">地板狀況</span>{data.factory_floor_condition + ((data.factory_floor_condition === '其他' || data.factory_floor_condition === '其他未列項目') ? `（${data.factory_floor_condition_other}）` : '')}</div>
-                        <div><span className="font-black">定期做消防檢測</span>{data.factory_fire_inspection}</div>
-                        <div><span className="font-black">消防設施</span>{getFactoryFireLabel()}</div>
+                        <div><span className="font-bold">地板狀況</span>{data.factory_floor_condition + ((data.factory_floor_condition === '其他' || data.factory_floor_condition === '其他未列項目') ? `（${data.factory_floor_condition_other}）` : '')}</div>
+                        <div><span className="font-bold">定期做消防檢測</span>{data.factory_fire_inspection}</div>
+                        <div><span className="font-bold">消防設施</span>{getFactoryFireLabel()}</div>
                     </div>
                 </div>
             </CheckRow>
@@ -932,7 +932,7 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             <SectionHeader title="6. 電、水、瓦斯與其他設施使用現況" />
             <CheckRow checked={!!data?.land_q1_elec?.startsWith("無電力")}>
                 <div className="flex flex-wrap items-start text-black">
-                    <span className="font-black mr-2 shrink-0">供電類型</span>
+                    <span className="font-bold mr-2 shrink-0">供電類型</span>
                     <PreviewResult checked={!!data?.land_q1_elec} label={data?.land_q1_elec} />
                     {(data?.land_q1_elec === '其他' || data?.land_q1_elec === '其他未列項目') && data?.land_q1_elec_other && ` （${data.land_q1_elec_other}）`}
                     {(data?.land_q1_elec?.includes("一般用電") || data?.land_q1_elec?.includes("動力用電")) && (
@@ -944,7 +944,7 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             </CheckRow>
             <CheckRow checked={data?.land_q1_water === '否'}>
                 <div className="flex items-center text-black">
-                    <span className="font-black mr-2">水源供應</span>
+                    <span className="font-bold mr-2">水源供應</span>
                     <PreviewResult checked={data?.land_q1_water !== '否' && !!data?.land_q1_water} label={getLandWaterSummary()} />
                     <PreviewResult checked={data?.land_q1_water === '否'} label="無" />
                 </div>
@@ -953,7 +953,7 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             {showSolar && (
                 <CheckRow checked={data?.house_solar_status === '無設置' || data?.house_solar_status === '無'}>
                     <div className="flex items-center text-black">
-                        <span className="font-black mr-2">太陽能光電發電設備</span>
+                        <span className="font-bold mr-2">太陽能光電發電設備</span>
                         <PreviewResult checked={data?.house_solar_status === '合法設置'} label="合法設置" />
                         <PreviewResult checked={data?.house_solar_status === '私人設置'} label="私人設置" />
                         <PreviewResult checked={data?.house_solar_status === '無設置' || data?.house_solar_status === '無'} label="無" />
@@ -964,7 +964,7 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             {data?.water_booster && (
                 <CheckRow checked={data?.water_booster === '無' || data?.water_booster === '無設置'}>
                     <div className="flex items-center text-black">
-                        <span className="font-black mr-2">加壓受水設備</span>
+                        <span className="font-bold mr-2">加壓受水設備</span>
                         <PreviewResult 
                             checked={!!data?.water_booster && data.water_booster !== '無' && data.water_booster !== '無設置' && data.water_booster !== '其他未列項目'} 
                             label={`有設置${(data.water_booster_items && data.water_booster_items.length > 0) ? ` （${data.water_booster_items.join('、')}）` : ''}`} 
@@ -976,7 +976,7 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             )}
             <CheckRow checked={data?.land_q1_other_new === '否'}>
                 <div className="flex items-center text-black">
-                    <span className="font-black mr-2">其他設施</span>
+                    <span className="font-bold mr-2">其他設施</span>
                     <PreviewResult checked={data?.land_q1_other_new === '是'} label={data.land_q1_other_desc} />
                     <PreviewResult checked={data?.land_q1_other_new === '否'} label="無" />
                 </div>
@@ -984,21 +984,21 @@ const FactoryPrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyD
             
             <SectionHeader title="7. 廠房硬體設施" />
             <CheckRow checked={data.factory_elevator === '無'}>
-                 <span className="font-black mr-2">貨梯</span>{getElevatorStr()}
+                 <span className="font-bold mr-2">貨梯</span>{getElevatorStr()}
             </CheckRow>
             <CheckRow checked={data.factory_crane === '無'}>
-                 <span className="font-black mr-2">天車</span>{getCraneStr()}
+                 <span className="font-bold mr-2">天車</span>{getCraneStr()}
             </CheckRow>
             <CheckRow checked={data.factory_waste === '無'}>
-                 <span className="font-black mr-2">廢水／氣</span>{getWasteStr()}
+                 <span className="font-bold mr-2">廢水／氣</span>{getWasteStr()}
             </CheckRow>
 
             <SectionHeader title="8. 物流動線" />
             <CheckRow checked={data.factory_loading_dock === '無'}>
-                 <span className="font-black mr-2">卸貨碼頭</span>{data.factory_loading_dock || ''}
+                 <span className="font-bold mr-2">卸貨碼頭</span>{data.factory_loading_dock || ''}
             </CheckRow>
             <CheckRow checked={false}>
-                 <span className="font-black mr-2">大車進出</span>{data.factory_truck_access || ''} {data.factory_truck_buffer ? `（${data.factory_truck_buffer}）` : ''}
+                 <span className="font-bold mr-2">大車進出</span>{data.factory_truck_access || ''} {data.factory_truck_buffer ? `（${data.factory_truck_buffer}）` : ''}
             </CheckRow>
             
             <SectionHeader title="9. 車位資訊" />
@@ -1024,7 +1024,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
         <>
             <SectionHeader title={`${idx}. 本案或周圍須注意設施`} />
             <CheckRow checked={data?.q9_hasIssue === '否'}>
-                 <span className="font-black mr-2">須注意設施</span>
+                 <span className="font-bold mr-2">須注意設施</span>
                 <PreviewResult checked={data?.q9_hasIssue === '是'} label={labels.q9()} />
             </CheckRow>
 
@@ -1068,7 +1068,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
                 <>
                     <SectionHeader title={`${++idx}. 土壤與地下埋設物現況`} />
                     <CheckRow checked={data?.soil_q1_status === '無'}>
-                        <span className="font-black mr-2">土壤汙染與地下掩埋物現況</span>
+                        <span className="font-bold mr-2">土壤汙染與地下掩埋物現況</span>
                         <PreviewResult checked={data?.soil_q1_status === '有'} label={`有 （${data.soil_q1_desc}）`} />
                         <PreviewResult checked={data?.soil_q1_status === '無'} label="無" />
                         <PreviewResult checked={data?.soil_q1_status === '不確定' || data?.soil_q1_status === '待查證'} label="待查證" />
@@ -1084,8 +1084,8 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
 // --- MAIN PREVIEW COMPONENT ---
 
 export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, exporting, previewScale, previewPage, setPreviewPage, page1Ref, page2Ref, page3Ref, isMobile = false }) => {
-    const mode = useInterface();
-    const isStandard = mode === 'standard';
+
+    const isStandard = true;
     // Removed viewMode state as we are defaulting to A4 view for consistency
     const activeMode = 'a4';
 
@@ -1115,10 +1115,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
     const PageSwitcher = () => (
         type !== 'parking' ? (
             <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2 border border-slate-200 no-print w-full dark:bg-slate-800 dark:border-slate-700 overflow-x-auto">
-                <button onClick={() => setPreviewPage(1)} className={`flex-1 min-w-[80px] py-4 rounded-xl font-black text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 1 ? 'bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900' : 'text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'}`}>第一頁</button>
-                <button onClick={() => setPreviewPage(2)} className={`flex-1 min-w-[80px] py-4 rounded-xl font-black text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 2 ? 'bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900' : 'text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'}`}>第二頁</button>
+                <button onClick={() => setPreviewPage(1)} className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 1 ? 'bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900' : 'text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'}`}>第一頁</button>
+                <button onClick={() => setPreviewPage(2)} className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 2 ? 'bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900' : 'text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'}`}>第二頁</button>
                 {hasPage3 && (
-                    <button onClick={() => setPreviewPage(3)} className={`flex-1 min-w-[80px] py-4 rounded-xl font-black text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 3 ? 'bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900' : 'text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'}`}>第三頁</button>
+                    <button onClick={() => setPreviewPage(3)} className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 3 ? 'bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900' : 'text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'}`}>第三頁</button>
                 )}
             </div>
         ) : null
@@ -1179,12 +1179,11 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
     };
 
     const BasicInfoTable = () => {
-        const mode = useInterface();
-        const isStandard = mode === 'standard';
+        const isStandard = true;
         return (
             <div className={`${isStandard ? 'mb-1' : 'mb-2'} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden shrink-0`}>
                 <div className={`px-2 ${isStandard ? 'py-1 gap-x-2 gap-y-0.5' : 'py-1.5 gap-x-2 gap-y-1'} flex flex-wrap items-center ${isStandard ? 'text-[15px]' : 'text-[17px]'} leading-snug text-black`}>
-                    <span className={`font-black text-black ${isStandard ? 'text-[16px]' : 'text-[18px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
+                    <span className={`font-bold text-black ${isStandard ? 'text-[16px]' : 'text-[18px]'}`}>{(type === 'factory' || type === 'house' || type === 'land') ? '本物件型態與現況：' : '本物件現況：'}</span>
                     {(type === 'factory' || type === 'house' || type === 'land') && (
                         <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
                     )}
@@ -1217,7 +1216,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
             <ScaledA4Wrapper pageNum={1}>
                 <div className="flex-grow flex flex-col h-full text-black pb-0">
                     <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-3 mt-3'} relative w-full shrink-0`}>
-                        <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
+                        <h1 className={`font-bold tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                             <>幸福家不動產<br/>－業務版現況調查表</>
                         </h1>
                         <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【第一頁】{data?.version}</div>
@@ -1225,17 +1224,17 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                     <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-2'} w-full text-black border-collapse border-2 border-[#009FE3] shrink-0`}>
                         <tbody>
                             <tr className="border-b border-[#7dd3fc]">
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>案名</td><td className={`w-[30%] font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.caseName}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td colSpan={3} className={`w-[48%] font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.address}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>案名</td><td className={`w-[30%] font-bold text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.caseName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-bold ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{type === 'land' ? '坐落' : (type === 'parking' ? '位置' : '地址')}</td><td colSpan={3} className={`w-[48%] font-bold text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.address}</td>
                             </tr>
                             <tr className="border-b border-[#7dd3fc]">
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>店名</td><td className={`w-[30%] text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.storeName}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>業務</td><td className={`w-[18%] font-black text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.agentName}</td>
-                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>日期</td><td className={`w-[20%] text-left font-mono whitespace-nowrap text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>店名</td><td className={`w-[30%] text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.storeName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-bold ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>業務</td><td className={`w-[18%] font-bold text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{data?.agentName}</td>
+                                <td className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>日期</td><td className={`w-[20%] text-left font-mono whitespace-nowrap text-black ${isStandard ? 'py-1.5' : 'py-1.5'} px-2 ${isStandard ? 'text-[16px]' : 'text-[17px]'}`}>{formatDateROC(data?.fillDate || '')}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div className={`bg-[#009FE3] text-white px-4 ${isStandard ? 'py-1 px-4' : 'py-1.5 px-4'} ${isStandard ? 'text-[16px]' : 'text-[18px]'} font-black ${isStandard ? 'mb-1' : 'mb-2'} self-start rounded-r-full shadow-md tracking-wide shrink-0`}>【調查現況】</div>
+                    <div className={`bg-[#009FE3] text-white px-4 ${isStandard ? 'py-1 px-4' : 'py-1.5 px-4'} ${isStandard ? 'text-[16px]' : 'text-[18px]'} font-bold ${isStandard ? 'mb-1' : 'mb-2'} self-start rounded-r-full shadow-md tracking-wide shrink-0`}>【調查現況】</div>
                     
                     <BasicInfoTable />
 
@@ -1252,32 +1251,32 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                                         {!data?.q10_noParking && <ParkingContent data={data} parkingSummary={parkingSummary} activeMode={activeMode} />}
                                     </CheckRow>
                                     <CheckRow checked={!data?.q10_noParking && (data?.q11_hasIssue === '否' || data?.q11_hasIssue === '無異常')}>
-                                        <span className="font-black mr-2">車位使用現況</span>
+                                        <span className="font-bold mr-2">車位使用現況</span>
                                         <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他：${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
                                     </CheckRow>
                                     <CheckRow checked={!data?.q10_noParking && data?.q12_hasNote === '否'}>
-                                        <span className="font-black mr-2">車位與車道其他備註</span>
+                                        <span className="font-bold mr-2">車位與車道其他備註</span>
                                         <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
                                     </CheckRow>
                                     <SectionHeader title="2. 重要環境設施與常見環境抗性設施" />
                                     <CheckRow checked={!!data?.q16_noFacilities}>
-                                        <span className="font-black mr-2 shrink-0">重要環境設施</span>
+                                        <span className="font-bold mr-2 shrink-0">重要環境設施</span>
                                         <span className="font-medium">{getMajorEnvFacilitiesLabel(data)}</span>
                                     </CheckRow>
                                     <CheckRow checked={!!data?.q16_2_noFacilities}>
-                                        <span className="font-black mr-2 shrink-0">常見環境抗性設施</span>
+                                        <span className="font-bold mr-2 shrink-0">常見環境抗性設施</span>
                                         <span className="font-medium">{getResistanceEnvFacilitiesLabel(data)}</span>
                                     </CheckRow>
                                     <SectionHeader title="3. 本案或本社區須注意的事項" />
                                     <CheckRow checked={data?.q17_homicide === '無'}>
-                                        <span className="font-black mr-2">是否曾發生非自然死亡情事</span>
+                                        <span className="font-bold mr-2">是否曾發生非自然死亡情事</span>
                                         <span className="font-medium">
                                             {data?.q17_homicide || ''}
                                             {(data?.q17_homicide === '有' || data?.q17_homicide === '待查證') && data?.q17_homicide_desc && `：${data.q17_homicide_desc}`}
                                         </span>
                                     </CheckRow>
                                     <CheckRow checked={data?.q17_issue === '否'}>
-                                             <span className="font-black mr-2">其他應注意事項</span>
+                                             <span className="font-bold mr-2">其他應注意事項</span>
                                             <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
                                     </CheckRow>
                                 </>
@@ -1292,7 +1291,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                 <ScaledA4Wrapper pageNum={2}>
                     <div className="flex-grow flex flex-col h-full text-black pb-0">
                         <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-3 mt-3'} relative w-full shrink-0`}>
-                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
+                            <h1 className={`font-bold tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                                 <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
                             <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【第二頁】</div>
@@ -1312,7 +1311,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                 <ScaledA4Wrapper pageNum={3}>
                     <div className="flex-grow flex flex-col h-full text-black pb-0">
                          <div className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? 'mb-4 mt-4' : 'mb-3 mt-3'} relative w-full shrink-0`}>
-                            <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
+                            <h1 className={`font-bold tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                                 <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
                             <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【第三頁】</div>
