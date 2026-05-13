@@ -925,7 +925,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     />
                 </SurveySection>
 
-                <SurveySection id="section-q8" highlighted={highlightedField === 'section-q8'} title="7. 公設空間（梯間/地下室）現況" status={getStairStatus()}>
+                <SurveySection id="section-q8" highlighted={highlightedField === 'section-q8'} title="7. 公設空間（梯間／地下室）" status={getStairStatus()}>
                      <BooleanReveal 
                         label="" 
                         value={data?.q8_stairIssue === '否' ? '無異常' : (data?.q8_stairIssue === '是' ? '有異常' : '')} 

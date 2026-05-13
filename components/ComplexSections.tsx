@@ -889,7 +889,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                             </div>
                                             
                                             <div className="pt-6 border-t-2 border-slate-200">
-                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路地號</p>
+                                                <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">通行進出地號</p>
                                                 <LandNumberInputs section={data[sectionKey] || ''} subSection={data[subSectionKey] || ''} number={data[numberKey] || ''} onChangeSection={v => update(sectionKey, v)} onChangeSubSection={v => update(subSectionKey, v)} onChangeNumber={v => update(numberKey, v)} />
                                             </div>
 

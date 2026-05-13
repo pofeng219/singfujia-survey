@@ -310,7 +310,7 @@ const LandAccessPreviewBuildingStyle = ({ data, title }: { data: SurveyData, tit
                         <div className="flex flex-col items-center select-none opacity-100 mb-2">
                              <SingfujiaLogo className="h-8" textClassName="text-[1.5rem]" subTextClassName="text-[0.6rem]" />
                         </div>
-                        <span className="text-[14px] font-black text-red-600 tracking-wider block leading-tight">※本資訊僅供初步評估參考。鑒於不動產資料之動態特性，所有細節請以實體權狀記載與現場勘察實況為最終依據。</span>
+                        <span className="text-[14px] font-black text-red-600 tracking-wider block leading-tight">※本資訊僅供評估參考，所有細節請以權責機關所核發之文件與現場所見實況為最終依據。</span>
                         <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">Exported: {timestamp}</span>
                     </div>
                 )}
@@ -600,9 +600,9 @@ const HousePrintPage2 = ({ data, parkingSummary, activeMode }: { data: SurveyDat
                 <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
             </CheckRow>
 
-            <SectionHeader title="7. 公設空間（梯間／地下室）現況" />
+            <SectionHeader title="7. 公設空間（梯間／地下室）" />
             <CheckRow checked={!!data?.q8_stairIssue}>
-                <span className="font-black mr-2">公設空間（梯間／地下室現況）</span>
+                <span className="font-black mr-2">公設空間（梯間／地下室）</span>
                 <PreviewResult checked={data?.q8_stairIssue === '是' || data?.q8_stairIssue === '有異常'} label={labels.q6()} />
                 <PreviewResult checked={data?.q8_stairIssue === '無公共設施'} label="無公共設施" />
                 <PreviewResult checked={data?.q8_stairIssue === '有公共設施'} label="有公共設施" />
@@ -1220,7 +1220,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                         <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                             <>幸福家不動產<br/>－業務版現況調查表</>
                         </h1>
-                        <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【正面】{data?.version}</div>
+                        <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【第一頁】{data?.version}</div>
                     </div>
                     <table className={`excel-table ${isStandard ? 'mb-2' : 'mb-2'} w-full text-black border-collapse border-2 border-[#009FE3] shrink-0`}>
                         <tbody>
@@ -1295,7 +1295,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                             <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                                 <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
-                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【背面】</div>
+                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【第二頁】</div>
                         </div>
                         <div className={`${isStandard ? 'mb-2' : 'mb-2'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}>
                                 <TableHeaderRow />
@@ -1315,7 +1315,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(({ data, type, expor
                             <h1 className={`font-black tracking-widest text-black ${isStandard ? 'leading-tight mb-3 text-[36px]' : 'leading-tight mb-2 text-[36px]'}`}>
                                 <>幸福家不動產<br/>－業務版現況調查表</>
                             </h1>
-                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【附件】</div>
+                            <div className={`${isStandard ? 'text-[16px] py-1.5' : 'text-[16px] py-1.5'} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}>【第三頁】</div>
                         </div>
                         <div className={`${isStandard ? 'mb-2' : 'mb-2'} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}>
                                 <TableHeaderRow />
