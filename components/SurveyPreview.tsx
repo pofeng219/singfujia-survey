@@ -475,7 +475,7 @@ const LandDisputeExproPreview = ({
           data?.land_q3_survey === "是" ||
           data?.land_q3_survey === "界標完整"
         }
-        label={`已鑑界（標完好） ${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}`}
+        label={`已鑑界（標完好） ${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}${data.land_q3_survey_date ? ` [${data.land_q3_survey_date}年]` : ""}`}
       />
 
       <PreviewResult
@@ -483,7 +483,7 @@ const LandDisputeExproPreview = ({
           data?.land_q3_survey === "待查證" ||
           data?.land_q3_survey === "不確定／不知道"
         }
-        label="待查證"
+        label={`待查證 ${data?.land_q3_survey_other ? "（" + data.land_q3_survey_other + "）" : ""}`}
       />
 
       <PreviewResult
@@ -1891,6 +1891,7 @@ const FactoryPrintPage2 = ({
   const getWasteStr = () => {
     if (!data.factory_waste) return "";
     if (data.factory_waste === "無") return "無";
+    if (data.factory_waste === "有") return `有${data.factory_waste_has_detail ? ` （${data.factory_waste_has_detail}）` : ""}`;
     return (
       data.factory_waste +
       (data.factory_waste === "其他未列項目" || data.factory_waste === "其他"
