@@ -971,11 +971,19 @@ const CommonExtraQuestions = ({
             }
             label="袋地"
           />
+          <PreviewResult
+            checked={
+              data?.q14_access === "其他未列項目"
+            }
+            label={data.q14_abnormalDesc || ""}
+            isWarning={true}
+          />
         </CheckRow>
         {(data.q14_access === "通行順暢" ||
           data.q14_access?.includes("順暢") ||
           data.q14_access === "通行受限" ||
-          data.q14_access?.includes("受限")) && (
+          data.q14_access?.includes("受限") ||
+          data.q14_access === "其他未列項目") && (
           <CheckRow checked={false}>
             <PreviewResult
               checked={!!data.q14_roadMaterial}
@@ -1863,15 +1871,21 @@ const FactoryPrintPage2 = ({
     if (data.factory_crane === "無") return "無";
     if (data.factory_crane === "僅預留牛腿") return "預留牛腿";
     if (data.factory_crane === "有軌道／樑，無主機") return "有軌道無主機";
-    const status =
-      data.factory_crane_status ||
-      (data.factory_crane_working ? "可運作" : "故障");
-    let s = `有 （${status}）`;
-    const parts = [];
-    if (data.factory_crane_tonnage)
-      parts.push(`${data.factory_crane_tonnage}噸`);
-    if (data.factory_crane_quantity) parts.push(data.factory_crane_quantity);
-    if (parts.length > 0) s += ` ${parts.join("／")}`;
+    let s = "有";
+    if (data.factory_crane_desc) {
+      s += ` （${data.factory_crane_desc}）`;
+    } else {
+      const status =
+        data.factory_crane_status ||
+        (data.factory_crane_working ? "可運作" : "故障");
+      let parts = [];
+      if (data.factory_crane_tonnage)
+        parts.push(`${data.factory_crane_tonnage}噸`);
+      if (data.factory_crane_quantity) parts.push(data.factory_crane_quantity);
+      if (parts.length > 0 || status) {
+        s += ` （${parts.join("／")}${parts.length > 0 && status ? ' ' : ''}${status || ''}）`;
+      }
+    }
     return s;
   };
   const getWasteStr = () => {
