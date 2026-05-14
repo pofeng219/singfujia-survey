@@ -296,7 +296,7 @@ const ParkingContent: React.FC<{
 
   const getParkingCarUsageLabel = () => {
     let labels = (data?.q10_carUsage || []).map((u) =>
-      u === "須固定抽籤" ? `須固定抽籤（每${data.q10_carLotteryMonth}月）` : u,
+      u === "須固定抽籤" ? `須固定抽籤（每${data.q10_carLotteryMonth}個月）` : u,
     );
     if (data?.q10_hasCarUsageOther && data.q10_carUsageOther)
       labels.push(`其他：${data.q10_carUsageOther}`);
