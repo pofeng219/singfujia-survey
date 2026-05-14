@@ -106,6 +106,8 @@ const PreviewResult: React.FC<{
       !label.includes("有車位編號") &&
       !label.includes("有公共設施") &&
       !label.includes("所有權人自用") &&
+      !label.includes("公有") &&
+      !label.includes("所有權") &&
       !label.includes("合法") &&
       !label.includes("正常") &&
       !label.includes("有農作物") &&
@@ -592,11 +594,12 @@ const LandAccessPreviewBuildingStyle = ({
   return (
     <>
       <SectionHeader title={title} />
-      <CheckRow checked={isNormal}>
+      <CheckRow checked={isNormal && ownership !== "私人" && ownership !== "私有"}>
         <span className="font-bold mr-2">進出現況</span>
         <PreviewResult
           checked={isNormal}
           label={`通行順暢 [${ownership || ""}${protection ? "／" + protection : ""}${protectionDesc ? ` （${protectionDesc}）` : ""}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`}
+          isWarning={ownership === "私人" || ownership === "私有"}
         />
         <PreviewResult
           checked={isAbnormal}
@@ -940,8 +943,10 @@ const CommonExtraQuestions = ({
         <SectionHeader title={`${startIdx}. 進出通行與臨路現況`} />
         <CheckRow
           checked={
-            data?.q14_access === "通行順暢" ||
-            data?.q14_access?.includes("順暢")
+            (data?.q14_access === "通行順暢" ||
+             data?.q14_access?.includes("順暢")) && 
+             data?.q14_ownership !== "私人" && 
+             data?.q14_ownership !== "私有"
           }
         >
           <span className="font-bold mr-2">進出現況</span>
@@ -951,6 +956,7 @@ const CommonExtraQuestions = ({
               data?.q14_access?.includes("順暢")
             }
             label={`通行順暢 [${data.q14_ownership || ""}${data.q14_protection ? "／" + data.q14_protection : ""}${data.q14_protectionDesc ? ` （${data.q14_protectionDesc}）` : ""}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`}
+            isWarning={data?.q14_ownership === "私人" || data?.q14_ownership === "私有"}
           />
           <PreviewResult
             checked={
