@@ -727,7 +727,10 @@ export const NotesSection = ({ data, setData, update, id, title, highlightedId, 
             
             <BooleanReveal 
                 label={type === 'factory' || type === 'land' ? "是否有須注意事項" : ""}
-                value={data?.q17_issue === '否' ? '無' : (data?.q17_issue === '是' ? '有' : '')} 
+                value={
+                    (type === 'land' ? data?.land_q8_special : data?.q17_issue) === '否' ? '無' : 
+                    ((type === 'land' ? data?.land_q8_special : data?.q17_issue) === '是' ? '有' : '')
+                } 
                 onChange={v => { 
                     // Fix: Use ternary to allow empty string (deselect)
                     const val = v === '無' ? '否' : (v === '有' ? '是' : ''); 

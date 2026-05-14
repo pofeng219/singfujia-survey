@@ -248,8 +248,6 @@ export interface SurveyData {
     land_infra_water_other: string;
     land_infra_other_status: string;
     land_infra_other_facility_desc: string;
-    land_q7_issue: string;
-    land_q7_desc: string;
 
     // Land Category - NEW GRANULAR FIELDS (v2)
     land_q1_elec: string; 

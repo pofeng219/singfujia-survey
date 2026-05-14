@@ -475,7 +475,7 @@ const LandDisputeExproPreview = ({
           data?.land_q3_survey === "是" ||
           data?.land_q3_survey === "界標完整"
         }
-        label={`已鑑界（標完好） ${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}${data.land_q3_survey_date ? ` [最近一次鑑界時間 (年份)：${data.land_q3_survey_date}年]` : ""}`}
+        label={`近期已鑑界 (附土地複丈成果圖)${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}${data.land_q3_survey_date ? `，最近一次鑑界時間 (年份)：${data.land_q3_survey_date}年` : ""}`}
       />
 
       <PreviewResult
@@ -1022,7 +1022,9 @@ const CommonExtraQuestions = ({
       title={
         type === "house"
           ? `${startIdx + 1}. 重要環境設施與常見環境抗性設施`
-          : `${type === "factory" ? startIdx : startIdx + 1}. 重要環境設施與常見環境抗性設施`
+          : type === "land"
+            ? `${startIdx}. 重要環境設施與常見環境抗性設施`
+            : `${type === "factory" ? startIdx : startIdx + 1}. 重要環境設施與常見環境抗性設施`
       }
     />
     <CheckRow checked={!!data?.q16_noFacilities}>
@@ -1068,33 +1070,53 @@ const CommonExtraQuestions = ({
       title={
         type === "house"
           ? `${startIdx + 2}. 本案與社區特殊或影響交易事項`
-          : `${type === "factory" ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`
+          : type === "land"
+            ? `${startIdx + 1}. 本案與社區特殊或影響交易事項`
+            : `${type === "factory" ? startIdx + 1 : startIdx + 2}. 本案與社區特殊或影響交易事項`
       }
     />
-    <CheckRow
-      checked={data?.q17_homicide === "否" || data?.q17_homicide === "無"}
-    >
-      <span className="font-bold mr-2">重大事故與非自然身故紀錄</span>
-      <PreviewResult
+    {type !== "land" && (
+      <CheckRow
         checked={data?.q17_homicide === "否" || data?.q17_homicide === "無"}
-        label="無"
-      />
+      >
+        <span className="font-bold mr-2">重大事故與非自然身故紀錄</span>
+        <PreviewResult
+          checked={data?.q17_homicide === "否" || data?.q17_homicide === "無"}
+          label="無"
+        />
+        <PreviewResult
+          checked={data?.q17_homicide === "是" || data?.q17_homicide === "有"}
+          label={`有：${data?.q17_homicide_desc || ""}`}
+          isWarning={true}
+        />
+        <PreviewResult
+          checked={data?.q17_homicide === "待查證"}
+          label={`待查證：${data?.q17_homicide_desc || ""}`}
+          isWarning={true}
+        />
+      </CheckRow>
+    )}
+    <CheckRow
+      checked={
+        type === "land"
+          ? data?.land_q8_special === "否"
+          : data?.q17_issue === "否"
+      }
+    >
+      <span className="font-bold mr-2">
+        {type === "land" ? "特殊或影響交易事項" : "補充事項"}
+      </span>
       <PreviewResult
-        checked={data?.q17_homicide === "是" || data?.q17_homicide === "有"}
-        label={`有：${data?.q17_homicide_desc || ""}`}
-        isWarning={true}
-      />
-      <PreviewResult
-        checked={data?.q17_homicide === "待查證"}
-        label={`待查證：${data?.q17_homicide_desc || ""}`}
-        isWarning={true}
-      />
-    </CheckRow>
-    <CheckRow checked={data?.q17_issue === "否"}>
-      <span className="font-bold mr-2">其他特殊或影響交易狀況補充</span>
-      <PreviewResult
-        checked={data?.q17_issue === "是"}
-        label={data?.q17_desc || ""}
+        checked={
+          type === "land"
+            ? data?.land_q8_special === "是"
+            : data?.q17_issue === "是"
+        }
+        label={
+          type === "land"
+            ? data?.land_q8_special_desc || ""
+            : data?.q17_desc || ""
+        }
         isWarning={true}
       />
     </CheckRow>
@@ -1757,6 +1779,13 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         title="8. 進出通行與臨路現況"
       />
 
+    </>
+  );
+};
+
+const LandPrintPage3 = ({ data }: { data: SurveyData }) => {
+  return (
+    <>
       <SectionHeader title="9. 土壤與地下埋設物現況" />
       <CheckRow checked={data?.soil_q1_status === "無"}>
         <span className="font-bold mr-2">土壤汙染與地下掩埋物現況</span>
@@ -1774,56 +1803,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         />
       </CheckRow>
 
-      <SectionHeader title="10. 重要環境設施與常見環境抗性設施" />
-      <CheckRow checked={!!data?.q16_noFacilities}>
-        <span className="font-bold mr-2 shrink-0">重要環境設施</span>
-        {data?.q16_noFacilities && (
-          <span className="font-medium">無重要環境設施</span>
-        )}
-        {!data?.q16_noFacilities &&
-          data?.q16_items &&
-          data.q16_items.length > 0 && (
-            <span className="font-medium mr-2">
-              {data.q16_items.join("、")}
-            </span>
-          )}
-        {data?.q16_hasOther && (
-          <PreviewResult
-            checked={!!(data?.q16_hasOther && data?.q16_other)}
-            label={data.q16_other || ""}
-            isWarning={true}
-          />
-        )}
-      </CheckRow>
-      <CheckRow checked={!!data?.q16_2_noFacilities}>
-        <span className="font-bold mr-2 shrink-0">常見環境抗性設施</span>
-        {data?.q16_2_noFacilities && (
-          <span className="font-medium">無常見環境抗性設施</span>
-        )}
-        {!data?.q16_2_noFacilities &&
-          data?.q16_2_items &&
-          data.q16_2_items.length > 0 && (
-            <span className="font-medium inline-block mr-2">
-              {data.q16_2_items.join("、")}
-            </span>
-          )}
-        {data?.q16_2_hasOther && (
-          <PreviewResult
-            checked={!!(data?.q16_2_hasOther && data?.q16_2_other)}
-            label={data.q16_2_other || ""}
-            isWarning={true}
-          />
-        )}
-      </CheckRow>
-
-      <SectionHeader title="11. 本案與社區特殊或影響交易事項" />
-      <CheckRow checked={data?.land_q8_special === "否"}>
-        <span className="font-bold mr-2">特殊或影響交易事項</span>
-        <PreviewResult
-          checked={data?.land_q8_special === "是"}
-          label={data?.land_q8_special_desc}
-        />
-      </CheckRow>
+      <CommonExtraQuestions data={data} startIdx={10} type="land" />
     </>
   );
 };
@@ -2279,7 +2259,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
     const activeMode = "a4";
 
     // Detect if we need page 3 (All factory types now use 3 pages)
-    const hasPage3 = type === "factory" || type === "house";
+    const hasPage3 = type === "factory" || type === "house" || type === "land";
 
     const parkingSummary = useMemo(() => {
       const isNoParking = data?.q10_noParking === true;
@@ -2779,7 +2759,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
                 )}
               </div>
               <Footer
-                showSignature={type === "land"}
+                showSignature={false}
                 signatureImage={data.signatureImage}
               />
             </div>
@@ -2813,6 +2793,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
                 <TableHeaderRow />
                 {type === "factory" && <FactoryPrintPage3 data={data} />}
                 {type === "house" && <HousePrintPage3 data={data} />}
+                {type === "land" && <LandPrintPage3 data={data} />}
               </div>
               <Footer
                 showSignature={true}

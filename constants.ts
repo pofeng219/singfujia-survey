@@ -81,7 +81,6 @@ export const INITIAL_STATE: SurveyData = {
     land_infra_electricity: '', land_infra_electricity_items: [], land_infra_electricity_other: '',
     land_infra_water: '', land_infra_water_items: [], land_infra_water_other: '',
     land_infra_other_status: '', land_infra_other_facility_desc: '', 
-    land_q7_issue: '', land_q7_desc: '',
 
     land_q1_elec: '', land_q1_elec_detail: '', land_q1_elec_detail_other: '', land_q1_elec_other: '', 
     land_q1_elec_meter: '', land_q1_elec_voltage: '', land_q1_elec_capacity: '',
