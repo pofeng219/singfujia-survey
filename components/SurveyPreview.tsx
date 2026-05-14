@@ -1623,7 +1623,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         data.land_q7_build_type === "宗教／殯葬設施" &&
         data.land_q7_build_rel_detail
       )
-        parts.push(data.land_q7_build_rel_detail);
+        parts.push(Array.isArray(data.land_q7_build_rel_detail) ? data.land_q7_build_rel_detail.join('／') : data.land_q7_build_rel_detail);
       else if (
         data.land_q7_build_type === "其他未列項目" &&
         data.land_q7_build_other

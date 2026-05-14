@@ -857,7 +857,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 if (!data.land_q7_build_ownership) return 'incomplete';
                 if (data.land_q7_build_ownership === '其他未列項目' && !data.land_q7_build_unreg_detail) return 'incomplete';
             }
-            if (data.land_q7_build_type === '宗教／殯葬設施' && !data.land_q7_build_rel_detail) return 'incomplete';
+            if (data.land_q7_build_type === '宗教／殯葬設施' && (!data.land_q7_build_rel_detail || data.land_q7_build_rel_detail.length === 0)) return 'incomplete';
             if (data.land_q7_build_type === '其他未列項目' && !data.land_q7_build_other) return 'incomplete';
         }
 
@@ -1199,7 +1199,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                 renderDetail={(opt2) => {
                                                     if (opt2 === '有保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>;
                                                     if (opt2 === '未保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>;
-                                                    if (opt2 === '宗教／殯葬設施') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['小廟', '墳墓']} value={data.land_q7_build_rel_detail || ''} onChange={v => update('land_q7_build_rel_detail', v)} /></div>;
+                                                    if (opt2 === '宗教／殯葬設施') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200 mt-2 space-y-3">{['小廟', '墳墓'].map(opt => <CheckBox key={opt} checked={data.land_q7_build_rel_detail?.includes(opt) || false} label={opt} onClick={() => toggleArr('land_q7_build_rel_detail', opt)} />)}</div>;
                                                     if (opt2 === '其他未列項目') return <DetailInput value={data.land_q7_build_other || ''} onChange={v => update('land_q7_build_other', v)} placeholder="說明現況" />;
                                                     return null;
                                                 }}

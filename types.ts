@@ -326,7 +326,7 @@ export interface SurveyData {
     land_q7_build_ownership: string;
     land_q7_build_reg_detail: string;
     land_q7_build_unreg_detail: string;
-    land_q7_build_rel_detail: string;
+    land_q7_build_rel_detail: string[];
     land_q7_build_other: string;
     land_q7_solar: string; // New: Solar PV status
 
