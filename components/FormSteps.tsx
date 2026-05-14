@@ -239,7 +239,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
              if (data.land_q1_water_cat?.includes('水利溝渠') && !data.land_q1_water_irr_detail) return 'incomplete';
         }
         if (data.land_q1_water === '其他未列項目' && !data.land_q1_water_other) return 'incomplete';
-        if (!data.land_q1_gas) return 'incomplete';
+        if (type !== 'land' && !data.land_q1_gas) return 'incomplete';
         if (type === 'factory' && isGroupA && !data.house_solar_status) return 'incomplete';
         if (showWaterBooster && isGroupA && !data.water_booster) return 'incomplete';
         if (!data.land_q1_other_new) return 'incomplete';
@@ -373,7 +373,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             />
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
-                    <UtilitiesSection data={data} setData={setData} title="1. 電、水、瓦斯與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
+                    <UtilitiesSection data={data} setData={setData} title="1. 電、水與其他設施使用現況" type={type} id="section-land-q1" highlightedId={highlightedField} status={getLandQ1Status()} />
                     <LandQuestionsGroup 
                         data={data} setData={setData} update={update}
                         titles={{ q2: '', q3: '2. 土地鑑界與界標現況與產權與使用糾紛現況', q4: '3. 土地徵收預定地與重測區現況' }}

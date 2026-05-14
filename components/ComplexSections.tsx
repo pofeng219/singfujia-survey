@@ -254,14 +254,16 @@ export const UtilitiesSection = ({
                     />
                 </QuestionBlock>
                 
-                <QuestionBlock>
-                    <p className="dynamic-text-h2 font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">瓦斯供應現況</p>
-                    <AccordionRadio 
-                        options={type === 'factory' ? ['一般瓦斯 (如桶裝瓦斯、天然瓦斯)', '工業用氣 (如大容量儲氣槽)', '完全無設置'] : ['無', '有', '其他未列項目']} 
-                        value={data.land_q1_gas || ''} 
-                        onChange={v => update('land_q1_gas', v)} 
-                    />
-                </QuestionBlock>
+                {type !== 'land' && (
+                    <QuestionBlock>
+                        <p className="dynamic-text-h2 font-black mb-6 text-slate-800 dark:text-slate-100 leading-normal">瓦斯供應現況</p>
+                        <AccordionRadio 
+                            options={type === 'factory' ? ['一般瓦斯 (如桶裝瓦斯、天然瓦斯)', '工業用氣 (如大容量儲氣槽)', '完全無設置'] : ['無', '有', '其他未列項目']} 
+                            value={data.land_q1_gas || ''} 
+                            onChange={v => update('land_q1_gas', v)} 
+                        />
+                    </QuestionBlock>
+                )}
 
                 {/* Solar Equipment for Factory - Hide for Group B (multistory buildings) as they move to section 10 */}
                 {type === 'factory' && GROUP_A_TYPES.includes(data.propertyType) && (
