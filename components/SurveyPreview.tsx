@@ -41,7 +41,13 @@ const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string
         '事故', '違建', '私下', '不明', '不確定', '無法', '外推', '加蓋', '夾層', 
         '增建', '改建', '損壞', '危險', '破壞', '漏水', '阻塞', '不通'
     ];
-    const hasWarningKeyword = warningKeywords.some(kw => label.includes(kw));
+    
+    // Check if the label explicitly negates the warning
+    const safeKeywords = ['無異常', '無瑕疵', '無滲漏水', '無壁癌', '未發現', '無增建', '無外推', '無占用', '無破壞', '無損壞'];
+    const hasSafeKeyword = safeKeywords.some(kw => label.includes(kw));
+    
+    const hasWarningKeyword = !hasSafeKeyword && warningKeywords.some(kw => label.includes(kw));
+    
     const isWarningOption = isWarning || hasWarningKeyword || 
         ((label.includes('有') || label.includes('是')) && 
          !label.includes('有保存登記') && 

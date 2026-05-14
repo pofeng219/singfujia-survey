@@ -1,0 +1,112 @@
+// Local PreviewResult: High contrast, larger text, less vibrant
+const PreviewResult: React.FC<{ checked: boolean; label: string; suffix?: string; variant?: string; isWarning?: boolean }> = ({ checked, label, suffix, isWarning }) => {
+            {parkingSummary.showMethod && (<div><span className="font-bold mr-2">停車方式</span>{(data?.q10_parkTypes || []).map(pt => (<PreviewResult key={pt} checked={true} label={getParkingTypeLabel(pt)} variant={prVariant} />))}<PreviewResult checked={data?.q10_hasParkTypeOther} label="其他" suffix={'：' + (data?.q10_parkTypeOther || '')} variant={prVariant} /></div>)}
+            {parkingSummary.showNumber && (<div><span className="font-bold mr-2">車位編號</span><PreviewResult checked={data?.q10_parkingNumberType === 'number'} label="有車位編號" suffix={'：' + (data?.q10_parkingNumberVal || '')} variant={prVariant} /><PreviewResult checked={data?.q10_parkingNumberType === 'none'} label="無車位編號" variant={prVariant} /></div>)}
+            {parkingSummary.showCharging && (<div><span className="font-bold mr-2">車位充電設備配置</span><PreviewResult checked={data?.q10_charging === '有' || data?.q10_charging === '是'} label="有" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '無' || data?.q10_charging === '否'} label="無" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '僅預留管線／孔位'} label="僅預留管線／孔位" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '須經管委會同意'} label="須經管委會同意" variant={prVariant} /><PreviewResult checked={data?.q10_charging === '其他' || data?.q10_charging === '其他未列項目'} label="其他" suffix={': ' + (data?.q10_chargingOther || '')} variant={prVariant} /></div>)}
+            {parkingSummary.isNoParking && (<div><span className="font-bold mr-2">停車方式</span><PreviewResult checked={true} label="無車位" variant={prVariant} /></div>)}
+            <PreviewResult 
+            <PreviewResult checked={data?.land_q3_survey === '待查證' || data?.land_q3_survey === '不確定／不知道'} label="待查證" />
+            <PreviewResult 
+            <PreviewResult checked={data?.land_q3_survey === '從未鑑界' || data?.land_q3_survey === '否'} label="從未鑑界" />
+            <PreviewResult checked={data?.land_q3_dispute === '是' || data?.land_q3_dispute === '有'} label={`有（${data.land_q3_dispute_desc}）`} />
+            <PreviewResult checked={data?.land_q3_dispute === '待查證' || data?.land_q3_dispute === '疑似／處理中'} label={`待查證（${data.land_q3_dispute_other}）`} />
+            <PreviewResult checked={data?.land_q4_expro === '是' || data?.land_q4_expro === '屬範圍內'} label={`屬範圍內 ${data.land_q4_expro_other}`} />
+            <PreviewResult checked={data?.land_q4_expro === '待查證' || data?.land_q4_expro === '查詢中／不確定'} label={`待查證 ${data.land_q4_expro_other}`} />
+            <PreviewResult checked={data?.land_q4_resurvey === '是' || data?.land_q4_resurvey === '屬範圍內'} label={`屬範圍內 ${data.land_q4_resurvey_other}`} />
+            <PreviewResult checked={data?.land_q4_resurvey === '待查證' || data?.land_q4_resurvey === '查詢中／不確定'} label={`待查證 ${data.land_q4_resurvey_other}`} />
+                <PreviewResult checked={isNormal} label={`通行順暢 [${ownership || ''}${protection ? '／' + protection : ''}${protectionDesc ? ` （${protectionDesc}）` : ''}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`} />
+                <PreviewResult checked={isAbnormal} label={`通行受限 （${abnormalDesc}）`} />
+                <PreviewResult checked={isLandlocked} label="袋地" />
+                    <PreviewResult checked={!!roadMat} label="路面材質" suffix={(roadMat === '其他未列項目' || roadMat === '其他') ? `: ${roadMatOther}` : `: ${roadMat}`} />
+                    <PreviewResult checked={!!ditch} label="排水溝" suffix={(ditch === '其他未列項目' || ditch === '其他') ? `: ${ditchOther}` : `: ${ditch}`} />
+                <PreviewResult checked={data?.q1_hasExt === '是'} label={labels.q1()} />
+                <PreviewResult checked={data?.q2_hasOccupancy !== '否' && !!data?.q2_hasOccupancy} label={data?.q2_hasOccupancy + (data?.q2_desc ? '：' + data.q2_desc : '')} />
+                <PreviewResult checked={data?.q2_other_occupancy !== '否' && !!data?.q2_other_occupancy} label={data?.q2_other_occupancy + (data?.q2_other_occupancy_desc ? '：' + data.q2_other_occupancy_desc : '')} />
+                <PreviewResult checked={data?.q6_hasIssue === '實測不符' || data?.q6_hasIssue === '無法測量／現況說明' || data?.q6_hasIssue === '不符 (有明顯差異)'} label={data?.q6_hasIssue + (data?.q6_desc ? '：' + data.q6_desc : '')} />
+                <PreviewResult checked={data?.q3_hasLeak === '是'} label={labels.q3()} />
+                <PreviewResult checked={data?.q3_hasLeak === '否'} label="無" />
+                <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
+                <PreviewResult checked={data?.q4_hasIssue === '是'} label={labels.q4()} />
+                <PreviewResult checked={data?.q4_hasIssue === '否'} label="無" />
+                <PreviewResult checked={data?.q5_hasTilt !== '否' && !!data?.q5_hasTilt} label={data?.q5_hasTilt + (data?.q5_desc ? '：' + data.q5_desc : '') + (data?.q5_suspectedDesc ? '：' + data.q5_suspectedDesc : '')} />
+                <PreviewResult checked={data?.q5_hasTilt === '否'} label="無" />
+                        <PreviewResult checked={data?.q7_hasIssue === '是'} label={labels.q7() || '異常'} />
+                    <PreviewResult checked={data?.q14_access === '通行順暢' || data?.q14_access?.includes('順暢')} label={`通行順暢 [${data.q14_ownership || ''}${data.q14_protection ? '／' + data.q14_protection : ''}${data.q14_protectionDesc ? ` （${data.q14_protectionDesc}）` : ''}] ${formatAccessLandAddress(data.q14_section, data.q14_subSection, data.q14_number)}`} />
+                    <PreviewResult checked={data?.q14_access === '通行受限' || data?.q14_access?.includes('受限')} label={`通行受限 （${data.q14_abnormalDesc}）`} />
+                    <PreviewResult checked={data?.q14_access === '袋地' || data?.q14_access?.includes('袋地')} label="袋地" />
+                        <PreviewResult checked={!!data.q14_roadMaterial} label="路面材質" suffix={(data.q14_roadMaterial === '其他' || data.q14_roadMaterial === '其他未列項目') ? `：${data.q14_roadMaterialOther}` : `：${data.q14_roadMaterial}`} />
+                        <PreviewResult checked={!!data.q14_ditch} label="排水溝" suffix={(data.q14_ditch === '其他' || data.q14_ditch === '其他未列項目') ? `：${data.q14_ditchOther}` : `：${data.q14_ditch}`} />
+            <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
+                <PreviewResult checked={data?.q1_hasExt === '是'} label={labels.q1()} />
+                <PreviewResult checked={data?.q2_hasOccupancy !== '否' && !!data?.q2_hasOccupancy} label={data?.q2_hasOccupancy + (data?.q2_desc ? '：' + data.q2_desc : '')} />
+                <PreviewResult checked={data?.q2_other_occupancy !== '否' && !!data?.q2_other_occupancy} label={data?.q2_other_occupancy + (data?.q2_other_occupancy_desc ? '：' + data.q2_other_occupancy_desc : '')} />
+                <PreviewResult checked={data?.q6_hasIssue !== '實測相符' && data?.q6_hasIssue !== '相符 (無明顯差異)' && !!data?.q6_hasIssue} label={data?.q6_hasIssue + (data?.q6_desc ? '：' + data.q6_desc : '')} />
+                <PreviewResult checked={data?.q3_hasLeak === '是'} label={labels.q3()} />
+                <PreviewResult checked={data?.q3_repairHistory === '無修繕紀錄'} label="（無修繕紀錄）" />
+                 <PreviewResult checked={data?.q4_hasIssue === '是'} label={labels.q4()} />
+                 <PreviewResult checked={data?.q5_hasTilt !== '否' && !!data?.q5_hasTilt} label={data?.q5_hasTilt + (data?.q5_desc ? '：' + data.q5_desc : '') + (data?.q5_suspectedDesc ? '：' + data.q5_suspectedDesc : '')} />
+                <PreviewResult checked={!!data?.q7_gasType} label={data.q7_gasType} />
+                <PreviewResult checked={data?.q7_hasIssue === '是'} label={labels.q7() || '異常'} />
+                    <PreviewResult checked={data?.house_solar_status === '合法設置'} label="合法設置" />
+                    <PreviewResult checked={data?.house_solar_status === '私人設置'} label="私人設置" />
+                    <PreviewResult checked={data?.house_solar_status === '無設置' || data?.house_solar_status === '無'} label="無" />
+                    <PreviewResult 
+                    <PreviewResult checked={data?.water_booster === '其他未列項目'} label={`其他 （${data.water_booster_desc}）`} />
+                    <PreviewResult checked={data?.water_booster === '無' || data?.water_booster === '無設置'} label="無" />
+                <PreviewResult checked={data?.publicFacilities === '有公共設施'} label="有公共設施" />
+                <PreviewResult checked={data?.publicFacilities === '無公共設施'} label="無公共設施" />
+                <PreviewResult checked={data?.publicFacilities === '無法進入'} label={`無法進入 （${data.publicFacilitiesReason}）`} />
+                <PreviewResult checked={data?.q8_stairIssue === '是' || data?.q8_stairIssue === '有異常'} label={labels.q6()} />
+                <PreviewResult checked={data?.q8_stairIssue === '無公共設施'} label="無公共設施" />
+                <PreviewResult checked={data?.q8_stairIssue === '有公共設施'} label="有公共設施" />
+                <PreviewResult checked={data?.q8_stairIssue === '否' || data?.q8_stairIssue === '無異常'} label="無異常" />
+                <PreviewResult checked={data?.q9_hasIssue === '是'} label={labels.q9()} />
+                <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他: ${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
+                <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
+                <PreviewResult checked={data?.land_q1_elec !== '否' && !data?.land_q1_elec?.startsWith('無電力') && !!data?.land_q1_elec} label={getLandElecSummary()} />
+                <PreviewResult checked={data?.land_q1_water !== '否' && data?.land_q1_water !== '無' && !!data?.land_q1_water} label={getLandWaterSummary()} />
+                <PreviewResult checked={data?.land_q1_other_new === '是'} label={data.land_q1_other_desc} />
+                <PreviewResult checked={data?.land_q5_encroached !== '否' && !!data?.land_q5_encroached} label={data?.land_q5_encroached + (data.land_q5_encroached_desc ? `：${data.land_q5_encroached_desc}` : '')} />
+                <PreviewResult checked={data?.land_q5_encroaching !== '否' && !!data?.land_q5_encroaching} label={data?.land_q5_encroaching + (data.land_q5_encroaching_desc ? `：${data.land_q5_encroaching_desc}` : '')} />
+                <PreviewResult checked={data?.land_q6_limit === '是'} label={`是 （${data.land_q6_limit_desc}）`} />
+                <PreviewResult checked={data?.land_q6_limit === '無'} label="無" />
+                <PreviewResult checked={data?.land_q7_user !== '無' && !!data?.land_q7_user} label={getLandUserSummary()} />
+                <PreviewResult checked={data?.land_q7_crops !== '無' && !!data?.land_q7_crops} label={getLandCropsSummary()} />
+                <PreviewResult checked={data?.land_q7_build !== '無' && !!data?.land_q7_build} label={getLandBuildSummary()} />
+                <PreviewResult checked={data?.land_q7_solar === '合法設置'} label="合法設置" />
+                <PreviewResult checked={data?.land_q7_solar === '私人設置'} label="私人設置" />
+                <PreviewResult checked={data?.land_q7_solar === '無'} label="無" />
+                    <PreviewResult 
+                    <PreviewResult checked={data?.land_water_booster === '無' || data?.land_water_booster === '無設置'} label="無" />
+                    <PreviewResult checked={data?.land_q7_fire_setback === '是'} label="是" />
+                    <PreviewResult checked={data?.land_q7_fire_setback === '否'} label="否" />
+                    <PreviewResult checked={data?.land_q7_road_opened === '是'} label="是" />
+                    <PreviewResult checked={data?.land_q7_road_opened === '否'} label="否" />
+                <PreviewResult checked={data?.land_q7_facilities === '是'} label={getLandFacilitiesSummary()} />
+                <PreviewResult checked={data?.land_q7_facilities === '否'} label="無" />
+                <PreviewResult checked={data?.soil_q1_status === '有'} label={`有 （${data.soil_q1_desc}）`} />
+                <PreviewResult checked={data?.soil_q1_status === '無'} label="無" />
+                <PreviewResult checked={data?.soil_q1_status === '不確定' || data?.soil_q1_status === '待查證'} label="待查證" />
+                <PreviewResult checked={data?.land_q8_special === '是'} label={data?.land_q8_special_desc} />
+                    <PreviewResult checked={!!data?.land_q1_elec} label={data?.land_q1_elec} />
+                    <PreviewResult checked={data?.land_q1_water !== '否' && !!data?.land_q1_water} label={getLandWaterSummary()} />
+                    <PreviewResult checked={data?.land_q1_water === '否'} label="無" />
+                        <PreviewResult checked={data?.house_solar_status === '合法設置'} label="合法設置" />
+                        <PreviewResult checked={data?.house_solar_status === '私人設置'} label="私人設置" />
+                        <PreviewResult checked={data?.house_solar_status === '無設置' || data?.house_solar_status === '無'} label="無" />
+                        <PreviewResult 
+                        <PreviewResult checked={data?.water_booster === '其他未列項目'} label={`其他 （${data.water_booster_desc}）`} />
+                        <PreviewResult checked={data?.water_booster === '無' || data?.water_booster === '無設置'} label="無" />
+                    <PreviewResult checked={data?.land_q1_other_new === '是'} label={data.land_q1_other_desc} />
+                    <PreviewResult checked={data?.land_q1_other_new === '否'} label="無" />
+                <PreviewResult checked={data?.q9_hasIssue === '是'} label={labels.q9()} />
+                        <PreviewResult checked={data?.soil_q1_status === '有'} label={`有 （${data.soil_q1_desc}）`} />
+                        <PreviewResult checked={data?.soil_q1_status === '無'} label="無" />
+                        <PreviewResult checked={data?.soil_q1_status === '不確定' || data?.soil_q1_status === '待查證'} label="待查證" />
+                        <PreviewResult checked={!!data?.propertyType} label={data?.propertyType} suffix={(data?.propertyType === '其他特殊工業設施' || data?.propertyType === '其他' || data?.propertyType === '其他未列項目') ? `：${data.propertyTypeOther}` : ''} />
+                    <PreviewResult checked={data?.access === '可進入'} label="可進入" />
+                            <PreviewResult checked={true} label="不可進入：" />
+                                <PreviewResult key={opt} checked={true} label={opt + (opt === "其他" || opt === "其他未列項目" ? '：' : '')} suffix={opt === "其他" || opt === "其他未列項目" ? data.accessOther : ""} />
+                                        <PreviewResult checked={data?.q11_hasIssue === '是' || data?.q11_hasIssue === '有異常'} label={[...(data?.q11_items || []), data?.q11_hasOther ? `其他：${data.q11_other}` : ''].filter(Boolean).join('、') || '異常'} />
+                                        <PreviewResult checked={data?.q12_hasNote === '是'} label={data?.q12_note} />
+                                            <PreviewResult checked={data?.q17_issue === '是'} label={data?.q17_desc} />
