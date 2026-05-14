@@ -475,7 +475,7 @@ const LandDisputeExproPreview = ({
           data?.land_q3_survey === "是" ||
           data?.land_q3_survey === "界標完整"
         }
-        label={`已鑑界（標完好） ${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}${data.land_q3_survey_date ? ` [${data.land_q3_survey_date}年]` : ""}`}
+        label={`已鑑界（標完好） ${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}${data.land_q3_survey_date ? ` [最近一次鑑界時間 (年份)：${data.land_q3_survey_date}年]` : ""}`}
       />
 
       <PreviewResult
@@ -532,14 +532,14 @@ const LandDisputeExproPreview = ({
         checked={
           data?.land_q4_expro === "是" || data?.land_q4_expro === "屬範圍內"
         }
-        label={`屬範圍內 ${data.land_q4_expro_other}`}
+        label={`屬範圍內${data?.land_q4_expro_other ? ` （${data.land_q4_expro_other}）` : ""}`}
       />
       <PreviewResult
         checked={
           data?.land_q4_expro === "待查證" ||
           data?.land_q4_expro === "查詢中／不確定"
         }
-        label={`待查證 ${data.land_q4_expro_other}`}
+        label={`待查證${data?.land_q4_expro_other ? ` （${data.land_q4_expro_other}）` : ""}`}
       />
     </CheckRow>
     <CheckRow
@@ -553,14 +553,14 @@ const LandDisputeExproPreview = ({
           data?.land_q4_resurvey === "是" ||
           data?.land_q4_resurvey === "屬範圍內"
         }
-        label={`屬範圍內 ${data.land_q4_resurvey_other}`}
+        label={`屬範圍內${data?.land_q4_resurvey_other ? ` （${data.land_q4_resurvey_other}）` : ""}`}
       />
       <PreviewResult
         checked={
           data?.land_q4_resurvey === "待查證" ||
           data?.land_q4_resurvey === "查詢中／不確定"
         }
-        label={`待查證 ${data.land_q4_resurvey_other}`}
+        label={`待查證${data?.land_q4_resurvey_other ? ` （${data.land_q4_resurvey_other}）` : ""}`}
       />
     </CheckRow>
   </>
