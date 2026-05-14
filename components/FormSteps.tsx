@@ -871,6 +871,15 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         return 'complete';
     };
 
+    const getLandQ7FacilitiesStatus = (): SectionStatus => {
+        if (!data.land_q7_facilities) return 'incomplete';
+        if (data.land_q7_facilities === '是') {
+            if ((!data.land_q7_facilities_items || data.land_q7_facilities_items.length === 0)) return 'incomplete';
+            if (data.land_q7_facilities_items.includes('其他未列項目') && !data.land_q7_facilities_other) return 'incomplete';
+        }
+        return 'complete';
+    };
+
     const getParkingStatus = (): SectionStatus => {
         if (data.q10_noParking) return 'complete';
         
@@ -1288,7 +1297,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 </SurveySection>
 
                 {/* NEW Q7 for Land */}
-                <SurveySection id="section-land-q7-facilities" highlighted={highlightedField === 'section-land-q7-facilities'} title="7. 本案或周圍須注意設施">
+                <SurveySection id="section-land-q7-facilities" highlighted={highlightedField === 'section-land-q7-facilities'} title="7. 本案或周圍須注意設施" status={getLandQ7FacilitiesStatus()}>
                      <BooleanReveal label="" value={data?.land_q7_facilities === '否' ? '無' : (data?.land_q7_facilities === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, land_q7_facilities: val, land_q7_facilities_items: val === '是' ? p.land_q7_facilities_items : [], land_q7_facilities_other: val === '是' ? p.land_q7_facilities_other : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
