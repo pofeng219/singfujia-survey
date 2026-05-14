@@ -59,7 +59,7 @@ export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMo
         } else {
             // Desktop: Download Page 1
             const link1 = document.createElement('a');
-            link1.download = `正面_${fileName}.jpg`;
+            link1.download = `第一頁_${fileName}.jpg`;
             link1.href = dataUrl1;
             document.body.appendChild(link1);
             link1.click();
@@ -69,7 +69,7 @@ export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMo
             if (canvas2) {
                 setTimeout(() => {
                     const link2 = document.createElement('a');
-                    link2.download = `背面_${fileName}.jpg`;
+                    link2.download = `第二頁_${fileName}.jpg`;
                     link2.href = canvas2.toDataURL('image/jpeg', 0.9);
                     document.body.appendChild(link2);
                     link2.click();
