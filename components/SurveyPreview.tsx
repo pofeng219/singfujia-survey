@@ -2449,11 +2449,12 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
             <PreviewResult checked={data?.access === "可進入"} label="可進入" />
             {data?.access === "不可進入" && (
               <>
-                <PreviewResult checked={true} label="不可進入：" />
+                <PreviewResult checked={true} label="不可進入：" isWarning={true} />
                 {(data?.accessType || []).map((opt) => (
                   <PreviewResult
                     key={opt}
                     checked={true}
+                    isWarning={true}
                     label={
                       opt +
                       (opt === "其他" || opt === "其他未列項目" ? "：" : "")
