@@ -1119,6 +1119,19 @@ const CommonExtraQuestions = ({
         }
         isWarning={true}
       />
+      <PreviewResult
+        checked={
+          type === "land"
+            ? data?.land_q8_special === "待查證"
+            : data?.q17_issue === "待查證"
+        }
+        label={`待查證：${
+          type === "land"
+            ? data?.land_q8_special_desc || ""
+            : data?.q17_desc || ""
+        }`}
+        isWarning={true}
+      />
     </CheckRow>
   </>
 );
@@ -1126,7 +1139,7 @@ const CommonExtraQuestions = ({
 const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
   const labels = getHouseLabels(data);
   const showSolar =
-    data.propertyType && ["透天別墅", "透天店面"].includes(data.propertyType);
+    data.propertyType && ["透天／別墅／獨棟店面"].includes(data.propertyType);
 
   return (
     <>
@@ -2703,6 +2716,11 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
                     <PreviewResult
                       checked={data?.q17_issue === "是"}
                       label={data?.q17_desc || ""}
+                      isWarning={true}
+                    />
+                    <PreviewResult
+                      checked={data?.q17_issue === "待查證"}
+                      label={`待查證：${data?.q17_desc || ""}`}
                       isWarning={true}
                     />
                   </CheckRow>

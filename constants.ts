@@ -134,14 +134,14 @@ export const ACCESS_SUB_OPTIONS_PARKING = ["塔式車位", "其他未列項目"]
 export const PARK_TYPES = ["坡道平面", "坡道機械", "升降平面", "一樓平面", "法定空地／自家門前", "塔式車位", "升降機械"];
 export const CAR_USAGE_OPTS = ["固定位置使用", "須承租", "須排隊等候", "每日先到先停"];
 export const Q11_OPTS = ["機械式車位故障", "車位不易駛入或停放"];
-export const HOUSE_PROPERTY_TYPE_OPTIONS = ["透天別墅", "透天店面", "大樓（10樓以上有電梯）", "華廈（10樓以下有電梯）", "公寓（5樓以下無電梯）", "其他未列項目"];
+export const HOUSE_PROPERTY_TYPE_OPTIONS = ["透天／別墅／獨棟店面", "大樓（10樓以上有電梯）", "華廈（10樓以下有電梯）", "公寓（5樓以下無電梯）", "其他未列項目"];
 export const LAND_PROPERTY_TYPE_OPTIONS = ["農地", "建地", "工業地", "其他（道路用地／公設地）"];
 // New Factory Property Type Options
 export const FACTORY_PROPERTY_TYPE_OPTIONS = ["獨棟自建廠房", "立體化廠辦大樓", "連棟／分組式標準廠房", "倉儲物流廠房", "其他特殊工業設施"];
 
 // Property Type Groups for Water Booster Logic
 export const GROUP_A_TYPES = [
-    '透天別墅', '透天店面', '農地', '建地', '工業地', 
+    '透天／別墅／獨棟店面', '農地', '建地', '工業地', 
     '獨棟自建廠房', '倉儲物流廠房', '其他特殊工業設施',
     '其他（道路用地／公設地）'
 ];

@@ -256,7 +256,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         // Removed validation for q16_other as the option is removed from UI
 
         v.require(d.q17_issue, "section-q17", "13. 注意事項未填寫", s4);
-        v.requireIf(d.q17_issue === '是', d.q17_desc, "section-q17", "13. 請填寫注意事項說明", s4);
+        v.requireIf(d.q17_issue === '是' || d.q17_issue === '待查證', d.q17_desc, "section-q17", "13. 請填寫注意事項說明", s4);
     }
     
     // --- LAND VALIDATION ---
@@ -353,7 +353,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         
         // Notes becomes Q11
         v.require(d.land_q8_special, "section-land-q8", "11. 注意事項未填寫", s4);
-        v.requireIf(d.land_q8_special === '是', d.land_q8_special_desc, "section-land-q8", "11. 請填寫注意事項說明", s4);
+        v.requireIf(d.land_q8_special === '是' || d.land_q8_special === '待查證', d.land_q8_special_desc, "section-land-q8", "11. 請填寫注意事項說明", s4);
     }
 
     // --- FACTORY VALIDATION ---
@@ -503,7 +503,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.check(noEnv, "section-q16", `${envNum}. 環境設施未勾選`, s4);
         
         v.require(d.q17_issue, "section-q17", `${noteNum}. 注意事項未填寫`, s4);
-        v.requireIf(d.q17_issue === '是', d.q17_desc, "section-q17", `${noteNum}. 請填寫注意事項說明`, s4);
+        v.requireIf(d.q17_issue === '是' || d.q17_issue === '待查證', d.q17_desc, "section-q17", `${noteNum}. 請填寫注意事項說明`, s4);
     }
 
     // --- PARKING VALIDATION ---
@@ -516,7 +516,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.check(noEnv, "section-q16", "2. 環境設施未勾選", s3);
         
         v.require(d.q17_issue, "section-q17", "3. 注意事項未填寫", s3);
-        v.requireIf(d.q17_issue === '是', d.q17_desc, "section-q17", "3. 請填寫注意事項說明", s3);
+        v.requireIf(d.q17_issue === '是' || d.q17_issue === '待查證', d.q17_desc, "section-q17", "3. 請填寫注意事項說明", s3);
     }
 
     return v.getErrors();

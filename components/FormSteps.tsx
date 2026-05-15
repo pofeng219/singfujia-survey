@@ -369,7 +369,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 isOpen={showOccupyGuide} 
                 onClose={() => setShowOccupyGuide(false)} 
                 imageSrc="https://lh3.googleusercontent.com/d/12EY9u7gm8oIuGpRWFlzqoAK_RrEuOupQ" 
-                title="增建、占用與被占用現況參考圖例" 
+                title="增建、占用與被占用現況真實案例" 
             />
             {type === 'land' && (
                 <div className="space-y-8 md:space-y-12">
@@ -407,7 +407,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 type="button"
                             >
                                 <ImageIcon size={20} />
-                                參考圖例
+                                真實案例
                             </button>
                         </div>
                         <div className="space-y-8 md:space-y-10 pl-0 md:pl-2">
@@ -786,10 +786,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const issueKey = type === 'land' ? 'land_q8_special' : 'q17_issue';
         const descKey = type === 'land' ? 'land_q8_special_desc' : 'q17_desc';
         if (!data[issueKey]) return 'incomplete';
-        if (data[issueKey] === '是' && !data[descKey]) return 'incomplete';
+        if ((data[issueKey] === '是' || data[issueKey] === '待查證') && !data[descKey]) return 'incomplete';
         if (type !== 'land' && type !== 'parking') {
             if (!data.q17_homicide) return 'incomplete';
-            if (data.q17_homicide === '是' && !data.q17_homicide_desc) return 'incomplete';
+            if ((data.q17_homicide === '是' || data.q17_homicide === '待查證') && !data.q17_homicide_desc) return 'incomplete';
         }
         return 'complete';
     };
@@ -1682,6 +1682,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 });
 
 export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, type, highlightedField, themeText }) => {
+    const [showHomicideGuide, setShowHomicideGuide] = useState(false);
     
     // Factory logic variables
     const isHiRise = (data.propertyType === "立體化廠辦大樓");
@@ -1785,10 +1786,10 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const issueKey = type === 'land' ? 'land_q8_special' : 'q17_issue';
         const descKey = type === 'land' ? 'land_q8_special_desc' : 'q17_desc';
         if (!data[issueKey]) return 'incomplete';
-        if (data[issueKey] === '是' && !data[descKey]) return 'incomplete';
+        if ((data[issueKey] === '是' || data[issueKey] === '待查證') && !data[descKey]) return 'incomplete';
         if (type !== 'land' && type !== 'parking') {
             if (!data.q17_homicide) return 'incomplete';
-            if (data.q17_homicide === '是' && !data.q17_homicide_desc) return 'incomplete';
+            if ((data.q17_homicide === '是' || data.q17_homicide === '待查證') && !data.q17_homicide_desc) return 'incomplete';
         }
         return 'complete';
     };
@@ -1850,11 +1851,27 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 title={type === 'house' ? "12. 本案與社區特殊或影響交易事項" : (type === 'land' ? "11. 本案或周圍特殊或影響交易事項" : `${noteNum}. 本案與社區特殊或影響交易事項`)} 
                 status={getNotesStatus()}
             >
+                <ImageModal 
+                    isOpen={showHomicideGuide} 
+                    onClose={() => setShowHomicideGuide(false)} 
+                    imageSrc="https://lh3.googleusercontent.com/d/1UIxr5rrpkp3GZDgW8Qk-1bryZASQvwGq" 
+                    title="重大事故與非自然身故紀錄參考圖例" 
+                />
                 <div className="space-y-10">
                     {/* Sub-question 1: Homicide */}
                     {type !== 'land' && (
                         <QuestionBlock>
                             <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">重大事故與非自然身故紀錄</p>
+                            <div className="mb-4">
+                                <button
+                                    onClick={() => setShowHomicideGuide(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                    type="button"
+                                >
+                                    <ImageIcon size={20} />
+                                    參考圖例
+                                </button>
+                            </div>
                             <div className="mb-4">
                                  <div className="w-full py-4 px-5 md:py-5 md:px-6 bg-[#FDE047] rounded-xl md:rounded-2xl flex items-start gap-3 shadow-sm dark:bg-yellow-900/40">
                                      <p className="text-xl md:text-2xl text-red-700 font-bold leading-normal dark:text-red-300 w-full text-left">
@@ -1871,7 +1888,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                         <DetailInput 
                                             value={data.q17_homicide_desc || ''} 
                                             onChange={v => update('q17_homicide_desc', v)} 
-                                            placeholder="說明現況" 
+                                            placeholder="如本戶曾發生或樓下鄰居曾發生" 
                                         />
                                     </SubItemHighlight>
                                 ) : null}
@@ -1893,17 +1910,17 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         </div>
                         
                         <AccordionRadio 
-                            options={['無', '有']} 
-                            value={type === 'land' ? (data.land_q8_special === '是' ? '有' : (data.land_q8_special === '否' ? '無' : '')) : (data.q17_issue === '是' ? '有' : (data.q17_issue === '否' ? '無' : ''))} 
+                            options={['無', '有', '待查證']} 
+                            value={type === 'land' ? (data.land_q8_special === '是' ? '有' : (data.land_q8_special === '否' ? '無' : (data.land_q8_special === '待查證' ? '待查證' : ''))) : (data.q17_issue === '是' ? '有' : (data.q17_issue === '否' ? '無' : (data.q17_issue === '待查證' ? '待查證' : '')))} 
                             onChange={v => {
-                                const val = v === '無' ? '否' : (v === '有' ? '是' : '');
+                                const val = v === '無' ? '否' : (v === '有' ? '是' : (v === '待查證' ? '待查證' : ''));
                                 if (type === 'land') {
                                     setData(prev => ({ ...prev, land_q8_special: val, land_q8_special_desc: val === '否' ? '' : prev.land_q8_special_desc }));
                                 } else {
                                     setData(prev => ({ ...prev, q17_issue: val, q17_desc: val === '否' ? '' : prev.q17_desc }));
                                 }
                             }} 
-                            renderDetail={(opt) => opt === '有' ? (
+                            renderDetail={(opt) => (opt === '有' || opt === '待查證') ? (
                                 <SubItemHighlight>
                                     <DetailInput 
                                         value={type === 'land' ? (data.land_q8_special_desc || '') : (data.q17_desc || '')} 

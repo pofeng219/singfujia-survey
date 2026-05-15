@@ -538,7 +538,7 @@ export const ParkingSection = ({
                                                 className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
                                             >
                                                 <ImageIcon size={20} />
-                                                參考圖例
+                                                真實案例
                                             </button>
                                         </div>
                                     </>
@@ -580,7 +580,7 @@ export const ParkingSection = ({
                                                 className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
                                             >
                                                 <ImageIcon size={20} />
-                                                參考圖例
+                                                真實案例
                                             </button>
                                         </div>
                                     </>
@@ -607,13 +607,13 @@ export const ParkingSection = ({
                 isOpen={showParkingGuide} 
                 onClose={() => setShowParkingGuide(false)} 
                 imageSrc="https://lh3.googleusercontent.com/d/1uGe_fPzNK1QTat5PSR6SmkHEtMIF39lo" 
-                title="車位與車道其他備註參考圖例" 
+                title="車位與車道其他備註真實案例" 
             />
             <ImageModal 
                 isOpen={showParkingUsageGuide} 
                 onClose={() => setShowParkingUsageGuide(false)} 
                 imageSrc="https://lh3.googleusercontent.com/d/12nlowzk-k3qp8KtfVbh7lDsjIQhhNPjV" 
-                title="車位使用現況參考圖例" 
+                title="車位使用現況真實案例" 
             />
         </SurveySection>
     );
