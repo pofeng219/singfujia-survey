@@ -36,7 +36,8 @@ const PreviewResult: React.FC<{
   suffix?: string;
   variant?: string;
   isWarning?: boolean;
-}> = ({ checked, label, suffix, isWarning }) => {
+  forceSafe?: boolean;
+}> = ({ checked, label, suffix, isWarning, forceSafe }) => {
   const isStandard = true;
   if (!checked) return null;
 
@@ -99,20 +100,21 @@ const PreviewResult: React.FC<{
     !hasSafeKeyword && warningKeywords.some((kw) => label.includes(kw));
 
   const isWarningOption =
-    isWarning ||
-    hasWarningKeyword ||
-    ((label.includes("有") || label.includes("是")) &&
-      !label.includes("有保存登記") &&
-      !label.includes("有車位編號") &&
-      !label.includes("有公共設施") &&
-      !label.includes("所有權人自用") &&
-      !label.includes("公有") &&
-      !label.includes("所有權") &&
-      !label.includes("合法") &&
-      !label.includes("正常") &&
-      !label.includes("有農作物") &&
-      !label.includes("有建築物") &&
-      !label.includes("有設置"));
+    !forceSafe &&
+    (isWarning ||
+      hasWarningKeyword ||
+      ((label.includes("有") || label.includes("是")) &&
+        !label.includes("有保存登記") &&
+        !label.includes("有車位編號") &&
+        !label.includes("有公共設施") &&
+        !label.includes("所有權人自用") &&
+        !label.includes("公有") &&
+        !label.includes("所有權") &&
+        !label.includes("合法") &&
+        !label.includes("正常") &&
+        !label.includes("有農作物") &&
+        !label.includes("有建築物") &&
+        !label.includes("有設置")));
 
   return (
     <div
@@ -2434,6 +2436,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
               <PreviewResult
                 checked={!!data?.propertyType}
                 label={data?.propertyType}
+                forceSafe={true}
                 suffix={
                   data?.propertyType === "其他特殊工業設施" ||
                   data?.propertyType === "其他" ||
