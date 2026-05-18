@@ -62,6 +62,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             if (!data.propertyType) return 'incomplete';
             if (type === 'factory' && data.propertyType === '其他特殊工業設施' && !data.propertyTypeOther) return 'incomplete';
             if (type === 'house' && data.propertyType === '其他未列項目' && !data.propertyTypeOther) return 'incomplete';
+            if (type === 'land' && data.propertyType === '其他未列項目' && !data.propertyTypeOther) return 'incomplete';
         }
 
         if (!data.access) return 'incomplete';
@@ -118,7 +119,11 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 {type === 'land' && (
                      <QuestionBlock id="section-propertyType" className={`flex flex-col gap-4 md:gap-6 mb-6 md:mb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <AccordionRadio options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v })); }} />
+                        <AccordionRadio options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '' })); }} renderDetail={opt => opt === '其他未列項目' ? (
+                             <SubItemHighlight>
+                                 <DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="如：道路用地、公設地" />
+                             </SubItemHighlight>
+                        ) : null} />
                     </QuestionBlock>
                 )}
                 {type !== 'factory' && (
@@ -866,7 +871,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (data.land_water_booster === '有設置' && (!data.land_water_booster_items || data.land_water_booster_items.length === 0)) return 'incomplete';
 
         if (!data.land_q7_fire_setback && data.propertyType === '工業地') return 'incomplete';
-        if (!data.land_q7_road_opened && data.propertyType === '其他（道路用地／公設地）') return 'incomplete';
+        if (!data.land_q7_road_opened && data.propertyType === '其他未列項目') return 'incomplete';
 
         return 'complete';
     };
@@ -1278,7 +1283,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             </QuestionBlock>
                         )}
 
-                        {data.propertyType === '其他（道路用地／公設地）' && (
+                        {data.propertyType === '其他未列項目' && (
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black text-slate-700 mb-4 leading-normal">計畫道路開闢現況</p>
                                 <AccordionRadio 

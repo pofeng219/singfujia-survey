@@ -1766,7 +1766,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         </CheckRow>
       )}
 
-      {data?.propertyType === "其他(道路用地／公設地)" && (
+      {data?.propertyType === "其他未列項目" && (
         <CheckRow checked={false}>
           <span className="font-bold mr-2">計畫道路開闢現況</span>
           <PreviewResult

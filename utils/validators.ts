@@ -318,7 +318,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         if (d.propertyType === '工業地') {
             v.require(d.land_q7_fire_setback, "section-land-q7", "6. 防火間隔與區劃現況未填寫", s3);
         }
-        if (d.propertyType === '其他(道路用地／公設地)') {
+        if (d.propertyType === '其他未列項目') {
             v.require(d.land_q7_road_opened, "section-land-q7", "6. 計畫道路開闢現況未填寫", s3);
         }
 
