@@ -864,9 +864,9 @@ const HousePrintPage1Factory = ({
         <span className="font-bold mr-2">面積測量</span>
         <PreviewResult
           checked={
-            data?.q6_hasIssue === "實測不符" ||
-            data?.q6_hasIssue === "無法測量／現況說明" ||
-            data?.q6_hasIssue === "不符 (有明顯差異)"
+            data?.q6_hasIssue !== "實測相符" &&
+            data?.q6_hasIssue !== "相符 (無明顯差異)" &&
+            !!data?.q6_hasIssue
           }
           label={data?.q6_hasIssue + (data?.q6_desc ? "：" + data.q6_desc : "")}
           isWarning={true}
