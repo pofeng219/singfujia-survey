@@ -610,33 +610,45 @@ const LandAccessPreviewBuildingStyle = ({
         />
         <PreviewResult checked={isLandlocked} label="袋地" />
       </CheckRow>
-      {(isNormal || isAbnormal) && (
+      {(isNormal || isAbnormal) && (roadMat || roadWidth || buildingLine || ditch) && (
         <CheckRow checked={false}>
-          <PreviewResult
-            checked={!!roadMat}
-            label="路面材質"
-            suffix={
-              roadMat === "其他未列項目" || roadMat === "其他"
-                ? `: ${roadMatOther}`
-                : `: ${roadMat}`
+          {(() => {
+            const items = [];
+            if (roadMat) {
+               items.push(
+                 <PreviewResult
+                   checked={!!roadMat}
+                   label="路面材質"
+                   suffix={
+                     roadMat === "其他未列項目" || roadMat === "其他"
+                       ? `: ${roadMatOther}`
+                       : `: ${roadMat}`
+                   }
+                 />
+               );
             }
-          />
-          {roadWidth && <span className="mx-2">／</span>}
-          {roadWidth && <span className="font-bold">路寬:{roadWidth}米</span>}
-          {buildingLine && <span className="mx-2">／</span>}
-          {buildingLine && (
-            <span className="font-bold">建築線:{buildingLine}</span>
-          )}
-          <span className="mx-2">／</span>
-          <PreviewResult
-            checked={!!ditch}
-            label="排水溝"
-            suffix={
-              ditch === "其他未列項目" || ditch === "其他"
-                ? `: ${ditchOther}`
-                : `: ${ditch}`
+            if (roadWidth) items.push(<span className="font-bold border-l-0">路寬:{roadWidth}米</span>);
+            if (buildingLine) items.push(<span className="font-bold border-l-0">建築線:{buildingLine}</span>);
+            if (ditch) {
+               items.push(
+                 <PreviewResult
+                   checked={!!ditch}
+                   label="排水溝"
+                   suffix={
+                     ditch === "其他未列項目" || ditch === "其他"
+                       ? `: ${ditchOther}`
+                       : `: ${ditch}`
+                   }
+                 />
+               );
             }
-          />
+            return items.map((item, index) => (
+              <React.Fragment key={index}>
+                 {item}
+                 {index < items.length - 1 && <span className="mx-2">／</span>}
+              </React.Fragment>
+            ));
+          })()}
         </CheckRow>
       )}
     </>
@@ -986,36 +998,50 @@ const CommonExtraQuestions = ({
           data.q14_access?.includes("順暢") ||
           data.q14_access === "通行受限" ||
           data.q14_access?.includes("受限") ||
-          data.q14_access === "其他未列項目") && (
+          data.q14_access === "其他未列項目") && (data.q14_roadMaterial || data.q14_roadWidth || data.q14_buildingLine || data.q14_ditch) && (
           <CheckRow checked={false}>
-            <PreviewResult
-              checked={!!data.q14_roadMaterial}
-              label="路面材質"
-              suffix={
-                data.q14_roadMaterial === "其他" ||
-                data.q14_roadMaterial === "其他未列項目"
-                  ? `：${data.q14_roadMaterialOther}`
-                  : `：${data.q14_roadMaterial}`
+            {(() => {
+              const items = [];
+              if (data.q14_roadMaterial) {
+                items.push(
+                  <PreviewResult
+                    checked={true}
+                    label="路面材質"
+                    suffix={
+                      data.q14_roadMaterial === "其他" ||
+                      data.q14_roadMaterial === "其他未列項目"
+                        ? `：${data.q14_roadMaterialOther}`
+                        : `：${data.q14_roadMaterial}`
+                    }
+                  />
+                );
               }
-            />
-            {data.q14_roadWidth && <span className="mx-2">／</span>}
-            {data.q14_roadWidth && (
-              <span className="font-bold">路寬：{data.q14_roadWidth}米</span>
-            )}
-            {data.q14_buildingLine && <span className="mx-2">／</span>}
-            {data.q14_buildingLine && (
-              <span className="font-bold">建築線：{data.q14_buildingLine}</span>
-            )}
-            <span className="mx-2">／</span>
-            <PreviewResult
-              checked={!!data.q14_ditch}
-              label="排水溝"
-              suffix={
-                data.q14_ditch === "其他" || data.q14_ditch === "其他未列項目"
-                  ? `：${data.q14_ditchOther}`
-                  : `：${data.q14_ditch}`
+              if (data.q14_roadWidth) {
+                items.push(<span className="font-bold border-l-0">路寬：{data.q14_roadWidth}米</span>);
               }
-            />
+              if (data.q14_buildingLine) {
+                items.push(<span className="font-bold border-l-0">建築線：{data.q14_buildingLine}</span>);
+              }
+              if (data.q14_ditch) {
+                items.push(
+                  <PreviewResult
+                    checked={true}
+                    label="排水溝"
+                    suffix={
+                      data.q14_ditch === "其他" || data.q14_ditch === "其他未列項目"
+                        ? `：${data.q14_ditchOther}`
+                        : `：${data.q14_ditch}`
+                    }
+                  />
+                );
+              }
+              return items.map((item, index) => (
+                <React.Fragment key={index}>
+                  {item}
+                  {index < items.length - 1 && <span className="mx-2">／</span>}
+                </React.Fragment>
+              ));
+            })()}
           </CheckRow>
         )}
       </>
