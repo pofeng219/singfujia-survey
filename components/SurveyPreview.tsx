@@ -1539,6 +1539,7 @@ const LandPrintPage1 = ({ data }: { data: SurveyData }) => {
             !!data?.land_q1_elec
           }
           label={getLandElecSummary()}
+          forceSafe={true}
         />
       </CheckRow>
       <CheckRow
@@ -1552,6 +1553,7 @@ const LandPrintPage1 = ({ data }: { data: SurveyData }) => {
             !!data?.land_q1_water
           }
           label={getLandWaterSummary()}
+          forceSafe={!getLandWaterSummary().includes("私設水井")}
         />
       </CheckRow>
       <CheckRow checked={data?.land_q1_other_new === "否"}>
@@ -1704,6 +1706,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         <PreviewResult
           checked={data?.land_q7_crops !== "無" && !!data?.land_q7_crops}
           label={getLandCropsSummary()}
+          forceSafe={true}
         />
       </CheckRow>
       <CheckRow checked={data?.land_q7_build === "無"}>
@@ -1711,6 +1714,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         <PreviewResult
           checked={data?.land_q7_build !== "無" && !!data?.land_q7_build}
           label={getLandBuildSummary()}
+          forceSafe={!getLandBuildSummary().includes("未保存登記")}
         />
       </CheckRow>
       <CheckRow checked={data?.land_q7_solar === "無"}>
@@ -1722,6 +1726,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         <PreviewResult
           checked={data?.land_q7_solar === "私人設置"}
           label="私人設置"
+          isWarning={true}
         />
         <PreviewResult checked={data?.land_q7_solar === "無"} label="無" />
       </CheckRow>
@@ -1786,6 +1791,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         <PreviewResult
           checked={data?.land_q7_facilities === "是"}
           label={getLandFacilitiesSummary()}
+          isWarning={true}
         />
         <PreviewResult checked={data?.land_q7_facilities === "否"} label="無" />
       </CheckRow>
