@@ -706,7 +706,7 @@ const Footer = ({
             ※本資訊僅供評估參考，所有細節請以權責機關所核發之文件與現場所見實況為最終依據。
           </span>
           <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">
-            Exported: {timestamp}
+            產出日期與時間： {timestamp}
           </span>
         </div>
       )}
@@ -1859,7 +1859,7 @@ const LandPrintPage3 = ({ data }: { data: SurveyData }) => {
             data?.soil_q1_status === "不確定" ||
             data?.soil_q1_status === "待查證"
           }
-          label="待查證"
+          label={`待查證${data?.soil_q1_desc ? ` （${data.soil_q1_desc}）` : ""}`}
         />
       </CheckRow>
 
@@ -2278,7 +2278,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
                 data?.soil_q1_status === "不確定" ||
                 data?.soil_q1_status === "待查證"
               }
-              label="待查證"
+              label={`待查證${data?.soil_q1_desc ? ` （${data.soil_q1_desc}）` : ""}`}
             />
           </CheckRow>
         </>
