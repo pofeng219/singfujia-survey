@@ -866,11 +866,11 @@ const HousePrintPage1Factory = ({
           checked={data?.q3_repairHistory === "無修繕紀錄"}
           label="（無修繕紀錄）"
         />
-        {data?.q3_repairHistory === "有修繕紀錄" && (
-          <span className="font-bold underline underline-offset-4 decoration-2 ml-2 text-red-600">
-            （曾有修繕：{data.q3_repairDesc}）
-          </span>
-        )}
+        <PreviewResult
+          checked={data?.q3_repairHistory === "有修繕紀錄"}
+          label={`（曾有修繕：${data?.q3_repairDesc || ""}）`}
+          isWarning={true}
+        />
       </CheckRow>
 
       <SectionHeader title="4. 建物結構安全評估（含瑕疵與傾斜）" />
@@ -1223,11 +1223,11 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
           checked={data?.q3_repairHistory === "無修繕紀錄"}
           label="（無修繕紀錄）"
         />
-        {data?.q3_repairHistory === "有修繕紀錄" && (
-          <span className="font-bold underline underline-offset-4 decoration-2 ml-2 text-red-600">
-            （曾有修繕：{data.q3_repairDesc}）
-          </span>
-        )}
+        <PreviewResult
+          checked={data?.q3_repairHistory === "有修繕紀錄"}
+          label={`（曾有修繕：${data?.q3_repairDesc || ""}）`}
+          isWarning={true}
+        />
       </CheckRow>
 
       <SectionHeader title="4. 建物結構安全評估（含瑕疵與傾斜）" />
