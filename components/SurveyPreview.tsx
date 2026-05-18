@@ -745,7 +745,10 @@ const getHouseLabels = (data: SurveyData) => {
       data?.q3_leakType === "全屋天花板包覆 (無法檢查)"
     )
       return "全屋天花板包覆（無法檢查） - 因裝潢包覆無法檢視內部，需特別留意";
-    const locations = [...(data?.q3_locations || [])];
+    const locations = [...(data?.q3_locations || [])].filter(loc => loc !== "其他未列項目");
+    if (data?.q3_hasOther && data.q3_other) {
+      locations.push(data.q3_other);
+    }
     if (data?.q3_suspected && data.q3_suspectedDesc)
       locations.push(`待查證：${data.q3_suspectedDesc}`);
     const locStr = locations.join("、");
@@ -879,11 +882,6 @@ const HousePrintPage1Factory = ({
         <PreviewResult
           checked={data?.q3_hasLeak === "是"}
           label={labels.q3()}
-          isWarning={true}
-        />
-        <PreviewResult
-          checked={!!(data?.q3_hasOther && data.q3_other)}
-          label={data?.q3_other || ""}
           isWarning={true}
         />
         <PreviewResult checked={data?.q3_hasLeak === "否"} label="無" />
@@ -1259,11 +1257,6 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
         <PreviewResult
           checked={data?.q3_hasLeak === "是"}
           label={labels.q3()}
-          isWarning={true}
-        />
-        <PreviewResult
-          checked={!!(data?.q3_hasOther && data.q3_other)}
-          label={data?.q3_other || ""}
           isWarning={true}
         />
         <PreviewResult
