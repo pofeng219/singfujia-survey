@@ -167,7 +167,7 @@ export const WATER_BOOSTER_ITEMS_B = [
 ];
 
 export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯（無天然瓦斯）', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
-export const BUILDING_LINE_OPTIONS = ['已核定', '未核定', '申請中', '其他未列項目'];
+export const BUILDING_LINE_OPTIONS = ['已核定', '其他未列項目'];
 export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '水利溝渠（灌溉溝渠）', '無排水系統'];
 
 // Protection Options (Access)
