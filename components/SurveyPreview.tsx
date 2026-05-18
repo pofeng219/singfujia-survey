@@ -40,6 +40,7 @@ const PreviewResult: React.FC<{
 }> = ({ checked, label, suffix, isWarning, forceSafe }) => {
   const isStandard = true;
   if (!checked) return null;
+  if (!label) return null;
 
   // Highlight "有" (Yes/Has issue) or "是" options in red for quick scanning
   // Also include common issue keywords to ensure they are caught even without "有/是" prefix
@@ -915,7 +916,7 @@ const HousePrintPage1Factory = ({
             <span className="font-bold mr-2">電、水與瓦斯設備現況</span>
             <PreviewResult
               checked={data?.q7_hasIssue === "是"}
-              label={labels.q7() || "異常"}
+              label={labels.q7()}
               isWarning={true}
             />
             <PreviewResult
@@ -1268,7 +1269,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
         <span className="font-bold mr-2">電、水、瓦斯與其他設施使用現況</span>
         <PreviewResult
           checked={data?.q7_hasIssue === "是"}
-          label={labels.q7() || "異常"}
+          label={labels.q7()}
           isWarning={true}
         />
         <PreviewResult
@@ -1453,7 +1454,7 @@ const HousePrintPage2 = ({
               data?.q11_hasOther ? `其他: ${data.q11_other}` : "",
             ]
               .filter(Boolean)
-              .join("、") || "異常"
+              .join("、")
           }
           isWarning={true}
         />
@@ -2625,7 +2626,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
                           data?.q11_hasOther ? `其他：${data.q11_other}` : "",
                         ]
                           .filter(Boolean)
-                          .join("、") || "異常"
+                          .join("、")
                       }
                       isWarning={true}
                     />
