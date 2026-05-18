@@ -5,8 +5,6 @@ import { GROUP_A_TYPES } from '../constants';
 class SurveyValidator {
     private errors: ValidationError[] = [];
 
-    constructor() {}
-
     // Generic check: adds error if condition is true
     check(condition: boolean, id: string, message: string, step: number) {
         if (condition) this.errors.push({ id, message, step });
