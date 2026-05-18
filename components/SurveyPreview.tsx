@@ -168,7 +168,7 @@ const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }> = ({
         >
           {/* Apply small gray question style to the first span child if it's the question label */}
           <div
-            className={`[&>span:first-child]:${isStandard ? "text-[14px]" : "text-[18px]"} [&>span:first-child]:font-bold ${isAbnormal ? "[&>span:first-child]:text-rose-700" : "[&>span:first-child]:text-slate-500"} [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"} w-full leading-normal`}
+            className={`[&>span:first-child]:${isStandard ? "text-[14px]" : "text-[18px]"} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-800 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"} w-full leading-normal text-slate-800`}
           >
             {children}
           </div>
@@ -1333,6 +1333,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
           <PreviewResult
             checked={data?.house_solar_status === "私人設置"}
             label="私人設置"
+            isWarning={true}
           />
           <PreviewResult
             checked={
@@ -1996,26 +1997,26 @@ const FactoryPrintPage2 = ({
           <div className="flex flex-wrap gap-x-8 gap-y-1">
             <div>
               <span className="font-bold">
-                {isHiRise ? "樑下淨高／樓層高度" : "滴水高度"}
+                {isHiRise ? "樑下淨高／樓層高度：" : "滴水高度："}
               </span>
-              {data.factory_height}米
+              {data.factory_spec_unknown ? "無法確認／依使照為準" : `${data.factory_height || ""}米`}
             </div>
             <div>
-              <span className="font-bold">面寬</span>
-              {data.factory_width}米
+              <span className="font-bold">面寬：</span>
+              {data.factory_spec_unknown ? "無法確認／依使照為準" : `${data.factory_width || ""}米`}
             </div>
             <div>
-              <span className="font-bold">深度</span>
-              {data.factory_depth}米
+              <span className="font-bold">深度：</span>
+              {data.factory_spec_unknown ? "無法確認／依使照為準" : `${data.factory_depth || ""}米`}
             </div>
             <div>
-              <span className="font-bold">樓板高度</span>
-              {data.factory_floor_height}米
+              <span className="font-bold">樓板高度：</span>
+              {data.factory_spec_unknown ? "無法確認／依使照為準" : `${data.factory_floor_height || ""}米`}
             </div>
           </div>
           <div className="flex flex-wrap gap-x-8 gap-y-1">
             <div>
-              <span className="font-bold">地板狀況</span>
+              <span className="font-bold">地板狀況：</span>
               {data.factory_floor_condition +
                 (data.factory_floor_condition === "其他" ||
                 data.factory_floor_condition === "其他未列項目"
@@ -2023,11 +2024,11 @@ const FactoryPrintPage2 = ({
                   : "")}
             </div>
             <div>
-              <span className="font-bold">定期做消防檢測</span>
+              <span className="font-bold">定期做消防檢測：</span>
               {data.factory_fire_inspection}
             </div>
             <div>
-              <span className="font-bold">消防設施</span>
+              <span className="font-bold">消防設施：</span>
               {getFactoryFireLabel()}
             </div>
           </div>
@@ -2072,6 +2073,12 @@ const FactoryPrintPage2 = ({
           <PreviewResult checked={data?.land_q1_water === "否"} label="無" />
         </div>
       </CheckRow>
+      <CheckRow checked={!data?.land_q1_gas || data?.land_q1_gas === "完全無設置"}>
+        <div className="flex items-center text-black">
+          <span className="font-bold mr-2">瓦斯供應現況</span>
+          <PreviewResult checked={!!data?.land_q1_gas} label={data?.land_q1_gas || ""} />
+        </div>
+      </CheckRow>
       {/* Solar for Factory */}
       {showSolar && (
         <CheckRow
@@ -2089,6 +2096,7 @@ const FactoryPrintPage2 = ({
             <PreviewResult
               checked={data?.house_solar_status === "私人設置"}
               label="私人設置"
+              isWarning={true}
             />
             <PreviewResult
               checked={
@@ -2166,8 +2174,11 @@ const FactoryPrintPage2 = ({
       </CheckRow>
       <CheckRow checked={false}>
         <span className="font-bold mr-2">大車進出</span>
-        {data.factory_truck_access || ""}{" "}
-        {data.factory_truck_buffer ? `（${data.factory_truck_buffer}）` : ""}
+        {data.factory_truck_access || ""}
+      </CheckRow>
+      <CheckRow checked={false}>
+        <span className="font-bold mr-2">迴轉空間／緩衝區</span>
+        {data.factory_truck_buffer || ""}
       </CheckRow>
 
       <SectionHeader title="9. 車位資訊" />
