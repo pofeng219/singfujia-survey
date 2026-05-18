@@ -629,7 +629,15 @@ const LandAccessPreviewBuildingStyle = ({
                );
             }
             if (roadWidth) items.push(<span className="font-bold border-l-0">路寬:{roadWidth}米</span>);
-            if (buildingLine) items.push(<span className="font-bold border-l-0">建築線:{buildingLine}</span>);
+            if (buildingLine) {
+              items.push(
+                <PreviewResult
+                  checked={true}
+                  label={`建築線:${buildingLine}`}
+                  isWarning={['未核定', '申請中', '須申請'].includes(buildingLine)}
+                />
+              );
+            }
             if (ditch) {
                items.push(
                  <PreviewResult
@@ -640,6 +648,7 @@ const LandAccessPreviewBuildingStyle = ({
                        ? `: ${ditchOther}`
                        : `: ${ditch}`
                    }
+                   isWarning={ditch === "無排水系統"}
                  />
                );
             }
@@ -1021,7 +1030,13 @@ const CommonExtraQuestions = ({
                 items.push(<span className="font-bold border-l-0">路寬：{data.q14_roadWidth}米</span>);
               }
               if (data.q14_buildingLine) {
-                items.push(<span className="font-bold border-l-0">建築線：{data.q14_buildingLine}</span>);
+                items.push(
+                  <PreviewResult
+                    checked={true}
+                    label={`建築線：${data.q14_buildingLine}`}
+                    isWarning={['未核定', '申請中', '須申請'].includes(data.q14_buildingLine)}
+                  />
+                );
               }
               if (data.q14_ditch) {
                 items.push(
@@ -1033,6 +1048,7 @@ const CommonExtraQuestions = ({
                         ? `：${data.q14_ditchOther}`
                         : `：${data.q14_ditch}`
                     }
+                    isWarning={data.q14_ditch === "無排水系統"}
                   />
                 );
               }
@@ -2231,9 +2247,23 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
                 {data.land_q2_owner
                   ? ` （${data.land_q2_owner}${data.land_q2_protection ? "／" + data.land_q2_protection : ""}）`
                   : ""}
-                {mat || ditchStr ? ` [${mat || "-"}／${ditchStr || "-"}]` : ""}
+                {mat ? ` [${mat}／` : (ditchStr ? " [-／" : "")}
+                {ditchStr ? (
+                  <span className={ditch === "無排水系統" ? "text-red-500 font-bold" : ""}>
+                    {ditchStr}
+                  </span>
+                ) : ""}
+                {mat || ditchStr ? "]" : ""}
                 {roadWidth ? ` [${roadWidth}]` : ""}
-                {buildingLine ? ` [${buildingLine}]` : ""}
+                {buildingLine ? (
+                  <>
+                    {" ["}
+                    <span className={['未核定', '申請中', '須申請'].includes(data.land_q2_buildingLine || "") ? "text-red-500 font-bold" : ""}>
+                      {buildingLine}
+                    </span>
+                    {"]"}
+                  </>
+                ) : ""}
                 {formatAccessLandAddress(
                   data.land_q2_access_section,
                   data.land_q2_access_subSection,
