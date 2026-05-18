@@ -98,7 +98,7 @@ export const INITIAL_STATE: SurveyData = {
     land_q5_encroached: '', land_q5_encroached_desc: '', land_q5_encroaching: '', land_q5_encroaching_desc: '',
     land_q6_limit: '', land_q6_limit_desc: '',
     land_q7_user: '', land_q7_user_detail: '', land_q7_user_desc: '',
-    land_q7_crops: '', land_q7_crops_month: '', land_q7_crops_type: [], land_q7_crops_detail: '', land_q7_crops_detail_other: '', land_q7_crops_other: '',
+    land_q7_crops: '', land_q7_crops_month: '', land_q7_crops_type: [], land_q7_crops_detail: '', land_q7_crops_detail_other: '', land_q7_crops_econ_detail: '', land_q7_crops_econ_detail_other: '', land_q7_crops_land_detail: '', land_q7_crops_land_detail_other: '', land_q7_crops_other: '',
     land_q7_build: '', land_q7_build_type: '', land_q7_build_ownership: '', land_q7_build_reg_detail: '', land_q7_build_unreg_detail: '', land_q7_build_rel_detail: [], land_q7_build_other: '', land_q7_solar: '',
     
     land_water_booster: '', land_water_booster_items: [],

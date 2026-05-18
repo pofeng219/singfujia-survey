@@ -317,6 +317,10 @@ export interface SurveyData {
     land_q7_crops_type: string[];
     land_q7_crops_detail: string;
     land_q7_crops_detail_other: string;
+    land_q7_crops_econ_detail: string;
+    land_q7_crops_econ_detail_other: string;
+    land_q7_crops_land_detail: string;
+    land_q7_crops_land_detail_other: string;
     land_q7_crops_other: string;
 
     land_q7_build: string;

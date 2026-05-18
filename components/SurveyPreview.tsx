@@ -1628,14 +1628,26 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         const idx = types.indexOf("其他未列項目");
         types[idx] = `其他未列項目：${data.land_q7_crops_other}`;
       }
+      
+      let formattedTypes = types.map(t => {
+        if (t === "經濟作物") {
+            const detail = data.land_q7_crops_econ_detail || data.land_q7_crops_detail;
+            const other = data.land_q7_crops_econ_detail ? data.land_q7_crops_econ_detail_other : data.land_q7_crops_detail_other;
+            if (detail) {
+                return `經濟作物（處理：${detail}${detail === "其他未列項目" ? " - " + other : ""}）`;
+            }
+        }
+        if (t === "景觀植栽") {
+            const detail = data.land_q7_crops_land_detail || data.land_q7_crops_detail;
+            const other = data.land_q7_crops_land_detail ? data.land_q7_crops_land_detail_other : data.land_q7_crops_detail_other;
+            if (detail) {
+                return `景觀植栽（處理：${detail}${detail === "其他未列項目" ? " - " + other : ""}）`;
+            }
+        }
+        return t;
+      });
 
-      let parts = [types.join("、")];
-      if (data.land_q7_crops_detail) {
-        parts.push(
-          `處理：${data.land_q7_crops_detail}${data.land_q7_crops_detail === "其他未列項目" ? " - " + data.land_q7_crops_detail_other : ""}`,
-        );
-      }
-      return `有 （${parts.join("／")}）`;
+      return `有 （${formattedTypes.join("、")}）`;
     }
     return "";
   };

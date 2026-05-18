@@ -844,9 +844,13 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!data.land_q7_crops) return 'incomplete';
         if (data.land_q7_crops === '有農作物／植栽') {
             if (!data.land_q7_crops_type || data.land_q7_crops_type.length === 0) return 'incomplete';
-            if ((data.land_q7_crops_type.includes('經濟作物') || data.land_q7_crops_type.includes('景觀植栽'))) {
-                if (!data.land_q7_crops_detail) return 'incomplete';
-                if (data.land_q7_crops_detail === '其他未列項目' && !data.land_q7_crops_detail_other) return 'incomplete';
+            if (data.land_q7_crops_type.includes('經濟作物')) {
+                if (!data.land_q7_crops_econ_detail) return 'incomplete';
+                if (data.land_q7_crops_econ_detail === '其他未列項目' && !data.land_q7_crops_econ_detail_other) return 'incomplete';
+            }
+            if (data.land_q7_crops_type.includes('景觀植栽')) {
+                if (!data.land_q7_crops_land_detail) return 'incomplete';
+                if (data.land_q7_crops_land_detail === '其他未列項目' && !data.land_q7_crops_land_detail_other) return 'incomplete';
             }
             if (data.land_q7_crops_type.includes('其他未列項目') && !data.land_q7_crops_other) return 'incomplete';
         }
@@ -1166,7 +1170,8 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                                 setData(prev => ({ 
                                                                     ...prev, 
                                                                     land_q7_crops_type: arr.filter(i => i !== opt2),
-                                                                    land_q7_crops_detail: (opt2 === '經濟作物' || opt2 === '景觀植栽') && !(arr.filter(i => i !== opt2).includes('經濟作物') || arr.filter(i => i !== opt2).includes('景觀植栽')) ? '' : prev.land_q7_crops_detail
+                                                                    land_q7_crops_econ_detail: opt2 === '經濟作物' ? '' : prev.land_q7_crops_econ_detail,
+                                                                    land_q7_crops_land_detail: opt2 === '景觀植栽' ? '' : prev.land_q7_crops_land_detail
                                                                 }));
                                                             } else {
                                                                 setData(prev => ({ ...prev, land_q7_crops_type: [...arr, opt2] }));
@@ -1176,14 +1181,26 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                 ))}
                                             </div>
                                             
-                                            {(data.land_q7_crops_type?.includes('經濟作物') || data.land_q7_crops_type?.includes('景觀植栽')) && (
+                                            {data.land_q7_crops_type?.includes('經濟作物') && (
                                                 <div className="p-4 bg-white rounded-xl border-2 border-slate-200">
-                                                    <p className="font-bold text-xl mb-3">處理方式：</p>
+                                                    <p className="font-bold text-xl mb-3">經濟作物處理方式：</p>
                                                     <AccordionRadio 
                                                         options={['隨同移轉', '賣方清除', '其他未列項目']} 
-                                                        value={data.land_q7_crops_detail || ''} 
-                                                        onChange={v => { update('land_q7_crops_detail', v); if (v !== '其他未列項目') update('land_q7_crops_detail_other', ''); }} 
-                                                        renderDetail={o => o === '其他未列項目' ? <DetailInput value={data.land_q7_crops_detail_other || ''} onChange={v => update('land_q7_crops_detail_other', v)} placeholder="說明現況" /> : null}
+                                                        value={data.land_q7_crops_econ_detail || ''} 
+                                                        onChange={v => { update('land_q7_crops_econ_detail', v); if (v !== '其他未列項目') update('land_q7_crops_econ_detail_other', ''); }} 
+                                                        renderDetail={o => o === '其他未列項目' ? <DetailInput value={data.land_q7_crops_econ_detail_other || ''} onChange={v => update('land_q7_crops_econ_detail_other', v)} placeholder="說明現況" /> : null}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {data.land_q7_crops_type?.includes('景觀植栽') && (
+                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200">
+                                                    <p className="font-bold text-xl mb-3">景觀植栽處理方式：</p>
+                                                    <AccordionRadio 
+                                                        options={['隨同移轉', '賣方清除', '其他未列項目']} 
+                                                        value={data.land_q7_crops_land_detail || ''} 
+                                                        onChange={v => { update('land_q7_crops_land_detail', v); if (v !== '其他未列項目') update('land_q7_crops_land_detail_other', ''); }} 
+                                                        renderDetail={o => o === '其他未列項目' ? <DetailInput value={data.land_q7_crops_land_detail_other || ''} onChange={v => update('land_q7_crops_land_detail_other', v)} placeholder="說明現況" /> : null}
                                                     />
                                                 </div>
                                             )}
