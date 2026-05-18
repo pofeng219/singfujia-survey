@@ -502,7 +502,8 @@ const LandDisputeExproPreview = ({
         checked={
           data?.land_q3_survey === "從未鑑界" || data?.land_q3_survey === "否"
         }
-        label="從未鑑界"
+        label={data?.land_q3_survey === "否" ? "否 (或年代久遠)" : "從未鑑界"}
+        isWarning={true}
       />
     </CheckRow>
     <CheckRow
