@@ -155,6 +155,7 @@ export interface SurveyData {
     q14_roadMaterialOther: string;
     q14_roadWidth: string; // New: Road width
     q14_buildingLine: string; // New: Building line designation
+    q14_buildingLineOther: string; // New: Building line other
     q14_ditch: string;
     q14_ditchOther: string;
     q14_protectionDesc: string; // New: Protection description
@@ -283,6 +284,7 @@ export interface SurveyData {
     land_q2_material_other: string;
     land_q2_roadWidth: string; // New: Road width for land
     land_q2_buildingLine: string; // New: Building line designation
+    land_q2_buildingLine_other: string; // New: Building line other
     land_q2_ditch: string;
     land_q2_ditch_other: string;
     land_q2_protectionDesc: string; // New: Protection description

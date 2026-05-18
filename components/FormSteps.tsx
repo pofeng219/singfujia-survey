@@ -1756,7 +1756,11 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             if (type === 'land') {
                 const hideBuildingLine = data.propertyType === '農地';
                 const hideDitch = false;
-                if (!hideBuildingLine && !data[buildingLineKey as keyof SurveyData]) return 'incomplete';
+                const buildingLineOtherKey = isHouse ? 'q14_buildingLineOther' : 'land_q2_buildingLine_other';
+                if (!hideBuildingLine) {
+                    if (!data[buildingLineKey as keyof SurveyData]) return 'incomplete';
+                    if (data[buildingLineKey as keyof SurveyData] === '其他未列項目' && !data[buildingLineOtherKey as keyof SurveyData]) return 'incomplete';
+                }
                 if (!hideDitch && !data[ditchKey as keyof SurveyData]) return 'incomplete';
             }
         } else if (accessVal.includes('受限') || accessVal === '其他未列項目' || accessVal.includes('袋地')) {

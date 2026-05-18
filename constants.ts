@@ -50,7 +50,7 @@ export const INITIAL_STATE: SurveyData = {
     isNotFirstFloor: false,
     q14_access: '', q14_ownership: '', q14_protection: '', q14_protectionDesc: '', q14_abnormalDesc: '', 
     q14_section: '', q14_subSection: '', q14_number: '',
-    q14_roadMaterial: '', q14_roadMaterialOther: '', q14_roadWidth: '', q14_buildingLine: '', q14_ditch: '', q14_ditchOther: '',
+    q14_roadMaterial: '', q14_roadMaterialOther: '', q14_roadWidth: '', q14_buildingLine: '', q14_buildingLineOther: '', q14_ditch: '', q14_ditchOther: '',
     
     q15_occupy: '', q15_section: '', q15_subSection: '', q15_number: '',
     q16_noFacilities: false, q16_items: [], q16_hasOther: false, q16_other: '',
@@ -91,7 +91,7 @@ export const INITIAL_STATE: SurveyData = {
     land_q2_access: '', land_q2_access_desc: '', 
     land_q2_access_section: '', land_q2_access_subSection: '', land_q2_access_number: '',
     land_q2_owner: '', land_q2_protection: '', land_q2_protectionDesc: '',
-    land_q2_material: '', land_q2_material_other: '', land_q2_roadWidth: '', land_q2_buildingLine: '', land_q2_ditch: '', land_q2_ditch_other: '',
+    land_q2_material: '', land_q2_material_other: '', land_q2_roadWidth: '', land_q2_buildingLine: '', land_q2_buildingLine_other: '', land_q2_ditch: '', land_q2_ditch_other: '',
     land_q3_survey: '', land_q3_survey_detail: '', land_q3_survey_other: '', land_q3_survey_date: '',
     land_q3_dispute: '', land_q3_dispute_desc: '', land_q3_dispute_other: '',
     land_q4_expro: '', land_q4_expro_other: '', land_q4_resurvey: '', land_q4_resurvey_other: '',
@@ -167,7 +167,7 @@ export const WATER_BOOSTER_ITEMS_B = [
 ];
 
 export const GAS_SUPPLY_OPTIONS = ['天然瓦斯（街道管線／有帳單）', '社區配管（社區大水桶／大槽）', '桶裝瓦斯（無天然瓦斯）', '無瓦斯（全電設備／電磁爐）', '完全無設置'];
-export const BUILDING_LINE_OPTIONS = ['已核定', '未核定', '申請中', '須申請'];
+export const BUILDING_LINE_OPTIONS = ['已核定', '未核定', '申請中', '其他未列項目'];
 export const DRAINAGE_OPTIONS = ['公有排水溝（可搭排）', '水利溝渠（灌溉溝渠）', '無排水系統'];
 
 // Protection Options (Access)

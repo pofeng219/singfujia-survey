@@ -880,6 +880,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
     const materialOtherKey = isHouse ? 'q14_roadMaterialOther' : 'land_q2_material_other';
     const roadWidthKey = isHouse ? 'q14_roadWidth' : 'land_q2_roadWidth';
     const buildingLineKey = isHouse ? 'q14_buildingLine' : 'land_q2_buildingLine';
+    const buildingLineOtherKey = isHouse ? 'q14_buildingLineOther' : 'land_q2_buildingLine_other';
     const ditchKey = isHouse ? 'q14_ditch' : 'land_q2_ditch';
     const ditchOtherKey = isHouse ? 'q14_ditchOther' : 'land_q2_ditch_other';
     
@@ -953,7 +954,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                                 {type === 'land' && !hideBuildingLine && (
                                                     <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                                          <p className="font-bold text-lg mb-2 text-slate-600">建築線指定狀況</p>
-                                                         <AccordionRadio options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} />
+                                                         <AccordionRadio options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[buildingLineOtherKey] || ''} onChange={v => update(buildingLineOtherKey, v)} placeholder="如：申請中、未核定" /> : null} />
                                                     </div>
                                                 )}
                                             </div>

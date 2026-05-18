@@ -588,6 +588,7 @@ const LandAccessPreviewBuildingStyle = ({
   const roadMatOther = data?.land_q2_material_other;
   const roadWidth = data?.land_q2_roadWidth;
   const buildingLine = data?.land_q2_buildingLine;
+  const buildingLineOther = data?.land_q2_buildingLine_other;
   const ditch = data?.land_q2_ditch;
   const ditchOther = data?.land_q2_ditch_other;
 
@@ -630,11 +631,12 @@ const LandAccessPreviewBuildingStyle = ({
             }
             if (roadWidth) items.push(<span className="font-bold border-l-0">路寬:{roadWidth}米</span>);
             if (buildingLine) {
+              const buildingLineLabel = buildingLine === '其他未列項目' ? buildingLineOther : buildingLine;
               items.push(
                 <PreviewResult
                   checked={true}
-                  label={`建築線:${buildingLine}`}
-                  isWarning={['未核定', '申請中', '須申請'].includes(buildingLine)}
+                  label={`建築線:${buildingLineLabel}`}
+                  isWarning={['未核定', '申請中', '須申請'].includes(buildingLine) || buildingLine === '其他未列項目'}
                 />
               );
             }
@@ -1030,11 +1032,12 @@ const CommonExtraQuestions = ({
                 items.push(<span className="font-bold border-l-0">路寬：{data.q14_roadWidth}米</span>);
               }
               if (data.q14_buildingLine) {
+                const buildingLineLabel = data.q14_buildingLine === '其他未列項目' ? data.q14_buildingLineOther : data.q14_buildingLine;
                 items.push(
                   <PreviewResult
                     checked={true}
-                    label={`建築線：${data.q14_buildingLine}`}
-                    isWarning={['未核定', '申請中', '須申請'].includes(data.q14_buildingLine)}
+                    label={`建築線：${buildingLineLabel}`}
+                    isWarning={['未核定', '申請中', '須申請'].includes(data.q14_buildingLine) || data.q14_buildingLine === '其他未列項目'}
                   />
                 );
               }
@@ -2237,8 +2240,9 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
             const roadWidth = data.land_q2_roadWidth
               ? `路寬：${data.land_q2_roadWidth}米`
               : "";
+            const buildingLineVal = data.land_q2_buildingLine === '其他未列項目' ? data.land_q2_buildingLine_other : data.land_q2_buildingLine;
             const buildingLine = data.land_q2_buildingLine
-              ? `建築線：${data.land_q2_buildingLine}`
+              ? `建築線：${buildingLineVal}`
               : "";
 
             return (
@@ -2258,7 +2262,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
                 {buildingLine ? (
                   <>
                     {" ["}
-                    <span className={['未核定', '申請中', '須申請'].includes(data.land_q2_buildingLine || "") ? "text-red-500 font-bold" : ""}>
+                    <span className={['未核定', '申請中', '須申請'].includes(data.land_q2_buildingLine || "") || data.land_q2_buildingLine === '其他未列項目' ? "text-red-500 font-bold" : ""}>
                       {buildingLine}
                     </span>
                     {"]"}
