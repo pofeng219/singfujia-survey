@@ -631,7 +631,7 @@ const LandAccessPreviewBuildingStyle = ({
             }
             if (roadWidth) items.push(<span className="font-bold border-l-0">路寬:{roadWidth}米</span>);
             if (buildingLine) {
-              const buildingLineLabel = buildingLine === '其他未列項目' ? buildingLineOther : buildingLine;
+              const buildingLineLabel = buildingLine === '其他未列項目' ? (buildingLineOther || '') : buildingLine;
               items.push(
                 <PreviewResult
                   checked={true}
@@ -1032,7 +1032,7 @@ const CommonExtraQuestions = ({
                 items.push(<span className="font-bold border-l-0">路寬：{data.q14_roadWidth}米</span>);
               }
               if (data.q14_buildingLine) {
-                const buildingLineLabel = data.q14_buildingLine === '其他未列項目' ? data.q14_buildingLineOther : data.q14_buildingLine;
+                const buildingLineLabel = data.q14_buildingLine === '其他未列項目' ? (data.q14_buildingLineOther || '') : data.q14_buildingLine;
                 items.push(
                   <PreviewResult
                     checked={true}
@@ -2240,7 +2240,7 @@ const FactoryPrintPage3 = ({ data }: { data: SurveyData }) => {
             const roadWidth = data.land_q2_roadWidth
               ? `路寬：${data.land_q2_roadWidth}米`
               : "";
-            const buildingLineVal = data.land_q2_buildingLine === '其他未列項目' ? data.land_q2_buildingLine_other : data.land_q2_buildingLine;
+            const buildingLineVal = data.land_q2_buildingLine === '其他未列項目' ? (data.land_q2_buildingLine_other || '') : data.land_q2_buildingLine;
             const buildingLine = data.land_q2_buildingLine
               ? `建築線：${buildingLineVal}`
               : "";
