@@ -129,6 +129,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
                 // Lane Land Number
                 v.require(d.q10_laneSection, sMain, `${qInfo}：車道經過地號-段號未填寫`, startStep);
+                v.require(d.q10_laneNumber, sMain, `${qInfo}：車道經過地號-地號未填寫`, startStep);
             }
 
             // Charging
@@ -244,6 +245,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
              const protectionNeedsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(d.q14_protection);
              v.requireIf(protectionNeedsDesc, d.q14_protectionDesc, "section-q14", "11. 請填寫保障類型說明", s4);
              v.require(d.q14_roadWidth, "section-q14", "11. 現況路寬未填寫", s4);
+             v.require(d.q14_section, "section-q14", "11. 通行進出地號-段號未填寫", s4);
+             v.require(d.q14_number, "section-q14", "11. 通行進出地號-地號未填寫", s4);
         } else if (d.q14_access === '通行受限' || d.q14_access?.includes('受限')) {
              v.require(d.q14_abnormalDesc, "section-q14", "11. 請填寫受限說明", s4);
         }
@@ -337,6 +340,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
              const protectionNeedsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(d.land_q2_protection);
              v.requireIf(protectionNeedsDesc, d.land_q2_protectionDesc, "section-land-q2", "8. 請填寫保障類型說明", s4);
              v.require(d.land_q2_roadWidth, "section-land-q2", "8. 現況路寬未填寫", s4);
+             v.require(d.land_q2_access_section, "section-land-q2", "8. 通行進出地號-段號未填寫", s4);
+             v.require(d.land_q2_access_number, "section-land-q2", "8. 通行進出地號-地號未填寫", s4);
         } else if (d.land_q2_access === '通行受限' || d.land_q2_access?.includes('受限')) {
              v.require(d.land_q2_access_desc, "section-land-q2", "8. 請填寫受限說明", s4);
         }
@@ -481,6 +486,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
              const protectionNeedsDesc = ['分管協議約定', '取得地主同意書', '法院判決通行', '現狀通行／既成道路', '現況未明／無保障'].includes(d.land_q2_protection);
              v.requireIf(protectionNeedsDesc, d.land_q2_protectionDesc, "section-land-q2", `${accessNum}. 請填寫保障類型說明`, s4);
              v.require(d.land_q2_roadWidth, "section-land-q2", `${accessNum}. 現況路寬未填寫`, s4);
+             v.require(d.land_q2_access_section, "section-land-q2", `${accessNum}. 通行進出地號-段號未填寫`, s4);
+             v.require(d.land_q2_access_number, "section-land-q2", `${accessNum}. 通行進出地號-地號未填寫`, s4);
         }
         
         if (!hideLandDetails) {

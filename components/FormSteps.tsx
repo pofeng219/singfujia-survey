@@ -302,7 +302,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         }
         if (!parkingLogic.disableWeight && !data.q10_mechWeight) return 'incomplete';
         if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
-        if (!data.q10_laneSection || !data.q10_laneSubSection || !data.q10_laneNumber) return 'incomplete';
+        if (!data.q10_laneSection || !data.q10_laneNumber) return 'incomplete';
         if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
         if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
         if (!data.q10_charging) return 'incomplete';
@@ -927,7 +927,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
 
         // 5. Lane Land Number
-        if (!data.q10_laneSection || !data.q10_laneSubSection || !data.q10_laneNumber) return 'incomplete';
+        if (!data.q10_laneSection || !data.q10_laneNumber) return 'incomplete';
 
         // 6. Motorcycle Usage
         if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
@@ -1425,7 +1425,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             }
             // Factory: Skip weight check as it is hidden
             if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
-            if (!data.q10_laneSection || !data.q10_laneSubSection || !data.q10_laneNumber) return 'incomplete';
+            if (!data.q10_laneSection || !data.q10_laneNumber) return 'incomplete';
             if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
             if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
             if (!data.q10_charging) return 'incomplete';
@@ -1729,7 +1729,6 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const materialKey = isHouse ? 'q14_roadMaterial' : 'land_q2_material';
         const roadWidthKey = isHouse ? 'q14_roadWidth' : 'land_q2_roadWidth';
         const sectionKey = isHouse ? 'q14_section' : 'land_q2_access_section';
-        const subSectionKey = isHouse ? 'q14_subSection' : 'land_q2_access_subSection';
         const numberKey = isHouse ? 'q14_number' : 'land_q2_access_number';
         const buildingLineKey = isHouse ? 'q14_buildingLine' : 'land_q2_buildingLine';
         const ditchKey = isHouse ? 'q14_ditch' : 'land_q2_ditch';
@@ -1748,7 +1747,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
             if (needsDesc && !data[protectionDescKey as keyof SurveyData]) return 'incomplete';
             
             // Land Numbers
-            if (!data[sectionKey as keyof SurveyData] || !data[subSectionKey as keyof SurveyData] || !data[numberKey as keyof SurveyData]) return 'incomplete';
+            if (!data[sectionKey as keyof SurveyData] || !data[numberKey as keyof SurveyData]) return 'incomplete';
 
             if (type === 'land' && !data[materialKey as keyof SurveyData]) return 'incomplete';
             if (!data[roadWidthKey as keyof SurveyData]) return 'incomplete';
