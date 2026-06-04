@@ -2067,6 +2067,7 @@ const FactoryPrintPage2 = ({
           <PreviewResult
             checked={data?.land_q1_water !== "否" && !!data?.land_q1_water}
             label={getLandWaterSummary()}
+            forceSafe={true}
           />
           <PreviewResult checked={data?.land_q1_water === "否"} label="無" />
         </div>
