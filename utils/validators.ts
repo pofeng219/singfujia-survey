@@ -161,7 +161,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.requireIf(!!q6Issue, d.q6_desc, "section-q6", "2. 請填寫面積差異／無法測量說明", s2);
 
         v.require(d.q3_hasLeak, "section-q3", "3. 滲漏水現況未填寫", s2);
-        if (d.q3_hasLeak === '是') {
+        if (d.q3_hasLeak === '是' && !d.q3_ceilingWrapped) {
             v.require(d.q3_leakType, "section-q3", "3. 請選擇滲漏水/壁癌類別", s2);
             if (!d.q3_leakType?.includes('全屋天花板包覆')) {
                 const locEmpty = (d.q3_locations?.length || 0) === 0;
@@ -308,6 +308,20 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
         v.require(d.land_q7_crops, "section-land-q7", "6. 農作物現況未填寫", s3);
         v.require(d.land_q7_build, "section-land-q7", "6. 地上建物現況未填寫", s3);
+        if (d.land_q7_build === '有建築物／工作物') {
+            v.requireCheckboxGroup(true, d.land_q7_build_type, false, "section-land-q7", "6. 請勾選地上建物類型", s3);
+            if (d.land_q7_build_type?.includes('有保存登記')) {
+                v.require(d.land_q7_build_reg_ownership, "section-land-q7", "6. 請選擇有保存登記產權狀況", s3);
+                v.requireIf(d.land_q7_build_reg_ownership === '其他未列項目', d.land_q7_build_reg_detail, "section-land-q7", "6. 請說明有保存登記現況", s3);
+            }
+            if (d.land_q7_build_type?.includes('未保存登記')) {
+                v.require(d.land_q7_build_unreg_ownership, "section-land-q7", "6. 請選擇未保存登記產權狀況", s3);
+                v.requireIf(d.land_q7_build_unreg_ownership === '其他未列項目', d.land_q7_build_unreg_detail, "section-land-q7", "6. 請說明未保存登記現況", s3);
+            }
+            if (d.land_q7_build_type?.includes('其他未列項目')) {
+                v.require(d.land_q7_build_other, "section-land-q7", "6. 請說明地上建物其他未列項目", s3);
+            }
+        }
         v.require(d.land_q7_solar, "section-land-q7", "6. 太陽能光電發電設備現況未填寫", s3);
 
         // Added Water Booster Validation for Land (Step 3 Q6)
@@ -381,7 +395,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
 
         // Q3 Leakage
         v.require(d.q3_hasLeak, "section-q3", "3. 滲漏水現況未填寫", s2);
-        if (d.q3_hasLeak === '是') {
+        if (d.q3_hasLeak === '是' && !d.q3_ceilingWrapped) {
             v.require(d.q3_leakType, "section-q3", "3. 請選擇滲漏水／壁癌類別", s2);
             if (!d.q3_leakType?.includes('全屋天花板包覆')) {
                 const locEmpty = (d.q3_locations?.length || 0) === 0;
@@ -416,7 +430,9 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
             v.require(d.factory_floor_height, "section-factory-struct", "5. 樓板高度未填寫", s3);
         }
         
-        v.require(d.factory_floor_condition, "section-factory-struct", "5. 地坪狀況未填寫", s3);
+        v.requireCheckboxGroup(true, d.factory_floor_condition, false, "section-factory-struct", "5. 地坪狀況未填寫", s3);
+        const hasOtherFloor = d.factory_floor_condition?.includes('其他未列項目');
+        v.requireIf(hasOtherFloor || false, d.factory_floor_condition_other, "section-factory-struct", "5. 請填寫地坪狀況「其他」說明", s3);
         
         // Factory Utilities
         v.require(d.land_q1_elec, "section-factory-q6", "6. 電、水與其他設施現況未填寫 (電力)", s3);

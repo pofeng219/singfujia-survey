@@ -1695,32 +1695,27 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
     if (!data?.land_q7_build) return "";
     if (data?.land_q7_build === "無") return "無";
     if (data?.land_q7_build === "有建築物／工作物") {
-      let parts = [data.land_q7_build_type];
-      if (
-        data.land_q7_build_type === "有保存登記" ||
-        data.land_q7_build_type === "未保存登記"
-      ) {
-        if (data.land_q7_build_ownership) {
-          let status = data.land_q7_build_ownership;
-          if (status === "其他未列項目" || status === "其他") {
-            const detail =
-              data.land_q7_build_type === "有保存登記"
-                ? data.land_q7_build_reg_detail
-                : data.land_q7_build_unreg_detail;
-            if (detail) status += `：${detail}`;
-          }
-          parts.push(status);
+      if (!Array.isArray(data.land_q7_build_type)) return "有";
+      const parts = data.land_q7_build_type.map(type => {
+        if (type === '有保存登記') {
+            let status = data.land_q7_build_reg_ownership;
+            if (status === "其他未列項目" || status === "其他") {
+               status += `：${data.land_q7_build_reg_detail}`;
+            }
+            return status ? `有保存登記（${status}）` : '有保存登記';
         }
-      } else if (
-        data.land_q7_build_type === "宗教／殯葬設施" &&
-        data.land_q7_build_rel_detail
-      )
-        parts.push(Array.isArray(data.land_q7_build_rel_detail) ? data.land_q7_build_rel_detail.join('／') : data.land_q7_build_rel_detail);
-      else if (
-        data.land_q7_build_type === "其他未列項目" &&
-        data.land_q7_build_other
-      )
-        parts.push(data.land_q7_build_other);
+        if (type === '未保存登記') {
+            let status = data.land_q7_build_unreg_ownership;
+            if (status === "其他未列項目" || status === "其他") {
+               status += `：${data.land_q7_build_unreg_detail}`;
+            }
+            return status ? `未保存登記（${status}）` : '未保存登記';
+        }
+        if (type === '其他未列項目' && data.land_q7_build_other) {
+            return `其他（${data.land_q7_build_other}）`;
+        }
+        return type;
+      });
       return `有 （${parts.join("、")}）`;
     }
     return "";
@@ -2017,11 +2012,13 @@ const FactoryPrintPage2 = ({
           <div className="flex flex-wrap gap-x-8 gap-y-1">
             <div>
               <span className="font-bold">地板狀況：</span>
-              {data.factory_floor_condition +
-                (data.factory_floor_condition === "其他" ||
-                data.factory_floor_condition === "其他未列項目"
-                  ? `（${data.factory_floor_condition_other}）`
-                  : "")}
+              {Array.isArray(data.factory_floor_condition) 
+                ? data.factory_floor_condition.map(cond => cond === '其他未列項目' || cond === '其他' ? `其他（${data.factory_floor_condition_other}）` : cond).join('、')
+                : (data.factory_floor_condition +
+                  (data.factory_floor_condition === "其他" || data.factory_floor_condition === "其他未列項目"
+                    ? `（${data.factory_floor_condition_other}）`
+                    : ""))
+              }
             </div>
             <div>
               <span className="font-bold">定期做消防檢測：</span>

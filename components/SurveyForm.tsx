@@ -543,8 +543,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[6rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
                 {/* Top Action Bar */}
-                <div className={`${themeBg} flex flex-col gap-2 shadow-md shrink-0 relative overflow-hidden transition-all duration-300 z-40 ${scrollDirection === 'down' ? 'max-h-1.5 p-0 opacity-80' : 'max-h-32 p-3 md:p-4 opacity-100'}`}>
-                    <div className={`flex justify-between items-center w-full gap-2 relative z-10 transition-transform duration-300 ${scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'}`}>
+                <div className={`${themeBg} absolute top-0 left-0 right-0 flex flex-col shadow-md z-50 transition-transform duration-300 ${scrollDirection === 'down' ? '-translate-y-[calc(100%-8px)] opacity-90' : 'translate-y-0 opacity-100'}`}>
+                    <div className="flex justify-between items-center w-full gap-2 p-3 md:p-4">
                         <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] border-yellow-500 px-3 md:px-4 py-2 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1 shadow-sm dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
                             <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
                             <span className="font-bold text-sm whitespace-nowrap">回首頁</span>
@@ -587,7 +587,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div ref={formScrollRef} className="flex-grow overflow-y-auto min-h-0 p-4 md:p-6 space-y-6 pb-8 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
+                <div ref={formScrollRef} className="flex-grow overflow-y-auto min-h-0 px-4 pb-8 pt-[84px] md:px-6 md:pb-8 md:pt-[92px] space-y-6 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
                     <ErrorBoundary>
                         {activeStep === 1 && <Step1 {...stepProps} />}
                         {activeStep === 2 && <Step2 {...stepProps} />}

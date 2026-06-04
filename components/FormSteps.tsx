@@ -857,17 +857,16 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
         if (!data.land_q7_build) return 'incomplete';
         if (data.land_q7_build === '有建築物／工作物') {
-            if (!data.land_q7_build_type) return 'incomplete';
-            if (data.land_q7_build_type === '有保存登記') {
-                if (!data.land_q7_build_ownership) return 'incomplete';
-                if (data.land_q7_build_ownership === '其他未列項目' && !data.land_q7_build_reg_detail) return 'incomplete';
+            if (!data.land_q7_build_type || data.land_q7_build_type.length === 0) return 'incomplete';
+            if (data.land_q7_build_type.includes('有保存登記')) {
+                if (!data.land_q7_build_reg_ownership) return 'incomplete';
+                if (data.land_q7_build_reg_ownership === '其他未列項目' && !data.land_q7_build_reg_detail) return 'incomplete';
             }
-            if (data.land_q7_build_type === '未保存登記') {
-                if (!data.land_q7_build_ownership) return 'incomplete';
-                if (data.land_q7_build_ownership === '其他未列項目' && !data.land_q7_build_unreg_detail) return 'incomplete';
+            if (data.land_q7_build_type.includes('未保存登記')) {
+                if (!data.land_q7_build_unreg_ownership) return 'incomplete';
+                if (data.land_q7_build_unreg_ownership === '其他未列項目' && !data.land_q7_build_unreg_detail) return 'incomplete';
             }
-            if (data.land_q7_build_type === '宗教／殯葬設施' && (!data.land_q7_build_rel_detail || data.land_q7_build_rel_detail.length === 0)) return 'incomplete';
-            if (data.land_q7_build_type === '其他未列項目' && !data.land_q7_build_other) return 'incomplete';
+            if (data.land_q7_build_type.includes('其他未列項目') && !data.land_q7_build_other) return 'incomplete';
         }
 
         if (!data.land_q7_solar) return 'incomplete';
@@ -1222,19 +1221,29 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 onChange={v => setData(p => ({...p, land_q7_build: v === '無' ? '無' : v}))} 
                                 renderDetail={(opt) => opt === '有建築物／工作物' ? (
                                     <SubItemHighlight>
-                                        <div className="space-y-6">
-                                            <AccordionRadio 
-                                                options={['有保存登記', '未保存登記', '宗教／殯葬設施', '其他未列項目']} 
-                                                value={data.land_q7_build_type || ''} 
-                                                onChange={v => update('land_q7_build_type', v)} 
-                                                renderDetail={(opt2) => {
-                                                    if (opt2 === '有保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>;
-                                                    if (opt2 === '未保存登記') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_ownership || ''} onChange={v => update('land_q7_build_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>;
-                                                    if (opt2 === '宗教／殯葬設施') return <div className="p-4 bg-white rounded-xl border-2 border-slate-200 mt-2 space-y-3">{['小廟', '墳墓'].map(opt => <CheckBox key={opt} checked={data.land_q7_build_rel_detail?.includes(opt) || false} label={opt} onClick={() => toggleArr('land_q7_build_rel_detail', opt)} />)}</div>;
-                                                    if (opt2 === '其他未列項目') return <DetailInput value={data.land_q7_build_other || ''} onChange={v => update('land_q7_build_other', v)} placeholder="說明現況" />;
-                                                    return null;
-                                                }}
-                                            />
+                                        <div className="space-y-4">
+                                            {['有保存登記', '未保存登記', '宗教／殯葬設施', '小廟', '墳墓', '其他未列項目'].map(bType => (
+                                                <div key={bType} className="space-y-3">
+                                                    <CheckBox 
+                                                        checked={data.land_q7_build_type?.includes(bType) || false} 
+                                                        label={bType} 
+                                                        onClick={() => toggleArr('land_q7_build_type', bType)} 
+                                                    />
+                                                    {data.land_q7_build_type?.includes(bType) && (
+                                                        <div className="pl-6 md:pl-8 animate-in fade-in zoom-in-95 duration-200">
+                                                            {bType === '有保存登記' && (
+                                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_reg_ownership || ''} onChange={v => update('land_q7_build_reg_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>
+                                                            )}
+                                                            {bType === '未保存登記' && (
+                                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_unreg_ownership || ''} onChange={v => update('land_q7_build_unreg_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>
+                                                            )}
+                                                            {bType === '其他未列項目' && (
+                                                                <DetailInput value={data.land_q7_build_other || ''} onChange={v => update('land_q7_build_other', v)} placeholder="說明現況" />
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </SubItemHighlight>
                                 ) : null}
@@ -1377,8 +1386,8 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (!data.factory_spec_unknown) {
             if (!data.factory_height || !data.factory_width || !data.factory_depth || !data.factory_floor_height) return 'incomplete';
         }
-        if (!data.factory_floor_condition) return 'incomplete';
-        if (data.factory_floor_condition === '其他未列項目' && !data.factory_floor_condition_other) return 'incomplete';
+        if (!data.factory_floor_condition || data.factory_floor_condition.length === 0) return 'incomplete';
+        if (data.factory_floor_condition.includes('其他未列項目') && !data.factory_floor_condition_other) return 'incomplete';
         if (!data.factory_fire_inspection) return 'incomplete';
         if (!data.factory_fire_safety || data.factory_fire_safety.length === 0) return 'incomplete';
         if (data.factory_fire_safety.includes('其他未列項目') && !data.factory_fire_safety_other) return 'incomplete';
@@ -1503,12 +1512,22 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             
                             <div className="mt-8 space-y-4">
                                 <p className="dynamic-text-h2 font-black text-slate-700 dark:text-slate-200">地板狀況</p>
-                                <AccordionRadio 
-                                    options={FACTORY_FLOOR_OPTS} 
-                                    value={data.factory_floor_condition || ''} 
-                                    onChange={v => setData(p => ({...p, factory_floor_condition: v, factory_floor_condition_other: v === '其他未列項目' ? p.factory_floor_condition_other : ''}))} 
-                                    renderDetail={(opt) => opt === '其他未列項目' ? <DetailInput value={data.factory_floor_condition_other || ''} onChange={v => update('factory_floor_condition_other', v)} placeholder="說明現況" /> : null}
-                                />
+                                <div className="space-y-3 pt-2">
+                                    {FACTORY_FLOOR_OPTS.map(opt => (
+                                        <div key={opt} className="space-y-3">
+                                            <CheckBox 
+                                                checked={data.factory_floor_condition?.includes(opt) || false} 
+                                                label={opt} 
+                                                onClick={() => toggleArr('factory_floor_condition', opt)} 
+                                            />
+                                            {opt === '其他未列項目' && data.factory_floor_condition?.includes(opt) && (
+                                                <div className="pl-6 md:pl-8 animate-in fade-in zoom-in-95 duration-200">
+                                                    <DetailInput value={data.factory_floor_condition_other || ''} onChange={v => update('factory_floor_condition_other', v)} placeholder="說明現況" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </QuestionBlock>
 

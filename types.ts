@@ -185,7 +185,7 @@ export interface SurveyData {
     factory_width: string; // New: 面寬
     factory_depth: string; // New: 深度
     factory_floor_height: string; // New: 樓板高度
-    factory_floor_condition: string; // 地板狀況
+    factory_floor_condition: string[]; // 地板狀況
     factory_floor_condition_other: string;
     factory_fire_safety: string[]; // 消防設施
     factory_fire_safety_other: string;
@@ -326,8 +326,9 @@ export interface SurveyData {
     land_q7_crops_other: string;
 
     land_q7_build: string;
-    land_q7_build_type: string;
-    land_q7_build_ownership: string;
+    land_q7_build_type: string[]; // changed to array
+    land_q7_build_reg_ownership: string;
+    land_q7_build_unreg_ownership: string;
     land_q7_build_reg_detail: string;
     land_q7_build_unreg_detail: string;
     land_q7_build_rel_detail: string[];
