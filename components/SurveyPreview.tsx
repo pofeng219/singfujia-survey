@@ -1357,6 +1357,7 @@ const HousePrintPage1 = ({ data }: { data: SurveyData }) => {
               data.water_booster === "有設置" || data.water_booster === "有"
             }
             label={`有設置${data.water_booster_items && data.water_booster_items.length > 0 ? ` （${data.water_booster_items.join("、")}）` : ""}`}
+            isWarning={true}
           />
           <PreviewResult
             checked={data?.water_booster === "其他未列項目"}
@@ -1793,6 +1794,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
               data.land_water_booster === "有"
             }
             label={`有設置${data.land_water_booster_items && data.land_water_booster_items.length > 0 ? ` （${data.land_water_booster_items.join("、")}）` : ""}`}
+            isWarning={true}
           />
           <PreviewResult
             checked={
@@ -2124,6 +2126,7 @@ const FactoryPrintPage2 = ({
                 data.water_booster !== "其他未列項目"
               }
               label={`有設置${data.water_booster_items && data.water_booster_items.length > 0 ? ` （${data.water_booster_items.join("、")}）` : ""}`}
+              isWarning={true}
             />
             <PreviewResult
               checked={data?.water_booster === "其他未列項目"}
