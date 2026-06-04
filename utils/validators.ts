@@ -163,7 +163,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.require(d.q3_hasLeak, "section-q3", "3. 滲漏水現況未填寫", s2);
         if (d.q3_hasLeak === '是') {
             v.require(d.q3_leakType, "section-q3", "3. 請選擇滲漏水/壁癌類別", s2);
-            if (d.q3_leakType !== '全屋天花板包覆') {
+            if (!d.q3_leakType?.includes('全屋天花板包覆')) {
                 const locEmpty = (d.q3_locations?.length || 0) === 0;
                 v.check(locEmpty && !d.q3_hasOther && !d.q3_suspected, "section-q3", "3. 請勾選或填寫發生位置", s2);
                 v.requireOther(d.q3_hasOther, d.q3_other, "section-q3", "3. 請填寫「其他」位置說明", s2);
@@ -383,7 +383,7 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.require(d.q3_hasLeak, "section-q3", "3. 滲漏水現況未填寫", s2);
         if (d.q3_hasLeak === '是') {
             v.require(d.q3_leakType, "section-q3", "3. 請選擇滲漏水／壁癌類別", s2);
-            if (d.q3_leakType !== '全屋天花板包覆') {
+            if (!d.q3_leakType?.includes('全屋天花板包覆')) {
                 const locEmpty = (d.q3_locations?.length || 0) === 0;
                 v.check(locEmpty && !d.q3_hasOther && !d.q3_suspected, "section-q3", "3. 請勾選或填寫發生位置", s2);
                 v.requireOther(d.q3_hasOther, d.q3_other, "section-q3", "3. 請填寫「其他」位置說明", s2);

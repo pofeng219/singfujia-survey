@@ -505,8 +505,28 @@ export const ParkingSection = ({
                 <QuestionBlock className="space-y-4 md:space-y-6">
                     <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">機車車位使用現況</p>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
-                        <CheckBox checked={data?.q10_motoUsage?.includes("固定位置使用") || false} label="固定位置使用" onClick={() => toggleArr('q10_motoUsage', "固定位置使用")} />
-                        <CheckBox checked={data?.q10_motoUsage?.includes("無機車車位") || false} label="無機車車位" onClick={() => toggleArr('q10_motoUsage', "無機車車位")} />
+                        <CheckBox checked={data?.q10_motoUsage?.includes("固定位置使用") || false} label="固定位置使用" onClick={() => {
+                            setData(p => {
+                                let arr = Array.isArray(p.q10_motoUsage) ? [...p.q10_motoUsage] : [];
+                                if (arr.includes("固定位置使用")) arr = arr.filter(i => i !== "固定位置使用");
+                                else {
+                                    arr.push("固定位置使用");
+                                    arr = arr.filter(i => i !== "無機車車位");
+                                }
+                                return { ...p, q10_motoUsage: arr };
+                            });
+                        }} />
+                        <CheckBox checked={data?.q10_motoUsage?.includes("無機車車位") || false} label="無機車車位" onClick={() => {
+                            setData(p => {
+                                let arr = Array.isArray(p.q10_motoUsage) ? [...p.q10_motoUsage] : [];
+                                if (arr.includes("無機車車位")) arr = arr.filter(i => i !== "無機車車位");
+                                else {
+                                    arr.push("無機車車位");
+                                    arr = arr.filter(i => i !== "固定位置使用");
+                                }
+                                return { ...p, q10_motoUsage: arr };
+                            });
+                        }} />
                         <div className="col-span-1 lg:col-span-2 text-left space-y-3">
                             <CheckBox checked={data?.q10_hasMotoUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasMotoUsageOther', !data.q10_hasMotoUsageOther)} />
                             {data?.q10_hasMotoUsageOther && (<SubItemHighlight><DetailInput value={data.q10_motoUsageOther || ''} onChange={v => update('q10_motoUsageOther', v)} placeholder="如：隨到隨停、一年一抽" /></SubItemHighlight>)}
