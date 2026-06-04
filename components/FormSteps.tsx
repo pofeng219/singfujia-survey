@@ -391,11 +391,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <SurveySection id="section-land-q5" highlighted={highlightedField === 'section-land-q5'} title="4. 被越界占用與占用鄰地現況" status={getLandQ5Status()}>
                         <div className="space-y-8">
                             <QuestionBlock>
-                                <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">遭</span>他人<span className="text-red-600">占用</span>現況</p>
+                                <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">本案遭</span>他人越界<span className="text-red-600">占用</span>現況</p>
                                 <AccordionRadio options={['無', '有']} value={data?.land_q5_encroached === '否' ? '無' : (data?.land_q5_encroached === '是' ? '有' : (data?.land_q5_encroached || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroached: val, land_q5_encroached_desc: val === '否' ? '' : prev.land_q5_encroached_desc })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroached_desc || ''} onChange={v => update('land_q5_encroached_desc', v)} placeholder="如：鄰居圍牆占用" /></SubItemHighlight> : null)}  />
                             </QuestionBlock>
                             <QuestionBlock>
-                                <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">占用</span>鄰地現況</p>
+                                <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">本案占用</span>鄰地現況</p>
                                 <AccordionRadio options={['無', '有']} value={data?.land_q5_encroaching === '否' ? '無' : (data?.land_q5_encroaching === '是' ? '有' : (data?.land_q5_encroaching || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroaching: val, land_q5_encroaching_desc: val === '否' ? '' : prev.land_q5_encroaching_desc })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroaching_desc || ''} onChange={v => update('land_q5_encroaching_desc', v)} placeholder="如：增建占用水利地" /></SubItemHighlight> : null)}  />
                             </QuestionBlock>
                         </div>
@@ -972,7 +972,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
     if (type === 'house') {
         return (
              <StepContainer title="第三步：公設／車位" type={type} themeText={themeText}>
-                <SurveySection id="section-publicFacilities" highlighted={highlightedField === 'section-publicFacilities'} title="6. 大樓／社區公共設施 (可否進入／使用)" status={getPublicFacilitiesStatus()}>
+                <SurveySection id="section-publicFacilities" highlighted={highlightedField === 'section-publicFacilities'} title="6. 大樓與社區公共設施（可否進入／使用）" status={getPublicFacilitiesStatus()}>
                     <AccordionRadio 
                         options={['無公共設施', '有公共設施', '無法進入']} 
                         value={data?.publicFacilities || ''} 
@@ -1087,9 +1087,9 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
         return (
             <StepContainer title="第三步：使用現況-2" type={type} themeText={themeText}>
-                <SurveySection id="section-land-q6" highlighted={highlightedField === 'section-land-q6'} title="5. 目前禁建與限建現況" status={getLandQ6Status()}>
+                <SurveySection id="section-land-q6" highlighted={highlightedField === 'section-land-q6'} title="5. 土地禁建、限建現況" status={getLandQ6Status()}>
                     <QuestionBlock>
-                        <p className="dynamic-text-h2 font-black mb-6 leading-normal">目前禁建與限建現況</p>
+                        <p className="dynamic-text-h2 font-black mb-6 leading-normal">土地禁建、限建現況</p>
                         <AccordionRadio 
                             options={['無', '有']} 
                             value={data.land_q6_limit === '否' ? '無' : (data.land_q6_limit === '是' ? '有' : '')} 
@@ -1659,7 +1659,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 )}
 
                 {/* 10. Facilities (Similar to House Q9) */}
-                <SurveySection id="section-factory-q10" highlighted={highlightedField === 'section-factory-q10'} title="10. 本案或本社區須注意的設施" status={getFacilityStatus()}>
+                <SurveySection id="section-factory-q10" highlighted={highlightedField === 'section-factory-q10'} title="10. 本案或周圍須注意設施" status={getFacilityStatus()}>
                      <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
@@ -1866,7 +1866,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
             {/* Soil */}
             {(type === 'land' || (type === 'factory' && !hideSoil)) && (
-                 <SurveySection id="section-soil" highlighted={highlightedField === 'section-soil'} title={type === 'land' ? "9. 土壤與地下埋設物" : `${soilNum}. 土壤與地下埋設物`} status={getSoilStatus()}> 
+                 <SurveySection id="section-soil" highlighted={highlightedField === 'section-soil'} title={type === 'land' ? "9. 土壤與地下埋設物現況" : `${soilNum}. 土壤與地下埋設物現況`} status={getSoilStatus()}> 
                     <QuestionBlock>
                         <p className="dynamic-text-h2 font-black text-slate-700 mb-6 dark:text-slate-200">土壤汙染與地下掩埋物現況</p>
                         <AccordionRadio 

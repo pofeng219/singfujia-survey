@@ -299,8 +299,8 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         const s3 = 3;
 
         // Old Q6 (now Q5)
-        v.require(d.land_q6_limit, "section-land-q6", "5. 禁建／限建現況未填寫", s3);
-        v.requireIf(d.land_q6_limit === '是', d.land_q6_limit_desc, "section-land-q6", "5. 請填寫限建說明", s3);
+        v.require(d.land_q6_limit, "section-land-q6", "5. 土地禁建、限建現況未填寫", s3);
+        v.requireIf(d.land_q6_limit === '是', d.land_q6_limit_desc, "section-land-q6", "5. 請填寫土地禁建、限建現況說明", s3);
 
         // Old Q7 (now Q6)
         v.require(d.land_q7_user, "section-land-q7", "6. 現況使用人未填寫", s3);

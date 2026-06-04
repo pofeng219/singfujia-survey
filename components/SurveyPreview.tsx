@@ -1732,12 +1732,12 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
   return (
     <>
       <SectionHeader title="5. 土地禁建、限建現況" />
-      <CheckRow checked={data?.land_q6_limit === "否"}>
+      <CheckRow checked={data?.land_q6_limit === "否" || data?.land_q6_limit === "無"}>
         <PreviewResult
-          checked={data?.land_q6_limit === "是"}
-          label={`是 （${data.land_q6_limit_desc}）`}
+          checked={data?.land_q6_limit === "是" || data?.land_q6_limit === "有"}
+          label={`有 （${data.land_q6_limit_desc}）`}
         />
-        <PreviewResult checked={data?.land_q6_limit === "無"} label="無" />
+        <PreviewResult checked={data?.land_q6_limit === "否" || data?.land_q6_limit === "無"} label="無" />
       </CheckRow>
 
       <SectionHeader title="6. 土地使用現況與地上物" />
@@ -1757,7 +1757,7 @@ const LandPrintPage2 = ({ data }: { data: SurveyData }) => {
         />
       </CheckRow>
       <CheckRow checked={data?.land_q7_build === "無"}>
-        <span className="font-bold mr-2">地上定著物-建物</span>
+        <span className="font-bold mr-2">地上定著物-建築物／工作物</span>
         <PreviewResult
           checked={data?.land_q7_build !== "無" && !!data?.land_q7_build}
           label={getLandBuildSummary()}
