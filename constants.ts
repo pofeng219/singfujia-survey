@@ -62,7 +62,7 @@ export const INITIAL_STATE: SurveyData = {
     factory_height: '', factory_width: '', factory_depth: '', factory_floor_height: '',
     factory_floor_condition: [], factory_floor_condition_other: '',
     factory_fire_safety: [], factory_fire_safety_other: '', factory_fire_inspection: '',
-    factory_elevator: '', factory_elevator_status: '可運作', factory_elevator_working: true, factory_elevator_separate: false, factory_elevator_capacity: '', factory_elevator_dim: '',
+    factory_elevator: '', factory_elevator_status: '可運作', factory_elevator_working: true, factory_elevator_separate: false, factory_elevator_capacity: '', factory_elevator_dim: '', factory_elevator_door_dim: '',
     factory_crane: '', factory_crane_desc: '', factory_crane_status: '可運作', factory_crane_working: true, factory_crane_tonnage: '', factory_crane_quantity: '',
     factory_waste: '', factory_waste_has_detail: '', factory_waste_desc: '',
     factory_loading_dock: '', factory_truck_access: '', factory_truck_buffer: '',

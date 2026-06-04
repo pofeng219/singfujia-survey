@@ -197,6 +197,7 @@ export interface SurveyData {
     factory_elevator_separate: boolean; // New: 客貨梯分離
     factory_elevator_capacity: string;
     factory_elevator_dim: string;
+    factory_elevator_door_dim: string;
     
     factory_crane: string; // 天車
     factory_crane_desc: string; // New: 天車說明 (如：天車噸數)

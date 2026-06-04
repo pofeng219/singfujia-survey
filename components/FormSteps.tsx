@@ -1397,7 +1397,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         const getFactoryHardwareStatus = (): SectionStatus => {
             if (!data.factory_elevator) return 'incomplete';
             if (data.factory_elevator !== '無') {
-                if (!data.factory_elevator_status || !data.factory_elevator_capacity || !data.factory_elevator_dim) return 'incomplete';
+                if (!data.factory_elevator_status || !data.factory_elevator_capacity || !data.factory_elevator_dim || !data.factory_elevator_door_dim) return 'incomplete';
             }
             if (!data.factory_crane) return 'incomplete';
             if (data.factory_crane === '有') {
@@ -1569,9 +1569,19 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     <SubItemHighlight>
                                         <div className="space-y-6">
                                             <AccordionRadio options={['可運作', '故障／停用']} value={data.factory_elevator_status || ''} onChange={v => update('factory_elevator_status', v)} />
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <UnitInput unit="噸/kg" value={data.factory_elevator_capacity || ''} onChange={v => update('factory_elevator_capacity', v)} placeholder="載重" />
-                                                <UnitInput unit="公分" value={data.factory_elevator_dim || ''} onChange={v => update('factory_elevator_dim', v)} placeholder="尺寸(長x寬x高)" />
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <span className="font-bold mb-2 block text-slate-700">載重</span>
+                                                    <UnitInput unit="噸/kg" value={data.factory_elevator_capacity || ''} onChange={v => update('factory_elevator_capacity', v)} placeholder="輸入載重" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-bold mb-2 block text-slate-700">車廂尺寸</span>
+                                                    <UnitInput unit="公分" value={data.factory_elevator_dim || ''} onChange={v => update('factory_elevator_dim', v)} placeholder="長x寬x高" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-bold mb-2 block text-slate-700">開門尺寸</span>
+                                                    <UnitInput unit="公分" value={data.factory_elevator_door_dim || ''} onChange={v => update('factory_elevator_door_dim', v)} placeholder="長x寬x高" />
+                                                </div>
                                             </div>
                                         </div>
                                     </SubItemHighlight>

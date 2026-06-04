@@ -1911,7 +1911,8 @@ const FactoryPrintPage2 = ({
     const parts = [];
     if (data.factory_elevator_capacity)
       parts.push(`${data.factory_elevator_capacity}噸/kg`);
-    if (data.factory_elevator_dim) parts.push(data.factory_elevator_dim);
+    if (data.factory_elevator_dim) parts.push(`車廂尺寸：${data.factory_elevator_dim}公分`);
+    if (data.factory_elevator_door_dim) parts.push(`開門尺寸：${data.factory_elevator_door_dim}公分`);
     if (parts.length > 0) s += ` ${parts.join("、")}`;
     return s;
   };
