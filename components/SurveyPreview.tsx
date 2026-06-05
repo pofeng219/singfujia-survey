@@ -392,7 +392,12 @@ const ParkingContent: React.FC<{
             <span>機械載重：{data?.q10_mechWeight || "_"}kg</span>
           )}
           {parkingSummary.showHeight && (
-            <span>車道出入口高度：{data?.q10_entryHeight || "_"}m</span>
+            <span>
+              車道出入口高度：{data?.q10_entryHeight || "_"}
+              {data?.q10_entryHeight === "無資訊告示牌" && data?.q10_entryHeight_desc
+                ? ` （${data.q10_entryHeight_desc}）`
+                : ""}
+            </span>
           )}
         </div>
       )}

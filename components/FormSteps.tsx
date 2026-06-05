@@ -301,7 +301,10 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
              }
         }
         if (!parkingLogic.disableWeight && !data.q10_mechWeight) return 'incomplete';
-        if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
+        if (!parkingLogic.disableHeight) {
+            if (!data.q10_entryHeight) return 'incomplete';
+            if (data.q10_entryHeight === '無資訊告示牌' && !data.q10_entryHeight_desc) return 'incomplete';
+        }
         if (!data.q10_laneSection || !data.q10_laneNumber) return 'incomplete';
         if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
         if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';
@@ -923,7 +926,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
         if (type !== 'factory' && !parkingLogic.disableWeight && !data.q10_mechWeight) return 'incomplete';
         
         // Entry Height
-        if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
+        if (!parkingLogic.disableHeight) {
+            if (!data.q10_entryHeight) return 'incomplete';
+            if (data.q10_entryHeight === '無資訊告示牌' && !data.q10_entryHeight_desc) return 'incomplete';
+        }
 
         // 5. Lane Land Number
         if (!data.q10_laneSection || !data.q10_laneNumber) return 'incomplete';
@@ -1433,7 +1439,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                  }
             }
             // Factory: Skip weight check as it is hidden
-            if (!parkingLogic.disableHeight && !data.q10_entryHeight) return 'incomplete';
+            if (!parkingLogic.disableHeight) {
+                if (!data.q10_entryHeight) return 'incomplete';
+                if (data.q10_entryHeight === '無資訊告示牌' && !data.q10_entryHeight_desc) return 'incomplete';
+            }
             if (!data.q10_laneSection || !data.q10_laneNumber) return 'incomplete';
             if ((!data.q10_motoUsage || data.q10_motoUsage.length === 0) && !data.q10_hasMotoUsageOther) return 'incomplete';
             if (data.q10_hasMotoUsageOther && !data.q10_motoUsageOther) return 'incomplete';

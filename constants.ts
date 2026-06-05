@@ -40,7 +40,7 @@ export const INITIAL_STATE: SurveyData = {
     q10_parkingNumberType: '', q10_parkingNumberVal: '',
     q10_carUsage: [], q10_carLotteryMonth: '', q10_hasCarUsageOther: false, q10_carUsageOther: '',
     q10_motoUsage: [], q10_hasMotoUsageOther: false, q10_motoUsageOther: '',
-    q10_measureType: '實際測量', q10_dimL: '', q10_dimW: '', q10_dimH: '', q10_mechWeight: '', q10_entryHeight: '',
+    q10_measureType: '實際測量', q10_dimL: '', q10_dimW: '', q10_dimH: '', q10_mechWeight: '', q10_entryHeight: '', q10_entryHeight_desc: '',
     
     q10_laneSection: '', q10_laneSubSection: '', q10_laneNumber: '',
 

@@ -126,6 +126,7 @@ export interface SurveyData {
     q10_dimH: string;
     q10_mechWeight: string;
     q10_entryHeight: string;
+    q10_entryHeight_desc: string;
     
     // New: Parking Lane Land Number
     q10_laneSection: string;

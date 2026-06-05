@@ -362,6 +362,7 @@ export const ParkingSection = ({
     const isHouseOrFactory = startNum === 8 || startNum === 11 || startNum === 9; 
     const [showParkingGuide, setShowParkingGuide] = useState(false);
     const [showParkingUsageGuide, setShowParkingUsageGuide] = useState(false);
+    const [showEntryHeightGuide, setShowEntryHeightGuide] = useState(false);
     const handleCarUsageToggle = (val: string) => {
         setData(prev => {
             let arr: string[] = prev.q10_carUsage || [];
@@ -490,8 +491,35 @@ export const ParkingSection = ({
                                 </div>
                             )}
                             <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
-                                <p className="font-black dynamic-text-h2 text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">車道出入口高度 (公尺)</p>
-                                <UnitInput unit="米" value={data?.q10_entryHeight || ''} onChange={v => update('q10_entryHeight', v)} disabled={parkingLogic.disableHeight} placeholder={parkingLogic.disableHeight ? "無須填寫" : "輸入高度"} />
+                                <p className="font-black dynamic-text-h2 text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">車道出入口高度</p>
+                                <div className="mb-4 flex flex-col items-start gap-2">
+                                    <InlineWarning>※如目視可供大型／七人座休旅車（高度約1.75米～1.9米）通行</InlineWarning>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setShowEntryHeightGuide(true);
+                                        }}
+                                        className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                        type="button"
+                                    >
+                                        <ImageIcon className="w-5 h-5" />
+                                        參考圖例
+                                    </button>
+                                </div>
+                                <AccordionRadio  
+                                    options={['有資訊告示牌', '無資訊告示牌']} 
+                                    value={data?.q10_entryHeight || ''} 
+                                    onChange={v => update('q10_entryHeight', v)} 
+                                    renderDetail={(opt) => 
+                                        opt === '無資訊告示牌' ? (
+                                            <DetailInput 
+                                                value={data?.q10_entryHeight_desc || ''} 
+                                                onChange={v => update('q10_entryHeight_desc', v)} 
+                                                placeholder="說明現況" 
+                                            />
+                                        ) : null
+                                    }
+                                />
                             </div>
                         </div>
 
@@ -634,6 +662,12 @@ export const ParkingSection = ({
                 onClose={() => setShowParkingUsageGuide(false)} 
                 imageSrc="https://lh3.googleusercontent.com/d/12nlowzk-k3qp8KtfVbh7lDsjIQhhNPjV" 
                 title="車位使用現況真實案例" 
+            />
+            <ImageModal 
+                isOpen={showEntryHeightGuide} 
+                onClose={() => setShowEntryHeightGuide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1dhQVMQeDo1kIEq5z_mGKrwlWsC-WHEbm" 
+                title="車道出入口高度參考圖例" 
             />
         </SurveySection>
     );

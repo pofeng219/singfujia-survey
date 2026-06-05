@@ -59,7 +59,7 @@ const OPTIONS: MenuOption[] = [
     },
     { 
         type: 'parking', 
-        label: '車位調查', 
+        label: '車位調查（僅賣車位物件，點選此）', 
         icon: Car, 
         bg: 'bg-rose-600', 
         border: 'border-rose-800', 
