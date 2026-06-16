@@ -825,6 +825,8 @@ export const NotesSection = ({ data, setData, update, id, title, highlightedId, 
 };
 
 export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlightedId, hideQ2, statusQ3 = 'neutral', statusQ4 = 'neutral' }: any) => {
+    const [showLandQ3Guide, setShowLandQ3Guide] = useState(false);
+
     return (
         <>
             {!hideQ2 && (
@@ -836,10 +838,24 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
 
             <SurveySection id={ids.q3} highlighted={highlightedId === ids.q3} title={titles.q3} status={statusQ3}>
                 <div className="space-y-8">
+                    <div className="mb-4 flex flex-col items-start gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setShowLandQ3Guide(true);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                            type="button"
+                        >
+                            <ImageIcon className="w-5 h-5" />
+                            真實案例
+                        </button>
+                    </div>
                     <QuestionBlock>
                         <p className="dynamic-text-h2 font-black mb-6 leading-normal">近兩年內土地鑑界與界標現況</p>
                         <AccordionRadio 
                             options={['近期已鑑界 (附土地複丈成果圖)', '待查證 (標位不明／須重測)', '否 (或年代久遠)']} 
+
                             value={
                                 data?.land_q3_survey === '否' ? '否 (或年代久遠)' : 
                                 (data?.land_q3_survey === '是' ? '近期已鑑界 (附土地複丈成果圖)' : 
@@ -919,6 +935,12 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                     </QuestionBlock>
                 </div>
             </SurveySection>
+            <ImageModal 
+                isOpen={showLandQ3Guide} 
+                onClose={() => setShowLandQ3Guide(false)} 
+                imageSrc="https://lh3.googleusercontent.com/d/1t44fX-PvFxEuwwTAi7hgf-IvGlSDUGJc" 
+                title="土地鑑界與界標現況與產權與使用糾紛現況真實案例" 
+            />
         </>
     );
 };

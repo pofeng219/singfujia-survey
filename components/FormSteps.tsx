@@ -1228,7 +1228,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 renderDetail={(opt) => opt === '有建築物／工作物' ? (
                                     <SubItemHighlight>
                                         <div className="space-y-4">
-                                            {['有保存登記', '未保存登記', '宗教／殯葬設施', '小廟', '墳墓', '其他未列項目'].map(bType => (
+                                            {['有保存登記', '未保存登記', '小廟', '墳墓', '其他未列項目'].map(bType => (
                                                 <div key={bType} className="space-y-3">
                                                     <CheckBox 
                                                         checked={data.land_q7_build_type?.includes(bType) || false} 
