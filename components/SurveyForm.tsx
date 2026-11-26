@@ -1,0 +1,790 @@
+
+import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
+import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2, ChevronRight } from 'lucide-react';
+
+import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
+import { INITIAL_STATE } from '../constants';
+
+import { Toast, DraftFoundModal, AlertModal, ImagePreviewModal, ExportSuccessModal, ConfirmModal } from './SharedUI';
+import { SurveyPreview } from './SurveyPreview';
+import { validateForm } from '../utils/validators';
+import { exportToJPG, exportToPDF } from '../utils/exporter';
+import { Step1, Step2, Step3, Step4 } from './FormSteps';
+import { useInterface } from './InterfaceContext';
+import { useAuth } from './AuthContext';
+import { saveSurveyDraft, loadSurveyDraftWithMeta, clearSurveyDraft } from '../firebase';
+
+interface ErrorBoundaryProps {
+    children?: ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    state: ErrorBoundaryState = { hasError: false };
+    
+    static getDerivedStateFromError(_: Error): ErrorBoundaryState { return { hasError: true }; }
+    
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="flex items-center justify-center h-full bg-red-50 p-10 flex-col text-center dark:bg-red-900/20">
+                    <h1 className="text-4xl font-black text-red-600 mb-6 dark:text-red-400">⚠️ 畫面暫時中斷</h1>
+                    <button onClick={() => { if (typeof window !== 'undefined') window.location.reload(); }} className="bg-red-600 text-white px-10 py-6 rounded-2xl font-black text-2xl border-b-[6px] border-red-800 active:border-b-2 active:translate-y-[4px] transition-all duration-150 dark:bg-red-700 dark:border-red-900">重新整理頁面</button>
+                </div>
+            );
+        }
+        return (this as any).props.children;
+    }
+}
+
+interface SurveyFormProps {
+    type: SurveyType;
+    onBack: () => void;
+    isDarkMode: boolean;
+    toggleTheme: () => void;
+}
+
+// Helper to check for real changes, ignoring date
+const isDataDirty = (current: SurveyData, initial: SurveyData): boolean => {
+    try {
+        const c = { ...current };
+        const i = { ...initial };
+        // Ignore date differences
+        delete (c as any).fillDate;
+        delete (i as any).fillDate;
+        return JSON.stringify(c) !== JSON.stringify(i);
+    } catch (e) {
+        return false;
+    }
+};
+
+// Sticky Action Bar Component removed (inlined)
+
+export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode, toggleTheme }) => {
+    const { user } = useAuth();
+    const mode = useInterface();
+    const isStandard = mode === 'standard';
+    const [data, setData] = useState<SurveyData>(INITIAL_STATE);
+    const [activeStep, setActiveStep] = useState(1);
+    const [exporting, setExporting] = useState(false);
+    const [mobileTab, setMobileTab] = useState<MobileTab>('edit');
+    const [previewPage, setPreviewPage] = useState(1);
+    const [isMobile, setIsMobile] = useState(false);
+    const [previewScale, setPreviewScale] = useState(1);
+    const [toastMsg, setToastMsg] = useState<string | null>(null);
+    const [draftFoundModalOpen, setDraftFoundModalOpen] = useState(false);
+    const [alertModalOpen, setAlertModalOpen] = useState(false);
+    const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+    const [generatedImage, setGeneratedImage] = useState<string[]>([]);
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [highlightedField, setHighlightedField] = useState<string | null>(null);
+    const [showExportSuccessModal, setShowExportSuccessModal] = useState(false);
+    const [showHomeConfirm, setShowHomeConfirm] = useState(false);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false); // New state for scroll button
+    const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
+    const lastScrollY = useRef(0);
+
+    const DRAFT_KEY = `survey_draft_${type}`;
+    const DRAFT_TIME_KEY = `survey_draft_${type}_updatedAt`;
+    const page1Ref = useRef<HTMLDivElement>(null);
+    const page2Ref = useRef<HTMLDivElement>(null);
+    const page3Ref = useRef<HTMLDivElement>(null); // Added Page 3 Ref
+    const formScrollRef = useRef<HTMLDivElement>(null);
+    const previewWrapperRef = useRef<HTMLDivElement>(null);
+    const dataRef = useRef(data);
+    const userRef = useRef(user);
+    const isJumpingToError = useRef(false);
+
+    // Scroll to Top Logic
+    useEffect(() => {
+        const handleScroll = () => {
+            if (formScrollRef.current) {
+                const currentScrollY = formScrollRef.current.scrollTop;
+                setShowScrollTop(currentScrollY > 100);
+                
+                if (currentScrollY > lastScrollY.current + 10 && currentScrollY > 60) {
+                    setScrollDirection('down');
+                } else if (currentScrollY < lastScrollY.current - 10) {
+                    setScrollDirection('up');
+                }
+                lastScrollY.current = currentScrollY;
+            }
+        };
+
+        const scrollContainer = formScrollRef.current;
+        if (scrollContainer) {
+            scrollContainer.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (scrollContainer) {
+                scrollContainer.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    const scrollToTop = () => {
+        if (formScrollRef.current) {
+            formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    // Use deferred value for preview to prevent typing lag
+    const deferredData = useDeferredValue(data);
+
+    // Synchronize colors with LandingPage - Added Dark Mode variants
+    const themeBg = useMemo(() => type === 'parking' ? 'bg-rose-600 dark:bg-rose-900' : (type === 'land' ? 'bg-emerald-600 dark:bg-emerald-900' : (type === 'factory' ? 'bg-orange-600 dark:bg-orange-900' : 'bg-sky-600 dark:bg-sky-900')), [type]);
+    // Theme borders for cards are handled in FormSteps via props
+    const themeBorder = useMemo(() => type === 'parking' ? 'border-rose-200 dark:border-rose-800' : (type === 'land' ? 'border-emerald-200 dark:border-emerald-800' : (type === 'factory' ? 'border-orange-200 dark:border-orange-800' : 'border-sky-200 dark:border-sky-800')), [type]);
+    // Text colors
+    const themeText = useMemo(() => type === 'parking' ? 'text-rose-700 dark:text-rose-300' : (type === 'land' ? 'text-emerald-700 dark:text-emerald-300' : (type === 'factory' ? 'text-orange-700 dark:text-orange-300' : 'text-sky-700 dark:text-sky-300')), [type]);
+
+    const highlightStyles = useMemo(() => {
+        switch (type) {
+            case 'parking': return { '--highlight-bg': '#fff1f2', '--highlight-border': '#fda4af', '--highlight-dark-bg': 'rgba(159, 18, 57, 0.3)' } as React.CSSProperties; // rose-50, rose-300
+            case 'land': return { '--highlight-bg': '#ecfdf5', '--highlight-border': '#6ee7b7', '--highlight-dark-bg': 'rgba(6, 78, 59, 0.3)' } as React.CSSProperties; // emerald-50, emerald-300
+            case 'factory': return { '--highlight-bg': '#fff7ed', '--highlight-border': '#fdba74', '--highlight-dark-bg': 'rgba(124, 45, 18, 0.3)' } as React.CSSProperties; // orange-50, orange-300
+            default: return { '--highlight-bg': '#f0f9ff', '--highlight-border': '#7dd3fc', '--highlight-dark-bg': 'rgba(12, 74, 110, 0.3)' } as React.CSSProperties; // sky-50, sky-300
+        }
+    }, [type]);
+
+    useEffect(() => { dataRef.current = data; }, [data]);
+    useEffect(() => { userRef.current = user; }, [user]);
+
+    const parkingLogic = useMemo(() => {
+        const isNoParking = data?.q10_noParking === true;
+        const pts = data?.q10_parkTypes || [];
+        const isOtherPt = data?.q10_hasParkTypeOther === true;
+        
+        // Defines types that don't need weight
+        const isPlaneType = pts.includes("坡道平面") || pts.includes("一樓平面") || pts.includes("法定空地／自家門前");
+        
+        // Only disable size/height for Legal Vacant Land (Front of House), 
+        // User requested Ramp Plane and 1F Plane to SHOW dimensions and height.
+        const isVacantLand = pts.includes("法定空地／自家門前");
+
+        // NEW: Check if 'Unable to measure' is selected to disable weight
+        const isUnableToMeasure = data.q10_measureType === '無法測量也無相關資訊';
+
+        return { 
+            isNoParking, 
+            isOtherPt, 
+            disableMethod: isNoParking, 
+            disableNumber: isNoParking || isOtherPt, 
+            disableCarStatus: isNoParking || isOtherPt, 
+            disableCarSize: isNoParking || isOtherPt || isVacantLand, 
+            // Update: Disable weight if plane type OR unable to measure
+            disableWeight: isNoParking || isOtherPt || isPlaneType || isUnableToMeasure, 
+            disableHeight: isNoParking || isOtherPt || isVacantLand, 
+            disableCharging: isNoParking, 
+            disableAbnormal: isNoParking, 
+            disableSupplement: isNoParking, 
+            disableMoto: false 
+        };
+    }, [data.q10_noParking, data.q10_parkTypes, data.q10_hasParkTypeOther, data.q10_measureType]);
+
+    useEffect(() => {
+        const updates: Partial<SurveyData> = {};
+        const d = dataRef.current;
+        const shouldUpdate = (key: keyof SurveyData, newValue: any) => {
+            if (Array.isArray(newValue)) return ((d[key] as any[]) || []).length > 0;
+            return d[key] !== newValue;
+        };
+        if (parkingLogic.isNoParking) {
+            if (shouldUpdate('q10_parkTypes', [])) updates.q10_parkTypes = [];
+            if (shouldUpdate('q10_parkingNumberType', '')) updates.q10_parkingNumberType = '';
+            if (shouldUpdate('q10_parkingNumberVal', '')) updates.q10_parkingNumberVal = '';
+            if (shouldUpdate('q10_carUsage', [])) updates.q10_carUsage = [];
+            if (shouldUpdate('q10_dimL', '')) updates.q10_dimL = ''; 
+            if (shouldUpdate('q10_dimW', '')) updates.q10_dimW = ''; 
+            if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
+            if (shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
+            if (shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+            if (shouldUpdate('q10_charging', '')) updates.q10_charging = '';
+            if (shouldUpdate('q11_hasIssue', '否')) updates.q11_hasIssue = '否';
+            if (shouldUpdate('q12_hasNote', '否')) updates.q12_hasNote = '否';
+        } else if (parkingLogic.isOtherPt) {
+            if (shouldUpdate('q10_parkingNumberType', '')) updates.q10_parkingNumberType = '';
+            if (shouldUpdate('q10_parkingNumberVal', '')) updates.q10_parkingNumberVal = '';
+            if (shouldUpdate('q10_carUsage', [])) updates.q10_carUsage = [];
+            if (shouldUpdate('q10_dimL', '')) updates.q10_dimL = ''; 
+            if (shouldUpdate('q10_dimW', '')) updates.q10_dimW = ''; 
+            if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
+            if (shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
+            if (shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+        } else {
+            // Updated Phase 2: Clear dimensions if disabled by logic
+            if (parkingLogic.disableCarSize) {
+                if (shouldUpdate('q10_dimL', '')) updates.q10_dimL = ''; 
+                if (shouldUpdate('q10_dimW', '')) updates.q10_dimW = ''; 
+                if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
+            }
+            if (parkingLogic.disableWeight && shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
+            if (parkingLogic.disableHeight && shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+        }
+        if (Object.keys(updates).length > 0) setData(prev => ({ ...prev, ...updates }));
+    }, [parkingLogic.isNoParking, parkingLogic.isOtherPt, parkingLogic.disableWeight, parkingLogic.disableHeight, parkingLogic.disableCarSize]);
+
+    useEffect(() => {
+        const checkMobile = () => { if (typeof window !== 'undefined') setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 1024); };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const performSave = async (silent: boolean = false) => { 
+        let localSaved = false;
+        try { 
+            // Always save locally first for speed
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(dataRef.current));
+            localStorage.setItem(DRAFT_TIME_KEY, String(Date.now()));
+            localSaved = true;
+        } catch (e) { 
+            if (!silent) setToastMsg("儲存失敗：請檢查瀏覽器設定");
+            return;
+        }
+
+        // Sync to cloud if user is logged in (use userRef to avoid stale closure)
+        const currentUser = userRef.current;
+        if (currentUser) {
+            try {
+                await saveSurveyDraft(currentUser.uid, type, dataRef.current);
+                if (!silent) setToastMsg("✅ 文字已同步儲存至本機與雲端！");
+            } catch (e) {
+                if (!silent) setToastMsg("✅ 已暫存至本機（雲端同步失敗，待有網路時再儲存）");
+            }
+        } else if (localSaved && !silent) {
+            setToastMsg("✅ 文字已儲存成功！");
+        }
+    };
+
+    const saveDraft = () => performSave(false);
+    
+    // Auto-save logic
+    useEffect(() => { 
+        const timer = setInterval(() => { 
+            if (isDataDirty(dataRef.current, INITIAL_STATE)) {
+                performSave(true); 
+            }
+        }, 60000); 
+        return () => clearInterval(timer); 
+    }, [user]); // re-bind when user changes
+
+    const getLocalDraftWithMeta = (): { data: SurveyData | null; updatedAt: number } => {
+        try {
+            const saved = localStorage.getItem(DRAFT_KEY);
+            if (!saved) return { data: null, updatedAt: 0 };
+            const parsed = JSON.parse(saved) as SurveyData;
+            if (!isDataDirty(parsed, INITIAL_STATE)) return { data: null, updatedAt: 0 };
+            const savedTime = Number(localStorage.getItem(DRAFT_TIME_KEY) || '0');
+            return { data: parsed, updatedAt: Number.isFinite(savedTime) ? savedTime : 0 };
+        } catch (e) {
+            return { data: null, updatedAt: 0 };
+        }
+    };
+
+    const loadDraft = async () => { 
+        try { 
+            const localResult = getLocalDraftWithMeta();
+            let cloudResult: { data: SurveyData | null; updatedAt: number } = { data: null, updatedAt: 0 };
+
+            const currentUser = userRef.current;
+            if (currentUser) {
+                setToastMsg("🔄 正在比對雲端與本機進度...");
+                try {
+                    const res = await loadSurveyDraftWithMeta(currentUser.uid, type);
+                    if (res.data && isDataDirty(res.data as SurveyData, INITIAL_STATE)) {
+                        cloudResult = { data: res.data as SurveyData, updatedAt: res.updatedAt };
+                    }
+                } catch (cloudErr) {
+                    console.error(cloudErr);
+                }
+            }
+
+            if (localResult.data && cloudResult.data) {
+                if (localResult.updatedAt > cloudResult.updatedAt) {
+                    setData(localResult.data);
+                    setToastMsg("✅ 已讀取較新的本機暫存檔");
+                } else {
+                    setData(cloudResult.data);
+                    setToastMsg("✅ 已讀取雲端暫存檔");
+                }
+            } else if (cloudResult.data) {
+                setData(cloudResult.data);
+                setToastMsg("✅ 已讀取雲端暫存檔");
+            } else if (localResult.data) {
+                setData(localResult.data);
+                setToastMsg("✅ 已讀取本機暫存檔");
+            } else {
+                setToastMsg("ℹ️ 目前沒有可讀取的暫存檔");
+            }
+            setDraftFoundModalOpen(false); 
+        } catch (e) { 
+            setToastMsg("❌ 讀取失敗");
+            console.error(e);
+        } 
+    };
+    
+    const performReset = async () => {
+        try {
+            localStorage.removeItem(DRAFT_KEY);
+            localStorage.removeItem(DRAFT_TIME_KEY);
+            setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
+            setActiveStep(1);
+
+            const currentUser = userRef.current;
+            if (currentUser) {
+                try {
+                    await clearSurveyDraft(currentUser.uid, type);
+                    setToastMsg("本機與雲端暫存檔已清空，畫面已重置");
+                } catch (cloudErr) {
+                    console.error(cloudErr);
+                    setToastMsg("本機已清空，雲端清空失敗（請於連線後再試）");
+                }
+            } else {
+                setToastMsg("暫存檔已清空，畫面已重置");
+            }
+        } catch (e) { }
+    };
+
+    const clearDraft = () => { 
+        setShowClearConfirm(true);
+    };
+    
+    // Check for existing draft on mount or when user logs in
+    useEffect(() => { 
+        const checkForDrafts = async () => {
+            try { 
+                let hasDraft = false;
+                
+                if (user) {
+                    try {
+                        const cloudRes = await loadSurveyDraftWithMeta(user.uid, type);
+                        if (cloudRes.data && isDataDirty(cloudRes.data as SurveyData, INITIAL_STATE)) {
+                            hasDraft = true;
+                        }
+                    } catch (cloudErr) {
+                        console.error(cloudErr);
+                    }
+                }
+
+                if (!hasDraft) {
+                    const localRes = getLocalDraftWithMeta();
+                    if (localRes.data) {
+                        hasDraft = true;
+                    }
+                }
+
+                if (hasDraft) {
+                    setDraftFoundModalOpen(true); 
+                }
+            } catch (e) { console.error(e); } 
+        };
+        checkForDrafts();
+    }, [DRAFT_KEY, user, type]);
+
+    useEffect(() => {
+        let inactivityTimer: ReturnType<typeof setTimeout>;
+        const resetInactivityTimer = () => { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { if (isDataDirty(dataRef.current, INITIAL_STATE)) performSave(true); }, 5 * 60 * 1000); };
+        let lastActivity = 0;
+        const handleActivity = () => { const now = Date.now(); if (now - lastActivity > 1000) { resetInactivityTimer(); lastActivity = now; } };
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => { 
+            if (isDataDirty(dataRef.current, INITIAL_STATE)) { 
+                e.preventDefault(); e.returnValue = '確定尚未存檔就離開分頁嗎？'; return '確定尚未存檔就離開分頁嗎？'; 
+            } 
+        };
+        const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+        events.forEach(event => window.addEventListener(event, handleActivity));
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        resetInactivityTimer();
+        return () => { events.forEach(event => window.removeEventListener(event, handleActivity)); window.removeEventListener('beforeunload', handleBeforeUnload); clearTimeout(inactivityTimer); };
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => { 
+            if (exporting || typeof window === 'undefined') return; 
+            const A4_WIDTH = 794; 
+            let newScale = 1; 
+            if (window.innerWidth >= 1024) { 
+                if (previewWrapperRef.current) { 
+                    const containerWidth = previewWrapperRef.current.clientWidth; 
+                    const availableWidth = containerWidth - 100; 
+                    newScale = Math.min(1, availableWidth / A4_WIDTH); 
+                } 
+            } else { 
+                if (mobileTab === 'preview') { 
+                    // Use screen.width to avoid getting a smaller value when the user pinch-zooms
+                    // window.innerWidth can change based on the visual viewport scale on mobile.
+                    const screenWidth = window.screen && window.screen.width ? window.screen.width : window.innerWidth;
+                    const availableWidth = screenWidth - 32; 
+                    newScale = Math.min(1, availableWidth / A4_WIDTH); 
+                } 
+            } 
+            setPreviewScale(newScale > 0.1 ? newScale : 0.1); 
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [mobileTab, exporting]);
+
+    const update = useCallback((key: keyof SurveyData, val: any) => setData(p => ({ ...p, [key]: val })), []);
+    const toggleArr = useCallback((key: keyof SurveyData, val: string) => setData(p => { const arr = Array.isArray(p[key]) ? p[key] as string[] : []; return { ...p, [key]: arr.includes(val) ? arr.filter(i => i !== val) : [...arr, val] }; }), []);
+
+    useEffect(() => { 
+        if (isJumpingToError.current) return;
+        const scrollToTop = () => {
+            if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' }); 
+            if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'auto' }); 
+        };
+        
+        // Immediate scroll
+        scrollToTop();
+        
+        // Scroll after short delay (for React render)
+        const t1 = setTimeout(scrollToTop, 50);
+        
+        // Scroll after animation delay (300ms is the duration of slide-in)
+        const t2 = setTimeout(scrollToTop, 320); 
+        
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
+    }, [activeStep]);
+
+    const handleJumpToError = (id: string, step: number) => {
+        setAlertModalOpen(false);
+        setMobileTab('edit'); // Ensure we switch to edit mode on mobile
+        isJumpingToError.current = true;
+        setActiveStep(step);
+        
+        setTimeout(() => {
+            let attempts = 0;
+            const findAndScroll = () => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setHighlightedField(id);
+                    setTimeout(() => {
+                        setHighlightedField(null);
+                        isJumpingToError.current = false;
+                    }, 2000);
+                } else if (attempts < 15) { // Try for up to 750ms
+                    attempts++;
+                    setTimeout(findAndScroll, 50);
+                } else {
+                    isJumpingToError.current = false;
+                }
+            };
+            findAndScroll();
+        }, 300);
+    };
+
+    const handleBackHome = () => {
+        if (isDataDirty(data, INITIAL_STATE)) {
+            setShowHomeConfirm(true);
+        } else {
+            onBack();
+        }
+    };
+
+    // Refactored handleExport to use the utility
+    const handleExport = async (fmt: 'jpg' | 'pdf') => {
+        const errors = validateForm(data, type); 
+        if (errors.length > 0) { setValidationErrors(errors); setAlertModalOpen(true); return; }
+        
+        setExporting(true);
+        if (typeof window !== 'undefined') { if (window.innerWidth < 1024) setMobileTab('preview'); window.scrollTo(0, 0); }
+        await new Promise(resolve => setTimeout(resolve, 800)); // Wait for render
+
+        if (!page1Ref.current) {
+            console.error("Preview elements not found");
+            setExporting(false);
+            return;
+        }
+
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+        const fileName = `現況調查表_${data.caseName || '未命名'}_${dateStr}`;
+        let exportFailed = false;
+        const exportOpts = {
+            fileName,
+            page1Ref: page1Ref.current,
+            page2Ref: (type !== 'parking' && page2Ref.current) ? page2Ref.current : null,
+            page3Ref: page3Ref.current || null,
+            isMobile,
+            onSuccess: (msg: string) => setToastMsg(msg),
+            onError: (e: any) => { exportFailed = true; console.error("Export Error:", e); setToastMsg("❌ 匯出失敗，請重試或縮短案名。"); }
+        };
+
+        if (fmt === 'jpg') {
+            const resultUrl = await exportToJPG(exportOpts);
+            if (resultUrl) {
+                setGeneratedImage(resultUrl);
+                setShowImageModal(true);
+            }
+        } else {
+            await exportToPDF(exportOpts);
+        }
+        
+        setExporting(false);
+        if (!exportFailed && (!isMobile || fmt !== 'jpg')) setShowExportSuccessModal(true);
+    };
+
+    const stepsToShow = (type === 'land') ? 4 : (type === 'parking' ? 3 : 4);
+    const stepLabels = useMemo(() => { 
+        const labels = ["基本資料"]; 
+        if (type === 'land') { 
+            labels.push("使用現況-1", "使用現況-2", "環境／其他"); 
+        } else if (type === 'parking') { 
+            labels.push("車位資訊", "環境與其他"); 
+        } else if (type === 'factory') {
+            labels.push("內部現況", "設備現況", "外觀／環境");
+        } else { 
+            labels.push("內部現況", "公設／車位", "外觀／環境"); 
+        } 
+        return labels; 
+    }, [type]);
+
+    const stepProps = {
+        data,
+        setData,
+        update,
+        toggleArr,
+        type,
+        highlightedField,
+        themeText,
+        themeBorder,
+        parkingLogic
+    };
+
+    // isCurrentStepValid useMemo removed
+
+    return (
+        <div className="relative w-full flex flex-col lg:flex-row h-full bg-slate-50 dark:bg-slate-950 overflow-hidden text-base transition-colors duration-300" style={highlightStyles}>
+            {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg(null)} />}
+            
+            <ConfirmModal 
+                isOpen={showHomeConfirm}
+                title="確定要返回首頁嗎？"
+                message="您尚未儲存資料，未儲存的內容將會遺失。"
+                onConfirm={() => { setShowHomeConfirm(false); onBack(); }}
+                onCancel={() => setShowHomeConfirm(false)}
+                type="danger"
+                confirmText="確定返回 (不儲存)"
+                cancelText="留在頁面"
+            />
+
+            <ConfirmModal 
+                isOpen={showClearConfirm}
+                title="確定要清空所有內容嗎？"
+                message="此動作無法復原，所有已填寫的內容將被移除。"
+                onConfirm={() => { setShowClearConfirm(false); setDraftFoundModalOpen(false); performReset(); }}
+                onCancel={() => setShowClearConfirm(false)}
+                type="danger"
+                confirmText="確定清空 (重填)"
+                cancelText="取消"
+            />
+
+            <DraftFoundModal isOpen={draftFoundModalOpen} onLoad={loadDraft} onClear={() => { setDraftFoundModalOpen(false); clearDraft(); }} onClose={() => setDraftFoundModalOpen(false)} />
+            <AlertModal isOpen={alertModalOpen} errors={validationErrors} onClose={() => setAlertModalOpen(false)} onJumpTo={handleJumpToError} />
+            <ImagePreviewModal isOpen={showImageModal} imageUrls={generatedImage} onClose={() => setShowImageModal(false)} />
+            <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
+
+            <div className={`w-full lg:w-[600px] bg-slate-50 dark:bg-slate-950 shadow-2xl flex flex-col no-print z-40 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 absolute inset-0 lg:relative pb-[6rem] lg:pb-0 ${mobileTab === 'edit' ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'}`}>
+                {/* Top Action Bar */}
+                <div className={`${themeBg} absolute top-0 left-0 right-0 flex flex-col shadow-md z-50 transition-transform duration-300 ${scrollDirection === 'down' ? '-translate-y-[calc(100%-8px)] opacity-90' : 'translate-y-0 opacity-100'}`}>
+                    <div className="flex justify-between items-center w-full gap-2 p-3 md:p-4">
+                        <button type="button" onClick={handleBackHome} className="bg-yellow-300 text-slate-900 border-b-[3px] border-yellow-500 px-3 md:px-4 py-2 rounded-xl hover:bg-yellow-400 transition-all duration-150 active:border-b-0 active:translate-y-[3px] flex items-center justify-center gap-1 shadow-sm dark:bg-yellow-600 dark:text-white dark:border-yellow-800 shrink-0">
+                            <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                            <span className="font-bold text-sm whitespace-nowrap">回首頁</span>
+                        </button>
+                        
+                        <div className="flex gap-2 flex-grow justify-center overflow-x-auto no-scrollbar">
+                            <button 
+                                onClick={() => {
+                                    if (activeStep > 1) {
+                                        setActiveStep(prev => prev - 1);
+                                        if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }
+                                }}
+                                className={`flex-1 min-w-[70px] max-w-[120px] px-2 py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center transition-all ${activeStep > 1 ? 'bg-amber-100 text-amber-900 border-[2px] border-amber-400 shadow-sm hover:bg-amber-200 active:scale-95 dark:bg-amber-900/50 dark:text-amber-200' : 'bg-sky-700/50 text-sky-100 border border-sky-400 opacity-60 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-600'}`}
+                                disabled={activeStep === 1}
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-1 hidden sm:block" /> 上一步
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    if (activeStep < stepsToShow) {
+                                        setActiveStep(prev => prev + 1);
+                                        if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                                    } else {
+                                        setMobileTab('preview');
+                                    }
+                                }}
+                                className={`flex-1 min-w-[70px] max-w-[120px] px-2 py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center transition-all shadow-md border-[2px] active:scale-95 text-white ${activeStep === stepsToShow ? 'bg-emerald-500 hover:bg-emerald-600 border-white' : 'bg-orange-500 hover:bg-orange-600 border-white'}`}
+                            >
+                                {activeStep === stepsToShow ? '預覽' : '下一步'} <ChevronRight className="w-4 h-4 ml-1 hidden sm:block" />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                            <span className="hidden sm:inline-block bg-black/20 px-2 py-1 rounded-lg text-white text-[10px] md:text-xs font-bold tracking-wider">{data?.version}</span>
+                            <button onClick={toggleTheme} className="p-1.5 md:p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors shrink-0" aria-label="Toggle Theme">
+                                {isDarkMode ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div ref={formScrollRef} className="flex-grow overflow-y-auto min-h-0 px-4 pb-8 pt-[84px] md:px-6 md:pb-8 md:pt-[92px] space-y-6 bg-slate-50 dark:bg-slate-950 relative transition-colors duration-300">
+                    <ErrorBoundary>
+                        {activeStep === 1 && <Step1 {...stepProps} />}
+                        {activeStep === 2 && <Step2 {...stepProps} />}
+                        {activeStep === 3 && <Step3 {...stepProps} />}
+                        {activeStep === 4 && type !== 'parking' && <Step4 {...stepProps} />}
+                    </ErrorBoundary>
+
+                    {/* Progress Bar */}
+                    <div className="w-full relative pt-5 pb-5 mt-1 md:pt-6 md:pb-6 border-t-2 border-slate-200/60 dark:border-slate-800/60">
+                        <div className="w-full max-w-[240px] md:max-w-[360px] lg:max-w-[420px] mx-auto relative">
+                            {/* Track */}
+                            <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full -translate-y-1/2 dark:bg-slate-700"></div>
+                            {/* Progress Line */}
+                            <div 
+                                className="absolute left-0 top-1/2 h-1 bg-sky-500 -z-10 rounded-full transition-all duration-500 -translate-y-1/2"
+                                style={{ width: `${((activeStep - 1) / (stepsToShow - 1)) * 100}%` }}
+                            ></div>
+                            
+                            <div className="flex justify-between items-center w-full">
+                                {stepLabels.slice(0, stepsToShow).map((label, idx) => {
+                                    const stepNum = idx + 1;
+                                    const isActive = activeStep === stepNum;
+                                    const isCompleted = activeStep > stepNum;
+                                    const pageLabel = ["第一頁", "第二頁", "第三頁", "第四頁"][idx];
+
+                                    return (
+                                        <button 
+                                            key={stepNum} 
+                                            type="button"
+                                            onClick={() => setActiveStep(stepNum)}
+                                            className="group relative flex flex-col items-center focus:outline-none cursor-pointer"
+                                        >
+                                            {/* Page Label (Above) */}
+                                            <span className={`absolute -top-5 md:-top-6 ${isStandard ? 'text-[11px] md:text-sm' : 'text-[14px] md:text-base'} font-bold whitespace-nowrap transition-all duration-300 ${isActive ? 'text-sky-600 dark:text-sky-400 translate-y-0 opacity-100' : (isCompleted ? 'text-slate-500 dark:text-slate-300 translate-y-1 opacity-80' : 'text-slate-400 dark:text-slate-400 translate-y-1 opacity-60')}`}>
+                                                {pageLabel}
+                                            </span>
+                                            
+                                            {/* Dot */}
+                                            <div className={`rounded-full flex items-center justify-center font-bold transition-all duration-300 border-[2px] z-10 ${isActive ? 'bg-sky-500 border-sky-100 text-white scale-110 shadow-md dark:border-sky-900 ring-4 ring-sky-100 dark:ring-sky-900/30' : (isCompleted ? 'bg-sky-500 border-sky-500 text-white dark:border-sky-600' : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400')} ${isStandard ? 'w-8 h-8 md:w-10 md:h-10 text-sm md:text-lg' : 'w-10 h-10 md:w-12 md:h-12 text-lg md:text-xl'}`}>
+                                                {isCompleted ? <Check className={`w-4 h-4 md:w-5 md:h-5 ${!isStandard && 'scale-125'}`} strokeWidth={3} /> : stepNum}
+                                            </div>
+                                            
+                                            {/* Content Label (Below) */}
+                                            <span className={`absolute -bottom-5 md:-bottom-6 w-max max-w-[80px] md:max-w-[120px] text-center transition-all duration-300 leading-tight ${isActive ? (isStandard ? 'text-[11px] md:text-sm' : 'text-[15px] md:text-lg') + ' font-bold text-slate-900 dark:text-white opacity-100 scale-110' : (isStandard ? 'text-[10px] md:text-xs' : 'text-[13px] md:text-sm') + ' font-medium text-slate-500 dark:text-slate-300 opacity-80'}`}>
+                                                {label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`p-3 md:p-4 bg-white/80 backdrop-blur-md border-t border-slate-200/50 dark:bg-slate-900/80 dark:border-slate-800/50 flex justify-between gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto`}>
+                    <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-amber-50 text-amber-700 border-2 border-amber-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-700">
+                        <FileInput className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 讀檔
+                    </button>
+                    <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
+                        <Save className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 存檔
+                    </button>
+                    <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
+                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 清空
+                    </button>
+                </div>
+            </div>
+
+            <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-start lg:items-center absolute lg:relative inset-0 z-30 transition-all duration-300 ${mobileTab === 'preview' ? 'translate-x-0 opacity-100 pointer-events-auto' : 'translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'} pb-32 lg:pb-10 dark:bg-slate-900`}>
+                <div className="w-full flex lg:justify-center justify-start pb-8">
+                    <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
+                </div>
+
+                <div className="hidden lg:flex shrink-0 w-full gap-4 justify-center mt-10 lg:flex-row text-left relative z-20">
+                    <button onClick={() => handleExport('jpg')} className="w-full lg:w-auto px-10 py-5 bg-sky-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-sky-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-sky-700 dark:border-sky-900"><ImageIcon className="w-8 h-8" /> 匯出 JPG 圖片</button>
+                    <button onClick={() => handleExport('pdf')} className="w-full lg:w-auto px-10 py-5 bg-red-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-red-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-red-700 dark:border-red-900"><FileText className="w-8 h-8" /> 匯出 PDF 文件</button>
+                </div>
+            </div>
+
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 flex justify-around items-center pb-safe pt-1 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] dark:bg-slate-900 dark:border-slate-800">
+                <button onClick={() => setMobileTab('edit')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'edit' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-400'}`}>
+                    <Edit3 className={`w-6 h-6 mb-1 ${mobileTab === 'edit' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'edit' ? 2.5 : 2} />
+                    <span className="text-lg font-black">填寫資料</span>
+                </button>
+                <div className="w-[2px] h-10 bg-slate-100 dark:bg-slate-800"></div>
+                <button onClick={() => setMobileTab('preview')} className={`flex flex-col items-center justify-center w-full py-2 transition-colors duration-200 ${mobileTab === 'preview' ? 'text-slate-900 bg-slate-50 dark:text-white dark:bg-slate-800' : 'text-slate-400 dark:text-slate-400'}`}>
+                    <Eye className={`w-6 h-6 mb-1 ${mobileTab === 'preview' ? 'fill-slate-900 dark:fill-white' : ''}`} strokeWidth={mobileTab === 'preview' ? 2.5 : 2} />
+                    <span className="text-lg font-black">預覽/匯出</span>
+                </button>
+            </div>
+
+            {isMobile && mobileTab === 'preview' && !exporting && (
+                <>
+                    {mobileMenuOpen && <div className="fixed inset-0 bg-black/20 z-[35] backdrop-blur-[1px]" onClick={() => setMobileMenuOpen(false)} />}
+                    <div className="fixed bottom-24 right-5 z-[40] flex flex-col items-end gap-4">
+                        <div className={`flex flex-col gap-3 transition-all duration-200 origin-bottom-right ${mobileMenuOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-50 opacity-0 translate-y-10 pointer-events-none'}`}>
+                            <button onClick={() => { setMobileMenuOpen(false); handleExport('jpg'); }} className="flex items-center gap-3 bg-white text-slate-800 px-5 py-3 rounded-full shadow-lg border-2 border-sky-100 active:scale-95 transition-transform dark:bg-slate-800 dark:text-white dark:border-slate-700">
+                                <span className="font-bold whitespace-nowrap">匯出 JPG</span>
+                                <div className="bg-sky-100 p-2 rounded-full dark:bg-sky-900"><ImageIcon className="w-5 h-5 text-sky-600 dark:text-sky-300" /></div>
+                            </button>
+                            <button onClick={() => { setMobileMenuOpen(false); handleExport('pdf'); }} className="flex items-center gap-3 bg-white text-slate-800 px-5 py-3 rounded-full shadow-lg border-2 border-red-100 active:scale-95 transition-transform dark:bg-slate-800 dark:text-white dark:border-slate-700">
+                                <span className="font-bold whitespace-nowrap">匯出 PDF</span>
+                                <div className="bg-red-100 p-2 rounded-full dark:bg-red-900"><FileText className="w-5 h-5 text-red-600 dark:text-red-300" /></div>
+                            </button>
+                        </div>
+                        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className={`p-4 rounded-full shadow-2xl transition-all duration-200 border-4 border-white dark:border-slate-800 flex items-center justify-center active:scale-95 ${mobileMenuOpen ? 'bg-slate-800 text-white rotate-45 dark:bg-slate-600' : 'bg-sky-500 text-white hover:bg-sky-600 dark:bg-sky-600'}`}>
+                            {mobileMenuOpen ? <X className="w-8 h-8" strokeWidth={3} /> : <Download className="w-8 h-8" strokeWidth={3} />}
+                        </button>
+                    </div>
+                </>
+            )}
+
+            {/* Exporting Loading Overlay */}
+            {exporting && (
+                <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center text-white animate-in fade-in duration-200">
+                    <Loader2 className="w-16 h-16 animate-spin mb-6 text-sky-400" />
+                    <p className="text-2xl md:text-3xl font-black tracking-widest drop-shadow-md">正在製作圖片中，請稍候...</p>
+                </div>
+            )}
+
+            {/* Scroll To Top Button */}
+            {showScrollTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-24 lg:bottom-10 right-6 z-[9999] p-4 rounded-full bg-sky-600 text-white shadow-xl hover:bg-sky-700 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 border-4 border-white dark:border-slate-800"
+                    aria-label="Scroll to top"
+                >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="28" 
+                        height="28" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="3" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                    >
+                        <path d="M12 19V5" />
+                        <path d="M5 12l7-7 7 7" />
+                    </svg>
+                </button>
+            )}
+        </div>
+    );
+};
