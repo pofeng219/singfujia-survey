@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} { 
+      allow read, write: if false; 
+    }
+
+    // Primitive Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isVerifiedOwner(userId) {
+      return isOwner(userId) && request.auth.token.email_verified == true;
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    function isValidUserDraft(data) {
+      return data.keys().hasOnly([
+          'house', 'land', 'factory', 'parking',
+          'houseUpdatedAt', 'landUpdatedAt', 'factoryUpdatedAt', 'parkingUpdatedAt',
+          'updatedAt'
+        ])
+        && data.updatedAt is timestamp
+        && data.updatedAt == request.time
+        && (!('house' in data) || data.house is map)
+        && (!('land' in data) || data.land is map)
+        && (!('factory' in data) || data.factory is map)
+        && (!('parking' in data) || data.parking is map)
+        && (!('houseUpdatedAt' in data) || data.houseUpdatedAt is timestamp)
+        && (!('landUpdatedAt' in data) || data.landUpdatedAt is timestamp)
+        && (!('factoryUpdatedAt' in data) || data.factoryUpdatedAt is timestamp)
+        && (!('parkingUpdatedAt' in data) || data.parkingUpdatedAt is timestamp);
+    }
+
+    match /userDrafts/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+      allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidUserDraft(incoming());
+      allow update: if isVerifiedOwner(userId)
+        && isValidId(userId)
+        && isValidUserDraft(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'house', 'land', 'factory', 'parking',
+          'houseUpdatedAt', 'landUpdatedAt', 'factoryUpdatedAt', 'parkingUpdatedAt',
+          'updatedAt'
+        ]);
+      allow delete: if isVerifiedOwner(userId) && isValidId(userId);
+    }
+  }
+}

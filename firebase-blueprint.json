@@ -1,0 +1,26 @@
+{
+  "entities": {
+    "UserDraft": {
+      "title": "User Draft",
+      "description": "Stores user survey drafts",
+      "type": "object",
+      "properties": {
+        "house": { "type": "object" },
+        "land": { "type": "object" },
+        "factory": { "type": "object" },
+        "parking": { "type": "object" },
+        "houseUpdatedAt": { "type": "object", "format": "date-time" },
+        "landUpdatedAt": { "type": "object", "format": "date-time" },
+        "factoryUpdatedAt": { "type": "object", "format": "date-time" },
+        "parkingUpdatedAt": { "type": "object", "format": "date-time" },
+        "updatedAt": { "type": "object", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/userDrafts/{userId}": {
+      "schema": { "$ref": "#/entities/UserDraft" },
+      "description": "User's draft data"
+    }
+  }
+}
