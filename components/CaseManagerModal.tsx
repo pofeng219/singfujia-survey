@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FolderOpen, Plus, Trash2, Cloud, HardDrive, X, Save, Clock, FilePlus2, Check } from 'lucide-react';
+import { FolderOpen, Plus, Trash2, Cloud, HardDrive, X, Save, Clock, FilePlus2, Check, FileInput } from 'lucide-react';
 import { CaseDraftRecord } from '../firebase';
+
+export interface QuickDraftMeta {
+    exists: boolean;
+    caseName?: string;
+    updatedAt: number;
+    source?: 'cloud' | 'local';
+}
 
 interface CaseManagerModalProps {
     isOpen: boolean;
@@ -10,6 +17,8 @@ interface CaseManagerModalProps {
     activeCaseId: string | null;
     defaultCaseName: string;
     isSignedIn: boolean;
+    quickDraftMeta: QuickDraftMeta | null;
+    onLoadQuickDraft: () => Promise<void>;
     onSaveAsNew: (caseName: string) => Promise<void>;
     onUpdateActive: (caseName: string) => Promise<void>;
     onLoadCase: (record: CaseDraftRecord) => void;
@@ -36,6 +45,8 @@ export const CaseManagerModal: React.FC<CaseManagerModalProps> = ({
     activeCaseId,
     defaultCaseName,
     isSignedIn,
+    quickDraftMeta,
+    onLoadQuickDraft,
     onSaveAsNew,
     onUpdateActive,
     onLoadCase,
@@ -44,18 +55,30 @@ export const CaseManagerModal: React.FC<CaseManagerModalProps> = ({
 }) => {
     const [caseNameInput, setCaseNameInput] = useState(defaultCaseName);
     const [saving, setSaving] = useState(false);
+    const [loadingQuickDraft, setLoadingQuickDraft] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
         if (isOpen) {
             setCaseNameInput(defaultCaseName);
             setConfirmDeleteId(null);
+            setLoadingQuickDraft(false);
         }
     }, [isOpen, defaultCaseName]);
 
     if (!isOpen) return null;
 
     const activeCase = cases.find(c => c.id === activeCaseId) || null;
+
+    const handleLoadQuick = async () => {
+        if (loadingQuickDraft) return;
+        setLoadingQuickDraft(true);
+        try {
+            await onLoadQuickDraft();
+        } finally {
+            setLoadingQuickDraft(false);
+        }
+    };
 
     const handleSaveNew = async () => {
         if (saving) return;
@@ -91,7 +114,7 @@ export const CaseManagerModal: React.FC<CaseManagerModalProps> = ({
                     <div className="flex items-center gap-2.5">
                         <FolderOpen className="w-6 h-6" />
                         <div>
-                            <h3 className="text-lg md:text-xl font-black leading-tight">多案件草稿庫</h3>
+                            <h3 className="text-lg md:text-xl font-black leading-tight">案件庫（含快速讀檔）</h3>
                             <p className="text-xs text-sky-100 font-medium">
                                 {isSignedIn ? '已登入 Google：自動同步雲端與本機' : '未登入模式：儲存於本機瀏覽器'}
                             </p>
@@ -105,6 +128,54 @@ export const CaseManagerModal: React.FC<CaseManagerModalProps> = ({
                     >
                         <X className="w-5 h-5" />
                     </button>
+                </div>
+
+                {/* Quick Draft Recovery Area (Top) */}
+                <div className="px-4 py-3 md:px-5 md:py-3.5 border-b border-amber-200/80 dark:border-amber-800/60 bg-amber-50/80 dark:bg-amber-950/30 shrink-0">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="min-w-0 flex-1 space-y-0.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                                <FileInput className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                                <span className="text-sm font-black text-amber-900 dark:text-amber-200">
+                                    快速暫存（自動／手動存檔）
+                                </span>
+                                {quickDraftMeta?.exists && quickDraftMeta.source && (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/90 text-slate-600 border border-amber-200 dark:bg-slate-800 dark:text-slate-300 dark:border-amber-800">
+                                        {quickDraftMeta.source === 'cloud' ? (
+                                            <><Cloud className="w-3 h-3 text-sky-500" /> 雲端</>
+                                        ) : (
+                                            <><HardDrive className="w-3 h-3 text-amber-500" /> 本機</>
+                                        )}
+                                    </span>
+                                )}
+                            </div>
+                            {loading && !quickDraftMeta ? (
+                                <p className="text-xs text-amber-800/80 dark:text-amber-300/80 font-medium">
+                                    正在檢查快速暫存紀錄...
+                                </p>
+                            ) : quickDraftMeta?.exists ? (
+                                <p className="text-xs text-amber-900/85 dark:text-amber-200/90 font-medium truncate">
+                                    {quickDraftMeta.caseName ? `案名：${quickDraftMeta.caseName} · ` : ''}
+                                    最後儲存：{formatUpdatedAt(quickDraftMeta.updatedAt)}
+                                </p>
+                            ) : (
+                                <p className="text-xs text-amber-800/75 dark:text-amber-300/75 font-medium">
+                                    目前沒有快速暫存紀錄（點擊底部「存檔」或自動備份後將顯示於此）
+                                </p>
+                            )}
+                        </div>
+                        {quickDraftMeta?.exists && (
+                            <button
+                                type="button"
+                                disabled={loadingQuickDraft}
+                                onClick={handleLoadQuick}
+                                className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 disabled:opacity-50 shrink-0"
+                            >
+                                <FileInput className="w-4 h-4" />
+                                {loadingQuickDraft ? '讀取中...' : '載入快速暫存'}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Save / New Action Area */}

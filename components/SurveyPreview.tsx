@@ -83,7 +83,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
           !isOtherPt &&
           ((data?.q10_carUsage || []).length > 0 || data?.q10_hasCarUsageOther),
         showCarSize:
-          !isNoParking && !isOtherPt && !pts.includes("法定空地／自家門前"),
+          !isNoParking &&
+          !isOtherPt &&
+          !pts.includes("法定空地／自家門前") &&
+          !!data?.q10_measureType,
         showWeight:
           !isNoParking &&
           !isOtherPt &&

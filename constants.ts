@@ -6,6 +6,8 @@ const getCurrentDate = () => {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
+export const SYSTEM_LAST_UPDATED = '系統於 115 年 11 月 26 日更新';
+
 export const INITIAL_STATE: SurveyData = {
     caseName: '', authNumber: '', storeName: '', agentName: '', address: '', 
     fillDate: getCurrentDate(), version: '1150101版',
@@ -40,7 +42,7 @@ export const INITIAL_STATE: SurveyData = {
     q10_parkingNumberType: '', q10_parkingNumberVal: '',
     q10_carUsage: [], q10_carLotteryMonth: '', q10_hasCarUsageOther: false, q10_carUsageOther: '',
     q10_motoUsage: [], q10_hasMotoUsageOther: false, q10_motoUsageOther: '',
-    q10_measureType: '實際測量', q10_dimL: '', q10_dimW: '', q10_dimH: '', q10_mechWeight: '', q10_entryHeight: '', q10_entryHeight_desc: '',
+    q10_measureType: '', q10_dimL: '', q10_dimW: '', q10_dimH: '', q10_mechWeight: '', q10_entryHeight: '', q10_entryHeight_desc: '',
     
     q10_laneSection: '', q10_laneSubSection: '', q10_laneNumber: '',
 
@@ -62,8 +64,8 @@ export const INITIAL_STATE: SurveyData = {
     factory_height: '', factory_width: '', factory_depth: '', factory_floor_height: '',
     factory_floor_condition: [], factory_floor_condition_other: '',
     factory_fire_safety: [], factory_fire_safety_other: '', factory_fire_inspection: '',
-    factory_elevator: '', factory_elevator_status: '可運作', factory_elevator_working: true, factory_elevator_separate: false, factory_elevator_capacity: '', factory_elevator_dim: '', factory_elevator_door_dim: '',
-    factory_crane: '', factory_crane_desc: '', factory_crane_status: '可運作', factory_crane_working: true, factory_crane_tonnage: '', factory_crane_quantity: '',
+    factory_elevator: '', factory_elevator_status: '', factory_elevator_working: false, factory_elevator_separate: false, factory_elevator_capacity: '', factory_elevator_dim: '', factory_elevator_door_dim: '',
+    factory_crane: '', factory_crane_desc: '', factory_crane_status: '', factory_crane_working: false, factory_crane_tonnage: '', factory_crane_quantity: '',
     factory_waste: '', factory_waste_has_detail: '', factory_waste_desc: '',
     factory_loading_dock: '', factory_truck_access: '', factory_truck_buffer: '',
     factory_parking_desc: '',

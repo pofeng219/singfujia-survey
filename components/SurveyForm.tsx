@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
-import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2, ChevronRight, FolderOpen } from 'lucide-react';
+import { Save, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2, ChevronRight, FolderOpen } from 'lucide-react';
 
 import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
 import { INITIAL_STATE } from '../constants';
 
 import { Toast, DraftFoundModal, AlertModal, ImagePreviewModal, ExportSuccessModal, ConfirmModal } from './SharedUI';
-import { CaseManagerModal } from './CaseManagerModal';
+import { CaseManagerModal, QuickDraftMeta } from './CaseManagerModal';
 import { SurveyPreview } from './SurveyPreview';
 import { validateForm } from '../utils/validators';
 import { exportToJPG, exportToPDF } from '../utils/exporter';
@@ -71,6 +71,13 @@ const isDataDirty = (current: SurveyData, initial: SurveyData): boolean => {
     }
 };
 
+const formatSavedTime = (ts: number): string => {
+    const d = new Date(ts);
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+};
+
 // Sticky Action Bar Component removed (inlined)
 
 export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode, toggleTheme }) => {
@@ -98,6 +105,9 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const [cases, setCases] = useState<CaseDraftRecord[]>([]);
     const [casesLoading, setCasesLoading] = useState(false);
     const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
+    const [quickDraftMeta, setQuickDraftMeta] = useState<QuickDraftMeta | null>(null);
+    const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+    const [highlightExportActions, setHighlightExportActions] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false); // New state for scroll button
     const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
@@ -111,10 +121,18 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const page3Ref = useRef<HTMLDivElement>(null); // Added Page 3 Ref
     const formScrollRef = useRef<HTMLDivElement>(null);
     const previewWrapperRef = useRef<HTMLDivElement>(null);
+    const exportActionsRef = useRef<HTMLDivElement>(null);
+    const exportHighlightTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dataRef = useRef(data);
     const userRef = useRef(user);
     const activeCaseIdRef = useRef<string | null>(activeCaseId);
     const isJumpingToError = useRef(false);
+
+    useEffect(() => {
+        return () => {
+            if (exportHighlightTimerRef.current) clearTimeout(exportHighlightTimerRef.current);
+        };
+    }, []);
 
     // Scroll to Top Logic
     useEffect(() => {
@@ -261,11 +279,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
     const performSave = async (silent: boolean = false) => { 
         let localSaved = false;
+        const savedNow = Date.now();
         try { 
             // Always save locally first for speed
             localStorage.setItem(DRAFT_KEY, JSON.stringify(dataRef.current));
-            localStorage.setItem(DRAFT_TIME_KEY, String(Date.now()));
+            localStorage.setItem(DRAFT_TIME_KEY, String(savedNow));
             localSaved = true;
+            setLastSavedAt(savedNow);
         } catch (e) { 
             if (!silent) setToastMsg("儲存失敗：請檢查瀏覽器設定");
             return;
@@ -284,7 +304,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 caseName: resolvedActiveCaseName,
                 address: (dataRef.current.address || '').trim().slice(0, 200),
                 data: dataRef.current,
-                updatedAt: Date.now(),
+                updatedAt: savedNow,
                 source: currentUser ? 'cloud' : 'local'
             });
         }
@@ -297,6 +317,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                         caseName: resolvedActiveCaseName
                     });
                 }
+                setLastSavedAt(Date.now());
                 if (!silent) setToastMsg("✅ 文字已同步儲存至本機與雲端！");
             } catch (e) {
                 if (!silent) setToastMsg("✅ 已暫存至本機（雲端同步失敗，待有網路時再儲存）");
@@ -344,16 +365,49 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         const mergedMap = new Map<string, CaseDraftRecord>();
         localList.forEach(item => mergedMap.set(item.id, item));
 
+        const localDraft = getLocalDraftWithMeta();
+        let nextQuickDraft: QuickDraftMeta = localDraft.data
+            ? {
+                exists: true,
+                caseName: (localDraft.data.caseName || '').trim() || undefined,
+                updatedAt: localDraft.updatedAt,
+                source: 'local'
+            }
+            : { exists: false, updatedAt: 0 };
+
         const currentUser = userRef.current;
         if (currentUser) {
             try {
-                const cloudList = await listSurveyCases(currentUser.uid, type);
-                cloudList.forEach(cloudItem => {
-                    const existingLocal = mergedMap.get(cloudItem.id);
-                    if (!existingLocal || cloudItem.updatedAt >= existingLocal.updatedAt) {
-                        mergedMap.set(cloudItem.id, cloudItem);
+                const [cloudCasesRes, cloudDraftRes] = await Promise.allSettled([
+                    listSurveyCases(currentUser.uid, type),
+                    loadSurveyDraftWithMeta(currentUser.uid, type)
+                ]);
+                if (cloudCasesRes.status === 'fulfilled') {
+                    cloudCasesRes.value.forEach(cloudItem => {
+                        const existingLocal = mergedMap.get(cloudItem.id);
+                        if (!existingLocal || cloudItem.updatedAt >= existingLocal.updatedAt) {
+                            mergedMap.set(cloudItem.id, cloudItem);
+                        }
+                    });
+                } else {
+                    console.error(cloudCasesRes.reason);
+                }
+                if (cloudDraftRes.status === 'fulfilled') {
+                    const res = cloudDraftRes.value;
+                    if (res.data && isDataDirty(res.data as SurveyData, INITIAL_STATE)) {
+                        const cloudData = res.data as SurveyData;
+                        if (!nextQuickDraft.exists || res.updatedAt >= nextQuickDraft.updatedAt) {
+                            nextQuickDraft = {
+                                exists: true,
+                                caseName: (cloudData.caseName || '').trim() || undefined,
+                                updatedAt: res.updatedAt,
+                                source: 'cloud'
+                            };
+                        }
                     }
-                });
+                } else {
+                    console.error(cloudDraftRes.reason);
+                }
             } catch (err) {
                 console.error(err);
             }
@@ -361,6 +415,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
         const merged = Array.from(mergedMap.values()).sort((a, b) => b.updatedAt - a.updatedAt);
         setCases(merged);
+        setQuickDraftMeta(nextQuickDraft);
         setCasesLoading(false);
     };
 
@@ -374,17 +429,19 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         const cleanName = customName.trim().slice(0, 120) || (dataRef.current.caseName || '').trim().slice(0, 120) || '未命名案件';
         const cleanAddress = (dataRef.current.address || '').trim().slice(0, 200);
         const currentUser = userRef.current;
+        const savedNow = Date.now();
         const localRecord: CaseDraftRecord = {
             id: newId,
             type,
             caseName: cleanName,
             address: cleanAddress,
             data: JSON.parse(JSON.stringify(dataRef.current)),
-            updatedAt: Date.now(),
+            updatedAt: savedNow,
             source: 'local'
         };
         upsertLocalCase(localRecord);
         setActiveCaseId(newId);
+        setLastSavedAt(savedNow);
 
         if (currentUser) {
             try {
@@ -393,6 +450,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     caseName: cleanName
                 });
                 upsertLocalCase(cloudRecord);
+                setLastSavedAt(cloudRecord.updatedAt || Date.now());
                 setToastMsg(`✅ 已建立雲端案件「${cleanName}」`);
             } catch {
                 setToastMsg(`✅ 已建立本機案件「${cleanName}」（雲端同步失敗）`);
@@ -408,16 +466,18 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         const cleanName = customName.trim().slice(0, 120) || (dataRef.current.caseName || '').trim().slice(0, 120) || '未命名案件';
         const cleanAddress = (dataRef.current.address || '').trim().slice(0, 200);
         const currentUser = userRef.current;
+        const savedNow = Date.now();
         const localRecord: CaseDraftRecord = {
             id: activeCaseId,
             type,
             caseName: cleanName,
             address: cleanAddress,
             data: JSON.parse(JSON.stringify(dataRef.current)),
-            updatedAt: Date.now(),
+            updatedAt: savedNow,
             source: 'local'
         };
         upsertLocalCase(localRecord);
+        setLastSavedAt(savedNow);
 
         if (currentUser) {
             try {
@@ -426,6 +486,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     caseName: cleanName
                 });
                 upsertLocalCase(cloudRecord);
+                setLastSavedAt(cloudRecord.updatedAt || Date.now());
                 setToastMsg(`✅ 已更新雲端案件「${cleanName}」`);
             } catch {
                 setToastMsg(`✅ 已更新本機案件「${cleanName}」（雲端同步失敗）`);
@@ -439,6 +500,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const handleLoadCase = (record: CaseDraftRecord) => {
         setData({ ...INITIAL_STATE, ...record.data });
         setActiveCaseId(record.id);
+        setLastSavedAt(record.updatedAt || Date.now());
         setActiveStep(1);
         setCaseModalOpen(false);
         setToastMsg(`✅ 已載入案件「${record.caseName}」`);
@@ -468,6 +530,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const handleNewBlankCase = () => {
         setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
         setActiveCaseId(null);
+        setLastSavedAt(null);
         setActiveStep(1);
         setCaseModalOpen(false);
         setToastMsg("📄 已開啟全新空白表單（原有案件仍保留於案件庫）");
@@ -519,16 +582,20 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             if (localResult.data && cloudResult.data) {
                 if (localResult.updatedAt > cloudResult.updatedAt) {
                     setData(localResult.data);
+                    setLastSavedAt(localResult.updatedAt || Date.now());
                     setToastMsg("✅ 已讀取較新的本機暫存檔");
                 } else {
                     setData(cloudResult.data);
+                    setLastSavedAt(cloudResult.updatedAt || Date.now());
                     setToastMsg("✅ 已讀取雲端暫存檔");
                 }
             } else if (cloudResult.data) {
                 setData(cloudResult.data);
+                setLastSavedAt(cloudResult.updatedAt || Date.now());
                 setToastMsg("✅ 已讀取雲端暫存檔");
             } else if (localResult.data) {
                 setData(localResult.data);
+                setLastSavedAt(localResult.updatedAt || Date.now());
                 setToastMsg("✅ 已讀取本機暫存檔");
             } else {
                 setToastMsg("ℹ️ 目前沒有可讀取的暫存檔");
@@ -546,6 +613,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             localStorage.removeItem(DRAFT_TIME_KEY);
             setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
             setActiveCaseId(null);
+            setLastSavedAt(null);
             setActiveStep(1);
 
             const currentUser = userRef.current;
@@ -561,6 +629,22 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 setToastMsg("暫存檔已清空，畫面已重置");
             }
         } catch (e) { }
+    };
+
+    const handleGoToExport = () => {
+        if (isMobile) {
+            setMobileTab('preview');
+            return;
+        }
+        if (exportActionsRef.current) {
+            exportActionsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (previewWrapperRef.current) {
+            previewWrapperRef.current.scrollTo({ top: previewWrapperRef.current.scrollHeight, behavior: 'smooth' });
+        }
+        setHighlightExportActions(true);
+        if (exportHighlightTimerRef.current) clearTimeout(exportHighlightTimerRef.current);
+        exportHighlightTimerRef.current = setTimeout(() => setHighlightExportActions(false), 2600);
+        setToastMsg("👇 請點擊右側下方「匯出 JPG 圖片」或「匯出 PDF 文件」");
     };
 
     const clearDraft = () => { 
@@ -811,6 +895,11 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 activeCaseId={activeCaseId}
                 defaultCaseName={data.caseName || ''}
                 isSignedIn={!!user}
+                quickDraftMeta={quickDraftMeta}
+                onLoadQuickDraft={async () => {
+                    await loadDraft();
+                    setCaseModalOpen(false);
+                }}
                 onSaveAsNew={handleSaveAsNewCase}
                 onUpdateActive={handleUpdateActiveCase}
                 onLoadCase={handleLoadCase}
@@ -849,12 +938,12 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                                         setActiveStep(prev => prev + 1);
                                         if (formScrollRef.current) formScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
                                     } else {
-                                        setMobileTab('preview');
+                                        handleGoToExport();
                                     }
                                 }}
-                                className={`flex-1 min-w-[70px] max-w-[120px] px-2 py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center transition-all shadow-md border-[2px] active:scale-95 text-white ${activeStep === stepsToShow ? 'bg-emerald-500 hover:bg-emerald-600 border-white' : 'bg-orange-500 hover:bg-orange-600 border-white'}`}
+                                className={`flex-1 min-w-[82px] max-w-[138px] px-2.5 py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center whitespace-nowrap transition-all shadow-md border-[2px] active:scale-95 text-white ${activeStep === stepsToShow ? 'bg-emerald-500 hover:bg-emerald-600 border-white' : 'bg-orange-500 hover:bg-orange-600 border-white'}`}
                             >
-                                {activeStep === stepsToShow ? '預覽' : '下一步'} <ChevronRight className="w-4 h-4 ml-1 hidden sm:block" />
+                                {activeStep === stepsToShow ? (isMobile ? '預覽' : '前往匯出') : '下一步'} <ChevronRight className="w-4 h-4 ml-1 hidden sm:block shrink-0" />
                             </button>
                         </div>
 
@@ -922,19 +1011,30 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div className={`p-3 md:p-4 bg-white/80 backdrop-blur-md border-t border-slate-200/50 dark:bg-slate-900/80 dark:border-slate-800/50 flex justify-between gap-2 md:gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto`}>
-                    <button onClick={openCaseManager} className="flex-1 bg-sky-50 text-sky-700 border-2 border-sky-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-sky-100 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700">
-                        <FolderOpen className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 案件庫
-                    </button>
-                    <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-amber-50 text-amber-700 border-2 border-amber-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-700">
-                        <FileInput className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 讀檔
-                    </button>
-                    <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
-                        <Save className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 存檔
-                    </button>
-                    <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
-                        <Trash2 className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 清空
-                    </button>
+                <div className="px-3 pt-2 pb-3 md:px-4 md:pt-2.5 md:pb-4 bg-white/90 backdrop-blur-md border-t border-slate-200/70 dark:bg-slate-900/90 dark:border-slate-800/70 flex flex-col gap-2 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto">
+                    <div className="flex items-center justify-end px-0.5 text-xs md:text-sm font-bold">
+                        {lastSavedAt ? (
+                            <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={3} />
+                                已存檔 {formatSavedTime(lastSavedAt)}
+                            </span>
+                        ) : (
+                            <span className="text-slate-400 dark:text-slate-500 font-medium">
+                                尚未存檔（系統每分鐘自動備份）
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex justify-between gap-2.5 md:gap-3">
+                        <button onClick={openCaseManager} className="flex-[1.35] bg-sky-50 text-sky-700 border-2 border-sky-400 py-3 px-2 rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold text-sm sm:text-base md:text-lg whitespace-nowrap active:scale-95 hover:bg-sky-100 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700">
+                            <FolderOpen className="w-5 h-5 shrink-0" strokeWidth={2.5} /> 案件庫（含讀檔）
+                        </button>
+                        <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-3 px-2 rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold text-sm sm:text-base md:text-lg whitespace-nowrap active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
+                            <Save className="w-5 h-5 shrink-0" strokeWidth={2.5} /> 存檔
+                        </button>
+                        <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-3 px-2 rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold text-sm sm:text-base md:text-lg whitespace-nowrap active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
+                            <Trash2 className="w-5 h-5 shrink-0" strokeWidth={2.5} /> 清空
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -943,7 +1043,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
                 </div>
 
-                <div className="hidden lg:flex shrink-0 w-full gap-4 justify-center mt-10 lg:flex-row text-left relative z-20">
+                <div
+                    ref={exportActionsRef}
+                    className={`hidden lg:flex shrink-0 w-full gap-4 justify-center mt-10 lg:flex-row text-left relative z-20 rounded-3xl p-3 transition-all duration-300 ${highlightExportActions ? 'ring-4 ring-emerald-400 bg-emerald-50/90 dark:bg-emerald-900/30 shadow-2xl scale-[1.02]' : ''}`}
+                >
                     <button onClick={() => handleExport('jpg')} className="w-full lg:w-auto px-10 py-5 bg-sky-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-sky-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-sky-700 dark:border-sky-900"><ImageIcon className="w-8 h-8" /> 匯出 JPG 圖片</button>
                     <button onClick={() => handleExport('pdf')} className="w-full lg:w-auto px-10 py-5 bg-red-600 text-white rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all duration-150 border-b-[6px] border-red-800 active:border-b-2 active:translate-y-[4px] active:scale-95 shadow-xl dark:bg-red-700 dark:border-red-900"><FileText className="w-8 h-8" /> 匯出 PDF 文件</button>
                 </div>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Home, Map as MapIcon, Car, Factory, LucideIcon, Sun, Moon, ArrowLeft } from 'lucide-react';
 import { SurveyType } from '../types';
+import { SYSTEM_LAST_UPDATED } from '../constants';
 
 interface LandingPageProps {
     onSelect: (type: SurveyType) => void;
@@ -160,7 +161,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSelect, isDarkMode, 
                     )}
 
                     {/* Footer */}
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-4 space-y-1">
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-wide">
+                            {SYSTEM_LAST_UPDATED}
+                        </p>
                         <p className="text-slate-400 dark:text-slate-600 font-medium text-xs tracking-wider uppercase">
                             Singfujia Realty Inc. © {new Date().getFullYear()}
                         </p>

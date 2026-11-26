@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sun, Moon, User, Users } from 'lucide-react';
 import { InterfaceMode } from './InterfaceContext';
+import { SYSTEM_LAST_UPDATED } from '../constants';
 
 interface ModeSelectionPageProps {
     onSelect: (mode: InterfaceMode) => void;
@@ -104,7 +105,10 @@ export const ModeSelectionPage: React.FC<ModeSelectionPageProps> = ({ onSelect, 
                     </div>
 
                     {/* Footer */}
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-4 space-y-1">
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-wide">
+                            {SYSTEM_LAST_UPDATED}
+                        </p>
                         <p className="text-slate-400 dark:text-slate-600 font-medium text-xs tracking-wider uppercase">
                             Singfujia Realty Inc. © {new Date().getFullYear()}
                         </p>

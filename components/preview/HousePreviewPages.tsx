@@ -240,7 +240,10 @@ export const HousePrintPage2 = ({
       <SectionHeader title="7. 公設空間（梯間／地下室）" />
       <CheckRow
         checked={
-          data?.q8_stairIssue !== "是" && data?.q8_stairIssue !== "有異常"
+          data?.q8_stairIssue === "否" ||
+          data?.q8_stairIssue === "無異常" ||
+          data?.q8_stairIssue === "無公共設施" ||
+          data?.q8_stairIssue === "有公共設施"
         }
       >
         <span className="font-bold mr-2">公設空間（梯間／地下室）</span>

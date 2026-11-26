@@ -42,10 +42,8 @@ export const FactoryPrintPage2 = ({
   const getElevatorStr = () => {
     if (!data.factory_elevator) return "";
     if (data.factory_elevator === "無") return "無";
-    const status =
-      data.factory_elevator_status ||
-      (data.factory_elevator_working ? "可運作" : "故障");
-    let s = `${data.factory_elevator} （${status}）`;
+    const status = data.factory_elevator_status || "";
+    let s = `${data.factory_elevator}${status ? ` （${status}）` : ""}`;
     const parts = [];
     if (data.factory_elevator_capacity)
       parts.push(`${data.factory_elevator_capacity}噸/kg`);
@@ -63,9 +61,7 @@ export const FactoryPrintPage2 = ({
     if (data.factory_crane_desc) {
       s += ` （${data.factory_crane_desc}）`;
     } else {
-      const status =
-        data.factory_crane_status ||
-        (data.factory_crane_working ? "可運作" : "故障");
+      const status = data.factory_crane_status || "";
       let parts = [];
       if (data.factory_crane_tonnage)
         parts.push(`${data.factory_crane_tonnage}噸`);
@@ -210,7 +206,7 @@ export const FactoryPrintPage2 = ({
           <PreviewResult checked={data?.land_q1_water === "否"} label="無" />
         </div>
       </CheckRow>
-      <CheckRow checked={!data?.land_q1_gas || data?.land_q1_gas === "完全無設置"}>
+      <CheckRow checked={data?.land_q1_gas === "完全無設置"}>
         <div className="flex items-center text-black">
           <span className="font-bold mr-2">瓦斯供應現況</span>
           <PreviewResult checked={!!data?.land_q1_gas} label={data?.land_q1_gas || ""} />
