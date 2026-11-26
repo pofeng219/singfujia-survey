@@ -490,8 +490,8 @@ export const ParkingSection = ({
                                     <UnitInput unit="kg" value={data?.q10_mechWeight || ''} onChange={v => update('q10_mechWeight', v)} placeholder={"若無標示填『無』"} />
                                 </div>
                             )}
-                            <div className="border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50">
-                                <p className="font-black dynamic-text-h2 text-slate-800 mt-4 text-left mb-4 dark:text-blue-100 leading-normal">車道出入口高度</p>
+                            <div className={`border-t-2 border-blue-200/50 pt-4 dark:border-blue-700/50 transition-all duration-500 ${parkingLogic.disableHeight ? 'opacity-60 pointer-events-none' : ''}`}>
+                                <p className={`font-black dynamic-text-h2 mt-4 text-left mb-4 leading-normal ${parkingLogic.disableHeight ? 'text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-blue-100'}`}>車道出入口高度</p>
                                 <div className="mb-4 flex flex-col items-start gap-2">
                                     <InlineWarning>※如目視可供大型／七人座休旅車（高度約1.75米～1.9米）通行</InlineWarning>
                                     <button
@@ -499,7 +499,8 @@ export const ParkingSection = ({
                                             e.preventDefault();
                                             setShowEntryHeightGuide(true);
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors text-base font-bold shrink-0 shadow-sm border border-sky-200 w-fit"
+                                        disabled={parkingLogic.disableHeight}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-base font-bold shrink-0 shadow-sm border w-fit ${parkingLogic.disableHeight ? 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed dark:bg-slate-700 dark:text-slate-500 dark:border-slate-600' : 'bg-sky-100 text-sky-700 hover:bg-sky-200 border-sky-200'}`}
                                         type="button"
                                     >
                                         <ImageIcon className="w-5 h-5" />
@@ -510,12 +511,14 @@ export const ParkingSection = ({
                                     options={['有資訊告示牌', '無資訊告示牌']} 
                                     value={data?.q10_entryHeight || ''} 
                                     onChange={v => update('q10_entryHeight', v)} 
+                                    disabled={parkingLogic.disableHeight}
                                     renderDetail={(opt) => 
                                         opt === '無資訊告示牌' ? (
                                             <DetailInput 
                                                 value={data?.q10_entryHeight_desc || ''} 
                                                 onChange={v => update('q10_entryHeight_desc', v)} 
                                                 placeholder="說明現況" 
+                                                disabled={parkingLogic.disableHeight}
                                             />
                                         ) : null
                                     }

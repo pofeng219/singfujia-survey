@@ -205,6 +205,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
             if (shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
             if (shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+            if (shouldUpdate('q10_entryHeight_desc', '')) updates.q10_entryHeight_desc = '';
             if (shouldUpdate('q10_charging', '')) updates.q10_charging = '';
             if (shouldUpdate('q11_hasIssue', '否')) updates.q11_hasIssue = '否';
             if (shouldUpdate('q12_hasNote', '否')) updates.q12_hasNote = '否';
@@ -217,6 +218,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
             if (shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
             if (shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+            if (shouldUpdate('q10_entryHeight_desc', '')) updates.q10_entryHeight_desc = '';
         } else {
             // Updated Phase 2: Clear dimensions if disabled by logic
             if (parkingLogic.disableCarSize) {
@@ -225,7 +227,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
             }
             if (parkingLogic.disableWeight && shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
-            if (parkingLogic.disableHeight && shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+            if (parkingLogic.disableHeight) {
+                if (shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
+                if (shouldUpdate('q10_entryHeight_desc', '')) updates.q10_entryHeight_desc = '';
+            }
         }
         if (Object.keys(updates).length > 0) setData(prev => ({ ...prev, ...updates }));
     }, [parkingLogic.isNoParking, parkingLogic.isOtherPt, parkingLogic.disableWeight, parkingLogic.disableHeight, parkingLogic.disableCarSize]);
