@@ -34,6 +34,25 @@ service cloud.firestore {
         && (!('parkingUpdatedAt' in data) || data.parkingUpdatedAt is timestamp);
     }
 
+    function isValidCaseDraft(data, userId) {
+      return data.keys().hasAll(['ownerId', 'type', 'caseName', 'address', 'data', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'type', 'caseName', 'address', 'data', 'createdAt', 'updatedAt'])
+        && data.ownerId is string
+        && data.ownerId == userId
+        && data.ownerId == request.auth.uid
+        && isValidId(data.ownerId)
+        && data.type is string
+        && data.type in ['house', 'land', 'factory', 'parking']
+        && data.caseName is string
+        && data.caseName.size() <= 120
+        && data.address is string
+        && data.address.size() <= 200
+        && data.data is map
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && data.updatedAt == request.time;
+    }
+
     match /userDrafts/{userId} {
       allow get: if isOwner(userId) && isValidId(userId);
       allow list: if false;
@@ -47,6 +66,33 @@ service cloud.firestore {
           'updatedAt'
         ]);
       allow delete: if isVerifiedOwner(userId) && isValidId(userId);
+
+      match /cases/{caseId} {
+        allow get: if isOwner(userId)
+          && isValidId(userId)
+          && isValidId(caseId)
+          && existing().ownerId == request.auth.uid;
+        allow list: if isOwner(userId)
+          && isValidId(userId)
+          && existing().ownerId == request.auth.uid;
+        allow create: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(caseId)
+          && isValidCaseDraft(incoming(), userId)
+          && incoming().createdAt == request.time;
+        allow update: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(caseId)
+          && isValidCaseDraft(incoming(), userId)
+          && incoming().ownerId == existing().ownerId
+          && incoming().type == existing().type
+          && incoming().createdAt == existing().createdAt
+          && incoming().diff(existing()).affectedKeys().hasOnly(['caseName', 'address', 'data', 'updatedAt']);
+        allow delete: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(caseId)
+          && existing().ownerId == request.auth.uid;
+      }
     }
   }
 }

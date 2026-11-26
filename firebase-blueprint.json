@@ -2,7 +2,7 @@
   "entities": {
     "UserDraft": {
       "title": "User Draft",
-      "description": "Stores user survey drafts",
+      "description": "Stores user quick-recovery survey drafts per category",
       "type": "object",
       "properties": {
         "house": { "type": "object" },
@@ -15,12 +15,44 @@
         "parkingUpdatedAt": { "type": "object", "format": "date-time" },
         "updatedAt": { "type": "object", "format": "date-time" }
       }
+    },
+    "SurveyCaseDraft": {
+      "title": "Survey Case Draft",
+      "description": "Stores an individual named property survey draft inside the user's multi-case subcollection",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["house", "land", "factory", "parking"]
+        },
+        "caseName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "data": { "type": "object" },
+        "createdAt": { "type": "object", "format": "date-time" },
+        "updatedAt": { "type": "object", "format": "date-time" }
+      },
+      "required": ["ownerId", "type", "caseName", "address", "data", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
     "/userDrafts/{userId}": {
       "schema": { "$ref": "#/entities/UserDraft" },
-      "description": "User's draft data"
+      "description": "User's quick-recovery draft document"
+    },
+    "/userDrafts/{userId}/cases/{caseId}": {
+      "schema": { "$ref": "#/entities/SurveyCaseDraft" },
+      "description": "User's multi-case named survey drafts subcollection"
     }
   }
 }

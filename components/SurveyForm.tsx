@@ -1,18 +1,28 @@
 
 import React, { useState, useEffect, useRef, ReactNode, useMemo, useDeferredValue, useCallback } from 'react';
-import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2, ChevronRight } from 'lucide-react';
+import { Save, FileInput, Image as ImageIcon, FileText, Edit3, Eye, ArrowLeft, Trash2, Download, X, Sun, Moon, Check, Loader2, ChevronRight, FolderOpen } from 'lucide-react';
 
 import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
 import { INITIAL_STATE } from '../constants';
 
 import { Toast, DraftFoundModal, AlertModal, ImagePreviewModal, ExportSuccessModal, ConfirmModal } from './SharedUI';
+import { CaseManagerModal } from './CaseManagerModal';
 import { SurveyPreview } from './SurveyPreview';
 import { validateForm } from '../utils/validators';
 import { exportToJPG, exportToPDF } from '../utils/exporter';
 import { Step1, Step2, Step3, Step4 } from './FormSteps';
 import { useInterface } from './InterfaceContext';
 import { useAuth } from './AuthContext';
-import { saveSurveyDraft, loadSurveyDraftWithMeta, clearSurveyDraft } from '../firebase';
+import {
+    saveSurveyDraft,
+    loadSurveyDraftWithMeta,
+    clearSurveyDraft,
+    CaseDraftRecord,
+    createSafeCaseId,
+    listSurveyCases,
+    saveSurveyCase,
+    deleteSurveyCase
+} from '../firebase';
 
 interface ErrorBoundaryProps {
     children?: ReactNode;
@@ -84,6 +94,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const [showExportSuccessModal, setShowExportSuccessModal] = useState(false);
     const [showHomeConfirm, setShowHomeConfirm] = useState(false);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [caseModalOpen, setCaseModalOpen] = useState(false);
+    const [cases, setCases] = useState<CaseDraftRecord[]>([]);
+    const [casesLoading, setCasesLoading] = useState(false);
+    const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false); // New state for scroll button
     const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
@@ -91,6 +105,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
     const DRAFT_KEY = `survey_draft_${type}`;
     const DRAFT_TIME_KEY = `survey_draft_${type}_updatedAt`;
+    const CASES_KEY = `survey_cases_${type}`;
     const page1Ref = useRef<HTMLDivElement>(null);
     const page2Ref = useRef<HTMLDivElement>(null);
     const page3Ref = useRef<HTMLDivElement>(null); // Added Page 3 Ref
@@ -98,6 +113,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const previewWrapperRef = useRef<HTMLDivElement>(null);
     const dataRef = useRef(data);
     const userRef = useRef(user);
+    const activeCaseIdRef = useRef<string | null>(activeCaseId);
     const isJumpingToError = useRef(false);
 
     // Scroll to Top Logic
@@ -155,6 +171,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
     useEffect(() => { dataRef.current = data; }, [data]);
     useEffect(() => { userRef.current = user; }, [user]);
+    useEffect(() => { activeCaseIdRef.current = activeCaseId; }, [activeCaseId]);
 
     const parkingLogic = useMemo(() => {
         const isNoParking = data?.q10_noParking === true;
@@ -256,9 +273,30 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
         // Sync to cloud if user is logged in (use userRef to avoid stale closure)
         const currentUser = userRef.current;
+        const currentActiveCaseId = activeCaseIdRef.current;
+        let resolvedActiveCaseName: string | undefined;
+        if (currentActiveCaseId) {
+            const existingLocal = getLocalCases().find(item => item.id === currentActiveCaseId);
+            resolvedActiveCaseName = (dataRef.current.caseName || '').trim().slice(0, 120) || existingLocal?.caseName || '未命名案件';
+            upsertLocalCase({
+                id: currentActiveCaseId,
+                type,
+                caseName: resolvedActiveCaseName,
+                address: (dataRef.current.address || '').trim().slice(0, 200),
+                data: dataRef.current,
+                updatedAt: Date.now(),
+                source: currentUser ? 'cloud' : 'local'
+            });
+        }
         if (currentUser) {
             try {
                 await saveSurveyDraft(currentUser.uid, type, dataRef.current);
+                if (currentActiveCaseId) {
+                    await saveSurveyCase(currentUser.uid, type, dataRef.current, {
+                        caseId: currentActiveCaseId,
+                        caseName: resolvedActiveCaseName
+                    });
+                }
                 if (!silent) setToastMsg("✅ 文字已同步儲存至本機與雲端！");
             } catch (e) {
                 if (!silent) setToastMsg("✅ 已暫存至本機（雲端同步失敗，待有網路時再儲存）");
@@ -266,6 +304,173 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         } else if (localSaved && !silent) {
             setToastMsg("✅ 文字已儲存成功！");
         }
+    };
+
+    const getLocalCases = (): CaseDraftRecord[] => {
+        try {
+            const raw = localStorage.getItem(CASES_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter(item => item && typeof item.id === 'string' && item.data);
+        } catch {
+            return [];
+        }
+    };
+
+    const saveLocalCases = (list: CaseDraftRecord[]) => {
+        try {
+            localStorage.setItem(CASES_KEY, JSON.stringify(list));
+        } catch (e) {
+            console.error('Failed to persist local cases:', e);
+        }
+    };
+
+    const upsertLocalCase = (record: CaseDraftRecord) => {
+        const list = getLocalCases();
+        const idx = list.findIndex(item => item.id === record.id);
+        if (idx >= 0) {
+            list[idx] = record;
+        } else {
+            list.unshift(record);
+        }
+        list.sort((a, b) => b.updatedAt - a.updatedAt);
+        saveLocalCases(list);
+    };
+
+    const refreshCases = async () => {
+        setCasesLoading(true);
+        const localList = getLocalCases();
+        const mergedMap = new Map<string, CaseDraftRecord>();
+        localList.forEach(item => mergedMap.set(item.id, item));
+
+        const currentUser = userRef.current;
+        if (currentUser) {
+            try {
+                const cloudList = await listSurveyCases(currentUser.uid, type);
+                cloudList.forEach(cloudItem => {
+                    const existingLocal = mergedMap.get(cloudItem.id);
+                    if (!existingLocal || cloudItem.updatedAt >= existingLocal.updatedAt) {
+                        mergedMap.set(cloudItem.id, cloudItem);
+                    }
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        const merged = Array.from(mergedMap.values()).sort((a, b) => b.updatedAt - a.updatedAt);
+        setCases(merged);
+        setCasesLoading(false);
+    };
+
+    const openCaseManager = () => {
+        setCaseModalOpen(true);
+        refreshCases();
+    };
+
+    const handleSaveAsNewCase = async (customName: string) => {
+        const newId = createSafeCaseId();
+        const cleanName = customName.trim().slice(0, 120) || (dataRef.current.caseName || '').trim().slice(0, 120) || '未命名案件';
+        const cleanAddress = (dataRef.current.address || '').trim().slice(0, 200);
+        const currentUser = userRef.current;
+        const localRecord: CaseDraftRecord = {
+            id: newId,
+            type,
+            caseName: cleanName,
+            address: cleanAddress,
+            data: JSON.parse(JSON.stringify(dataRef.current)),
+            updatedAt: Date.now(),
+            source: 'local'
+        };
+        upsertLocalCase(localRecord);
+        setActiveCaseId(newId);
+
+        if (currentUser) {
+            try {
+                const cloudRecord = await saveSurveyCase(currentUser.uid, type, localRecord.data, {
+                    caseId: newId,
+                    caseName: cleanName
+                });
+                upsertLocalCase(cloudRecord);
+                setToastMsg(`✅ 已建立雲端案件「${cleanName}」`);
+            } catch {
+                setToastMsg(`✅ 已建立本機案件「${cleanName}」（雲端同步失敗）`);
+            }
+        } else {
+            setToastMsg(`✅ 已建立本機案件「${cleanName}」`);
+        }
+        await refreshCases();
+    };
+
+    const handleUpdateActiveCase = async (customName: string) => {
+        if (!activeCaseId) return;
+        const cleanName = customName.trim().slice(0, 120) || (dataRef.current.caseName || '').trim().slice(0, 120) || '未命名案件';
+        const cleanAddress = (dataRef.current.address || '').trim().slice(0, 200);
+        const currentUser = userRef.current;
+        const localRecord: CaseDraftRecord = {
+            id: activeCaseId,
+            type,
+            caseName: cleanName,
+            address: cleanAddress,
+            data: JSON.parse(JSON.stringify(dataRef.current)),
+            updatedAt: Date.now(),
+            source: 'local'
+        };
+        upsertLocalCase(localRecord);
+
+        if (currentUser) {
+            try {
+                const cloudRecord = await saveSurveyCase(currentUser.uid, type, localRecord.data, {
+                    caseId: activeCaseId,
+                    caseName: cleanName
+                });
+                upsertLocalCase(cloudRecord);
+                setToastMsg(`✅ 已更新雲端案件「${cleanName}」`);
+            } catch {
+                setToastMsg(`✅ 已更新本機案件「${cleanName}」（雲端同步失敗）`);
+            }
+        } else {
+            setToastMsg(`✅ 已更新本機案件「${cleanName}」`);
+        }
+        await refreshCases();
+    };
+
+    const handleLoadCase = (record: CaseDraftRecord) => {
+        setData({ ...INITIAL_STATE, ...record.data });
+        setActiveCaseId(record.id);
+        setActiveStep(1);
+        setCaseModalOpen(false);
+        setToastMsg(`✅ 已載入案件「${record.caseName}」`);
+    };
+
+    const handleDeleteCase = async (record: CaseDraftRecord) => {
+        const remaining = getLocalCases().filter(item => item.id !== record.id);
+        saveLocalCases(remaining);
+        if (activeCaseId === record.id) {
+            setActiveCaseId(null);
+        }
+
+        const currentUser = userRef.current;
+        if (currentUser && record.source === 'cloud') {
+            try {
+                await deleteSurveyCase(currentUser.uid, record.id);
+                setToastMsg(`🗑️ 已刪除雲端案件「${record.caseName}」`);
+            } catch {
+                setToastMsg(`⚠️ 本機已移除，但雲端刪除失敗`);
+            }
+        } else {
+            setToastMsg(`🗑️ 已刪除案件「${record.caseName}」`);
+        }
+        await refreshCases();
+    };
+
+    const handleNewBlankCase = () => {
+        setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
+        setActiveCaseId(null);
+        setActiveStep(1);
+        setCaseModalOpen(false);
+        setToastMsg("📄 已開啟全新空白表單（原有案件仍保留於案件庫）");
     };
 
     const saveDraft = () => performSave(false);
@@ -340,6 +545,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             localStorage.removeItem(DRAFT_KEY);
             localStorage.removeItem(DRAFT_TIME_KEY);
             setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
+            setActiveCaseId(null);
             setActiveStep(1);
 
             const currentUser = userRef.current;
@@ -597,6 +803,20 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             />
 
             <DraftFoundModal isOpen={draftFoundModalOpen} onLoad={loadDraft} onClear={() => { setDraftFoundModalOpen(false); clearDraft(); }} onClose={() => setDraftFoundModalOpen(false)} />
+            <CaseManagerModal
+                isOpen={caseModalOpen}
+                onClose={() => setCaseModalOpen(false)}
+                cases={cases}
+                loading={casesLoading}
+                activeCaseId={activeCaseId}
+                defaultCaseName={data.caseName || ''}
+                isSignedIn={!!user}
+                onSaveAsNew={handleSaveAsNewCase}
+                onUpdateActive={handleUpdateActiveCase}
+                onLoadCase={handleLoadCase}
+                onDeleteCase={handleDeleteCase}
+                onNewBlankCase={handleNewBlankCase}
+            />
             <AlertModal isOpen={alertModalOpen} errors={validationErrors} onClose={() => setAlertModalOpen(false)} onJumpTo={handleJumpToError} />
             <ImagePreviewModal isOpen={showImageModal} imageUrls={generatedImage} onClose={() => setShowImageModal(false)} />
             <ExportSuccessModal isOpen={showExportSuccessModal} onConfirm={() => { performReset(); setShowExportSuccessModal(false); }} onCancel={() => setShowExportSuccessModal(false)} />
@@ -702,15 +922,18 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                     </div>
                 </div>
 
-                <div className={`p-3 md:p-4 bg-white/80 backdrop-blur-md border-t border-slate-200/50 dark:bg-slate-900/80 dark:border-slate-800/50 flex justify-between gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto`}>
-                    <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-amber-50 text-amber-700 border-2 border-amber-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-700">
-                        <FileInput className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 讀檔
+                <div className={`p-3 md:p-4 bg-white/80 backdrop-blur-md border-t border-slate-200/50 dark:bg-slate-900/80 dark:border-slate-800/50 flex justify-between gap-2 md:gap-3 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto`}>
+                    <button onClick={openCaseManager} className="flex-1 bg-sky-50 text-sky-700 border-2 border-sky-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-sky-100 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700">
+                        <FolderOpen className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 案件庫
                     </button>
-                    <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
-                        <Save className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 存檔
+                    <button onClick={() => setDraftFoundModalOpen(true)} className="flex-1 bg-amber-50 text-amber-700 border-2 border-amber-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-700">
+                        <FileInput className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 讀檔
                     </button>
-                    <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-sm md:text-base active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
-                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /> 清空
+                    <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
+                        <Save className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 存檔
+                    </button>
+                    <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-2.5 rounded-lg transition-all duration-150 flex justify-center items-center gap-1 font-bold text-xs sm:text-sm md:text-base active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
+                        <Trash2 className="w-4 h-4 md:w-5 md:h-5 shrink-0" strokeWidth={2.5} /> 清空
                     </button>
                 </div>
             </div>
