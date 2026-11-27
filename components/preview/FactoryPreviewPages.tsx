@@ -716,6 +716,7 @@ export const getFactoryPreviewBlocks = (
   data: SurveyData,
   parkingSummary: any,
   activeMode: "a4" | "mobile",
+  isStandard = false,
 ): PreviewBlock[] => {
   const isHiRiseSpec =
     data.propertyType === "立體化廠辦大樓" ||
@@ -951,7 +952,7 @@ export const getFactoryPreviewBlocks = (
                   data.land_q1_elec_voltage,
                   data.land_q1_elec_capacity,
                 ].filter(Boolean).length > 0 && (
-                  <span className="ml-2 text-[17px] font-bold">
+                  <span className={`ml-2 ${isStandard ? "text-sm" : "text-[17px]"} font-bold`}>
                     [
                     {[
                       data.land_q1_elec_meter,

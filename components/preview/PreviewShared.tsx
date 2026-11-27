@@ -98,7 +98,7 @@ export const PreviewResult: React.FC<{
 
   return (
     <div
-      className={`flex items-start ${isStandard ? "gap-1 mr-3 my-0.5" : "gap-1.5 mr-3 my-0.5"}`}
+      className={`flex items-start min-w-0 max-w-full ${isStandard ? "gap-1 pr-3 my-0.5" : "gap-1.5 pr-3 my-0.5"}`}
     >
       <div
         className={`${isStandard ? "w-4 h-4 mt-0.5" : "w-5 h-5 mt-1"} rounded-sm border flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? "border-rose-500 bg-rose-500" : "border-sky-600 bg-sky-600"}`}
@@ -106,7 +106,7 @@ export const PreviewResult: React.FC<{
         <Check size={isStandard ? 12 : 14} strokeWidth={4} className="text-white" />
       </div>
       <span
-        className={`${isStandard ? "text-[15px]" : "text-[18px]"} font-bold leading-snug tracking-wide ${isWarningOption ? "text-rose-600" : "text-slate-800"}`}
+        className={`${isStandard ? "text-[15px]" : "text-[18px]"} font-bold leading-snug tracking-wide min-w-0 break-words [word-break:break-word] [overflow-wrap:anywhere] ${isWarningOption ? "text-rose-600" : "text-slate-800"}`}
       >
         {label}
         {suffix}
@@ -140,14 +140,14 @@ export const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }>
         </div>
       </div>
       <div
-        className={`flex-grow ${isStandard ? "py-1 text-[15px]" : "py-1.5 text-[18px]"} px-2 text-left`}
+        className={`flex-grow min-w-0 ${isStandard ? "py-1 text-[15px]" : "py-1.5 text-[18px]"} px-2 text-left`}
       >
         <div
-          className={`flex flex-col md:flex-row md:flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"}`}
+          className={`flex flex-col md:flex-row md:flex-wrap items-start min-w-0 max-w-full ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"}`}
         >
           {/* Apply question label style to the first span child */}
           <div
-            className={`${isStandard ? "[&>span:first-child]:text-[14px]" : "[&>span:first-child]:text-[18px]"} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-800 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"} w-full leading-normal text-slate-800`}
+            className={`${isStandard ? "[&>span:first-child]:text-[14px]" : "[&>span:first-child]:text-[18px]"} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-800 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start min-w-0 max-w-full [&>*]:min-w-0 [&>*]:max-w-full break-words [word-break:break-word] [overflow-wrap:anywhere] ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"} w-full leading-normal text-slate-800`}
           >
             {children}
           </div>
@@ -261,7 +261,7 @@ export const ParkingContent: React.FC<{
     )
   ) {
     return (
-      <div className={`space-y-1 ${textColor}`}>
+      <div className={`space-y-1 min-w-0 max-w-full break-words [word-break:break-word] [overflow-wrap:anywhere] ${textColor}`}>
         <span className="font-bold mr-2">車位資訊</span>
         {data.factory_parking_desc || ""}
       </div>
@@ -304,7 +304,7 @@ export const ParkingContent: React.FC<{
   };
 
   return (
-    <div className={`flex flex-col gap-y-1.5 ${textColor}`}>
+    <div className={`flex flex-col gap-y-1.5 min-w-0 max-w-full break-words [word-break:break-word] [overflow-wrap:anywhere] ${textColor}`}>
       {parkingSummary.isNoParking && (
         <div>
           <span className="font-bold mr-2">停車方式</span>

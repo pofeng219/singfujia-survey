@@ -871,9 +871,9 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         if (typeof window !== 'undefined') { if (window.innerWidth < 1024) setMobileTab('preview'); window.scrollTo(0, 0); }
         await new Promise(resolve => setTimeout(resolve, 800)); // Wait for render
 
-        const collectedDynamicPages = !isStandard
-            ? dynamicPageRefs.current.filter((el): el is HTMLDivElement => el !== null)
-            : [];
+        const collectedDynamicPages = dynamicPageRefs.current.filter(
+            (el): el is HTMLDivElement => el !== null
+        );
 
         const primaryPage = collectedDynamicPages[0] || page1Ref.current;
         if (!primaryPage) {

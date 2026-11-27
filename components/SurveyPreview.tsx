@@ -12,24 +12,9 @@ import {
   Footer,
   PreviewBlock,
 } from "./preview/PreviewShared";
-import {
-  HousePrintPage1,
-  HousePrintPage2,
-  HousePrintPage3,
-  getHousePreviewBlocks,
-} from "./preview/HousePreviewPages";
-import {
-  LandPrintPage1,
-  LandPrintPage2,
-  LandPrintPage3,
-  getLandPreviewBlocks,
-} from "./preview/LandPreviewPages";
-import {
-  FactoryPrintPage1,
-  FactoryPrintPage2,
-  FactoryPrintPage3,
-  getFactoryPreviewBlocks,
-} from "./preview/FactoryPreviewPages";
+import { getHousePreviewBlocks } from "./preview/HousePreviewPages";
+import { getLandPreviewBlocks } from "./preview/LandPreviewPages";
+import { getFactoryPreviewBlocks } from "./preview/FactoryPreviewPages";
 
 interface SurveyPreviewProps {
   data: SurveyData;
@@ -318,9 +303,6 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
     const isStandard = useInterface() === "standard";
     const activeMode = "a4";
 
-    // Detect if we need page 3 in Standard Mode
-    const hasPage3 = type === "factory" || type === "house" || type === "land";
-
     const parkingSummary = useMemo(() => {
       const isNoParking = data?.q10_noParking === true;
       const pts = data?.q10_parkTypes || [];
@@ -364,16 +346,15 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
       };
     }, [data]);
 
-    // Friendly Mode atomic blocks
+    // Atomic blocks for Smart Auto-Pagination (both Standard Mode and Friendly Mode)
     const friendlyBlocks = useMemo<PreviewBlock[]>(() => {
-      if (isStandard) return [];
       if (type === "house") return getHousePreviewBlocks(data, parkingSummary, activeMode);
-      if (type === "factory") return getFactoryPreviewBlocks(data, parkingSummary, activeMode);
+      if (type === "factory") return getFactoryPreviewBlocks(data, parkingSummary, activeMode, isStandard);
       if (type === "land") return getLandPreviewBlocks(data);
       return getParkingPreviewBlocks(data, parkingSummary, activeMode);
     }, [isStandard, type, data, parkingSummary]);
 
-    // Measurement refs for Friendly Mode Smart Auto-Pagination
+    // Measurement refs for Smart Auto-Pagination
     const budgetRulerRef = useRef<HTMLDivElement | null>(null);
     const p1ChromeRef = useRef<HTMLDivElement | null>(null);
     const pOtherChromeRef = useRef<HTMLDivElement | null>(null);
@@ -385,15 +366,8 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
       friendlyBlocks.length > 0 ? [friendlyBlocks.map((_, i) => i)] : [[0]],
     );
 
-    // Clear dynamicPageRefs when in Standard Mode
-    useEffect(() => {
-      if (isStandard && dynamicPageRefs) {
-        dynamicPageRefs.current = [];
-      }
-    }, [isStandard, dynamicPageRefs]);
-
     const recalculatePages = useCallback(() => {
-      if (isStandard || friendlyBlocks.length === 0) return;
+      if (friendlyBlocks.length === 0) return;
       const rulerEl = budgetRulerRef.current;
       const p1El = p1ChromeRef.current;
       const pOtherEl = pOtherChromeRef.current;
@@ -411,7 +385,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
       const footerSigH = fSigEl.getBoundingClientRect().height;
 
       // Safety margins account for table border (4px) + bottom margin (16px/8px) + minor subpixel rounding
-      const availPage1 = Math.max(120, pageBudget - p1ChromeH - footerNormalH - 28);
+      const availPage1 = Math.max(120, pageBudget - p1ChromeH - footerNormalH - (isStandard ? 20 : 28));
       const availOther = Math.max(120, pageBudget - pOtherChromeH - footerNormalH - 20);
 
       const blockHeights = friendlyBlocks.map((_, idx) => {
@@ -447,7 +421,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
         const lastAvail = Math.max(
           120,
           (lastIdx === 0
-            ? pageBudget - p1ChromeH - 28
+            ? pageBudget - p1ChromeH - (isStandard ? 20 : 28)
             : pageBudget - pOtherChromeH - 20) - footerSigH,
         );
         const lastGroup = groups[lastIdx];
@@ -483,7 +457,6 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
     }, [isStandard, friendlyBlocks]);
 
     useLayoutEffect(() => {
-      if (isStandard) return;
       measureBlockRefs.current.length = friendlyBlocks.length;
       recalculatePages();
       let rafId = 0;
@@ -501,7 +474,6 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
 
     // Re-measure when web fonts finish loading, window resizes, or preview container becomes visible
     useEffect(() => {
-      if (isStandard) return;
       let cancelled = false;
       if (typeof document !== "undefined" && (document as any).fonts?.ready) {
         (document as any).fonts.ready.then(() => {
@@ -524,10 +496,10 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
         window.removeEventListener("resize", handleResize);
         if (ro) ro.disconnect();
       };
-    }, [isStandard, recalculatePages]);
+    }, [recalculatePages]);
 
     const effectivePageGroups = useMemo(() => {
-      if (isStandard || friendlyBlocks.length === 0) return pageGroups;
+      if (friendlyBlocks.length === 0) return pageGroups;
       const covered = new Set<number>();
       let totalCount = 0;
       let valid = pageGroups.length > 0;
@@ -550,51 +522,29 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
         return pageGroups;
       }
       return [friendlyBlocks.map((_, i) => i)];
-    }, [isStandard, friendlyBlocks, pageGroups]);
+    }, [friendlyBlocks, pageGroups]);
 
-    // Trim dynamicPageRefs array length to match current Friendly Mode page count
+    // Keep dynamicPageRefs and legacy page refs synced to current page count
     useEffect(() => {
-      if (!isStandard && dynamicPageRefs) {
+      if (dynamicPageRefs) {
         dynamicPageRefs.current.length = effectivePageGroups.length;
       }
-    }, [isStandard, effectivePageGroups.length, dynamicPageRefs]);
+      if (effectivePageGroups.length < 2) {
+        (page2Ref as React.MutableRefObject<HTMLDivElement | null>).current = null;
+      }
+      if (effectivePageGroups.length < 3 && page3Ref) {
+        (page3Ref as React.MutableRefObject<HTMLDivElement | null>).current = null;
+      }
+    }, [effectivePageGroups.length, dynamicPageRefs, page2Ref, page3Ref]);
 
     // Clamp previewPage if page count decreases
-    const totalPages = isStandard
-      ? type === "parking"
-        ? 1
-        : hasPage3
-          ? 3
-          : 2
-      : Math.max(1, effectivePageGroups.length);
+    const totalPages = Math.max(1, effectivePageGroups.length);
 
     useEffect(() => {
       if (previewPage > totalPages) {
         setPreviewPage(totalPages);
       }
     }, [previewPage, totalPages, setPreviewPage]);
-
-    // Keep ref setters stable for Standard Mode
-    const setPage1Ref = useCallback(
-      (el: HTMLDivElement | null) => {
-        (page1Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-      },
-      [page1Ref],
-    );
-    const setPage2Ref = useCallback(
-      (el: HTMLDivElement | null) => {
-        (page2Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-      },
-      [page2Ref],
-    );
-    const setPage3Ref = useCallback(
-      (el: HTMLDivElement | null) => {
-        if (page3Ref) {
-          (page3Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-        }
-      },
-      [page3Ref],
-    );
 
     const renderPageHeader = (pageNum: number, showVersion: boolean) => (
       <div
@@ -619,8 +569,16 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
 
     const renderMetadataTable = () => (
       <table
-        className={`excel-table ${isStandard ? "mb-2" : "mb-2"} w-full text-black border-collapse border-2 border-[#009FE3] shrink-0`}
+        className={`excel-table ${isStandard ? "mb-2" : "mb-2"} w-full table-fixed text-black border-collapse border-2 border-[#009FE3] shrink-0`}
       >
+        <colgroup>
+          <col className="w-[10%]" />
+          <col className="w-[30%]" />
+          <col className="w-[12%]" />
+          <col className="w-[18%]" />
+          <col className="w-[10%]" />
+          <col className="w-[20%]" />
+        </colgroup>
         <tbody>
           <tr className="border-b border-[#7dd3fc]">
             <td
@@ -629,7 +587,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
               案名
             </td>
             <td
-              className={`w-[30%] font-bold text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+              className={`w-[30%] font-bold text-black py-1.5 px-2 break-words [word-break:break-word] [overflow-wrap:anywhere] ${isStandard ? "text-[16px]" : "text-[19px]"}`}
             >
               {data?.caseName}
             </td>
@@ -644,7 +602,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
             </td>
             <td
               colSpan={3}
-              className={`w-[48%] font-bold text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+              className={`w-[48%] font-bold text-black py-1.5 px-2 break-words [word-break:break-word] [overflow-wrap:anywhere] ${isStandard ? "text-[16px]" : "text-[19px]"}`}
             >
               {data?.address}
             </td>
@@ -656,7 +614,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
               店名
             </td>
             <td
-              className={`w-[30%] text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+              className={`w-[30%] text-black py-1.5 px-2 break-words [word-break:break-word] [overflow-wrap:anywhere] ${isStandard ? "text-[16px]" : "text-[19px]"}`}
             >
               {data?.storeName}
             </td>
@@ -666,7 +624,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
               業務
             </td>
             <td
-              className={`w-[18%] font-bold text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+              className={`w-[18%] font-bold text-black py-1.5 px-2 break-words [word-break:break-word] [overflow-wrap:anywhere] ${isStandard ? "text-[16px]" : "text-[19px]"}`}
             >
               {data?.agentName}
             </td>
@@ -690,7 +648,7 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
         className={`${isStandard ? "mb-1" : "mb-1.5"} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden shrink-0`}
       >
         <div
-          className={`px-2 ${isStandard ? "py-1 gap-x-2 gap-y-0.5 text-[15px]" : "py-1.5 gap-x-2 gap-y-1 text-[18px]"} flex flex-wrap items-center leading-snug text-black`}
+          className={`px-2 ${isStandard ? "py-1 gap-x-2 gap-y-0.5 text-[15px]" : "py-1.5 gap-x-2 gap-y-1 text-[18px]"} flex flex-wrap items-center min-w-0 max-w-full [&>*]:min-w-0 [&>*]:max-w-full break-words [word-break:break-word] [overflow-wrap:anywhere] leading-snug text-black`}
         >
           <span
             className={`font-bold text-black ${isStandard ? "text-[16px]" : "text-[19px]"}`}
@@ -750,34 +708,6 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
     );
 
     const renderPageSwitcher = () => {
-      if (isStandard) {
-        if (type === "parking") return null;
-        return (
-          <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2 border border-slate-200 no-print w-full dark:bg-slate-800 dark:border-slate-700 overflow-x-auto">
-            <button
-              onClick={() => setPreviewPage(1)}
-              className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 1 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
-            >
-              第一頁
-            </button>
-            <button
-              onClick={() => setPreviewPage(2)}
-              className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 2 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
-            >
-              第二頁
-            </button>
-            {hasPage3 && (
-              <button
-                onClick={() => setPreviewPage(3)}
-                className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 3 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
-              >
-                第三頁
-              </button>
-            )}
-          </div>
-        );
-      }
-
       if (effectivePageGroups.length <= 1) return null;
       return (
         <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2 border border-slate-200 no-print w-full dark:bg-slate-800 dark:border-slate-700 overflow-x-auto">
@@ -816,233 +746,132 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
           </div>
         )}
 
-        {isStandard ? (
-          <>
-            <ScaledA4Page
-              pageNum={1}
-              previewPage={previewPage}
-              previewScale={previewScale}
-              exporting={exporting}
-              setPageRef={setPage1Ref}
-            >
-              <div className="flex-grow flex flex-col h-full text-black pb-0">
-                {renderPageHeader(1, true)}
-                {renderMetadataTable()}
-                <div className="bg-[#009FE3] text-white px-4 py-1 text-[16px] mb-1 font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0">
-                  【調查現況】
-                </div>
-
-                {renderBasicInfoTable()}
-
-                <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0">
-                  {type === "house" && <HousePrintPage1 data={data} />}
-                  {type === "land" && <LandPrintPage1 data={data} />}
-                  {type === "factory" && <FactoryPrintPage1 data={data} />}
-                  {type === "parking" && (
-                    <>
-                      <TableHeaderRow />
-                      {getParkingPreviewBlocks(data, parkingSummary, activeMode).map(
-                        (b) => (
-                          <React.Fragment key={b.id}>{b.node}</React.Fragment>
-                        ),
-                      )}
-                    </>
-                  )}
-                </div>
-
-                <Footer
-                  showSignature={type === "parking"}
-                  signatureImage={data.signatureImage}
-                />
-              </div>
-            </ScaledA4Page>
-
-            {(type !== "parking" || previewPage === 2) && (
-              <ScaledA4Page
-                pageNum={2}
-                previewPage={previewPage}
-                previewScale={previewScale}
-                exporting={exporting}
-                setPageRef={setPage2Ref}
-              >
-                <div className="flex-grow flex flex-col h-full text-black pb-0">
-                  {renderPageHeader(2, false)}
-                  <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0">
-                    <TableHeaderRow />
-                    {type === "house" && (
-                      <HousePrintPage2
-                        data={data}
-                        parkingSummary={parkingSummary}
-                        activeMode={activeMode}
-                      />
-                    )}
-                    {type === "land" && <LandPrintPage2 data={data} />}
-                    {type === "factory" && (
-                      <FactoryPrintPage2
-                        data={data}
-                        parkingSummary={parkingSummary}
-                        activeMode={activeMode}
-                      />
-                    )}
-                  </div>
-                  <Footer
-                    showSignature={false}
-                    signatureImage={data.signatureImage}
-                  />
-                </div>
-              </ScaledA4Page>
-            )}
-
-            {hasPage3 && (previewPage === 3 || exporting) && (
-              <ScaledA4Page
-                pageNum={3}
-                previewPage={previewPage}
-                previewScale={previewScale}
-                exporting={exporting}
-                setPageRef={setPage3Ref}
-              >
-                <div className="flex-grow flex flex-col h-full text-black pb-0">
-                  {renderPageHeader(3, false)}
-                  <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0">
-                    <TableHeaderRow />
-                    {type === "factory" && (
-                      <FactoryPrintPage3
-                        data={data}
-                        parkingSummary={parkingSummary}
-                        activeMode={activeMode}
-                      />
-                    )}
-                    {type === "house" && <HousePrintPage3 data={data} />}
-                    {type === "land" && <LandPrintPage3 data={data} />}
-                  </div>
-                  <Footer
-                    showSignature={true}
-                    signatureImage={data.signatureImage}
-                  />
-                </div>
-              </ScaledA4Page>
-            )}
-          </>
-        ) : (
-          <>
-            {/* Hidden Off-Screen Measurement Stage for Friendly Mode Smart Auto-Pagination */}
+        <>
+          {/* Hidden Off-Screen Measurement Stage for Smart Auto-Pagination */}
+          <div
+            aria-hidden="true"
+            className="no-print"
+            style={{
+              position: "fixed",
+              left: "-99999px",
+              top: 0,
+              width: "210mm",
+              padding: "10mm 10mm",
+              boxSizing: "border-box",
+              visibility: "hidden",
+              pointerEvents: "none",
+              zIndex: -1,
+            }}
+          >
             <div
-              aria-hidden="true"
-              className="no-print"
+              ref={budgetRulerRef}
               style={{
-                position: "fixed",
-                left: "-99999px",
+                height: "277mm",
+                width: "1px",
+                position: "absolute",
                 top: 0,
-                width: "210mm",
-                padding: "10mm 10mm",
-                boxSizing: "border-box",
-                visibility: "hidden",
-                pointerEvents: "none",
-                zIndex: -1,
+                left: 0,
               }}
-            >
+            />
+            <div ref={p1ChromeRef} className="w-full flex flex-col text-black">
+              {renderPageHeader(1, true)}
+              {renderMetadataTable()}
               <div
-                ref={budgetRulerRef}
-                style={{
-                  height: "277mm",
-                  width: "1px",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                }}
-              />
-              <div ref={p1ChromeRef} className="w-full flex flex-col text-black">
-                {renderPageHeader(1, true)}
-                {renderMetadataTable()}
-                <div className="bg-[#009FE3] text-white px-4 py-1.5 text-[19px] mb-1.5 font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0">
-                  【調查現況】
-                </div>
-                {renderBasicInfoTable()}
-                <div className="w-full flex flex-col rounded-t-xl border-x-2 border-t-2 border-slate-200 bg-white">
-                  <TableHeaderRow />
-                </div>
+                className={`bg-[#009FE3] text-white px-4 ${isStandard ? "py-1 text-[16px] mb-1" : "py-1.5 text-[19px] mb-1.5"} font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0`}
+              >
+                【調查現況】
               </div>
-              <div ref={pOtherChromeRef} className="w-full flex flex-col text-black">
-                {renderPageHeader(2, false)}
-                <div className="w-full flex flex-col rounded-t-xl border-x-2 border-t-2 border-slate-200 bg-white">
-                  <TableHeaderRow />
-                </div>
-              </div>
-              <div ref={footerNormalRef} className="w-full">
-                <Footer showSignature={false} signatureImage={data.signatureImage} />
-              </div>
-              <div ref={footerSigRef} className="w-full">
-                <Footer showSignature={true} signatureImage={data.signatureImage} />
-              </div>
-              <div className="w-full flex flex-col">
-                {friendlyBlocks.map((block, idx) => (
-                  <div
-                    key={block.id}
-                    ref={(el) => {
-                      measureBlockRefs.current[idx] = el;
-                    }}
-                    className="w-full flex flex-col border-x-2 border-slate-200 bg-white text-black"
-                  >
-                    {block.node}
-                  </div>
-                ))}
+              {renderBasicInfoTable()}
+              <div className="w-full flex flex-col rounded-t-xl border-x-2 border-t-2 border-slate-200 bg-white">
+                <TableHeaderRow />
               </div>
             </div>
-
-            {/* Dynamically Paginated Friendly Mode A4 Pages */}
-            {effectivePageGroups.map((blockIndices, pageIdx) => {
-              const pNum = pageIdx + 1;
-              const isFirst = pageIdx === 0;
-              const isLast = pageIdx === effectivePageGroups.length - 1;
-              const validBlocks = blockIndices
-                .map((bIdx) => friendlyBlocks[bIdx])
-                .filter((b): b is PreviewBlock => !!b);
-
-              return (
-                <ScaledA4Page
-                  key={`friendly-page-${pNum}`}
-                  pageNum={pNum}
-                  previewPage={previewPage}
-                  previewScale={previewScale}
-                  exporting={exporting}
-                  setPageRef={(el) => {
-                    if (dynamicPageRefs) {
-                      dynamicPageRefs.current[pageIdx] = el;
-                    }
-                    if (isFirst) {
-                      (page1Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-                    }
+            <div ref={pOtherChromeRef} className="w-full flex flex-col text-black">
+              {renderPageHeader(2, false)}
+              <div className="w-full flex flex-col rounded-t-xl border-x-2 border-t-2 border-slate-200 bg-white">
+                <TableHeaderRow />
+              </div>
+            </div>
+            <div ref={footerNormalRef} className="w-full">
+              <Footer showSignature={false} signatureImage={data.signatureImage} />
+            </div>
+            <div ref={footerSigRef} className="w-full">
+              <Footer showSignature={true} signatureImage={data.signatureImage} />
+            </div>
+            <div className="w-full flex flex-col">
+              {friendlyBlocks.map((block, idx) => (
+                <div
+                  key={block.id}
+                  ref={(el) => {
+                    measureBlockRefs.current[idx] = el;
                   }}
+                  className="w-full flex flex-col border-x-2 border-slate-200 bg-white text-black"
                 >
-                  <div className="flex-grow flex flex-col h-full text-black pb-0">
-                    {renderPageHeader(pNum, isFirst)}
-                    {isFirst && (
-                      <>
-                        {renderMetadataTable()}
-                        <div className="bg-[#009FE3] text-white px-4 py-1.5 text-[19px] mb-1.5 font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0">
-                          【調查現況】
-                        </div>
-                        {renderBasicInfoTable()}
-                      </>
-                    )}
-                    <div
-                      className={`${isFirst ? "mb-4" : "mb-2"} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}
-                    >
-                      <TableHeaderRow />
-                      {validBlocks.map((block) => (
-                        <React.Fragment key={block.id}>{block.node}</React.Fragment>
-                      ))}
-                    </div>
-                    <Footer
-                      showSignature={isLast}
-                      signatureImage={data.signatureImage}
-                    />
+                  {block.node}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Dynamically Paginated A4 Pages (Standard Mode & Friendly Mode) */}
+          {effectivePageGroups.map((blockIndices, pageIdx) => {
+            const pNum = pageIdx + 1;
+            const isFirst = pageIdx === 0;
+            const isLast = pageIdx === effectivePageGroups.length - 1;
+            const validBlocks = blockIndices
+              .map((bIdx) => friendlyBlocks[bIdx])
+              .filter((b): b is PreviewBlock => !!b);
+
+            return (
+              <ScaledA4Page
+                key={`preview-page-${pNum}`}
+                pageNum={pNum}
+                previewPage={previewPage}
+                previewScale={previewScale}
+                exporting={exporting}
+                setPageRef={(el) => {
+                  if (dynamicPageRefs) {
+                    dynamicPageRefs.current[pageIdx] = el;
+                  }
+                  if (pageIdx === 0) {
+                    (page1Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                  } else if (pageIdx === 1) {
+                    (page2Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                  } else if (pageIdx === 2 && page3Ref) {
+                    (page3Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                  }
+                }}
+              >
+                <div className="flex-grow flex flex-col h-full text-black pb-0">
+                  {renderPageHeader(pNum, isFirst)}
+                  {isFirst && (
+                    <>
+                      {renderMetadataTable()}
+                      <div
+                        className={`bg-[#009FE3] text-white px-4 ${isStandard ? "py-1 text-[16px] mb-1" : "py-1.5 text-[19px] mb-1.5"} font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0`}
+                      >
+                        【調查現況】
+                      </div>
+                      {renderBasicInfoTable()}
+                    </>
+                  )}
+                  <div
+                    className={`${isStandard ? "mb-2" : isFirst ? "mb-4" : "mb-2"} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}
+                  >
+                    <TableHeaderRow />
+                    {validBlocks.map((block) => (
+                      <React.Fragment key={block.id}>{block.node}</React.Fragment>
+                    ))}
                   </div>
-                </ScaledA4Page>
-              );
-            })}
-          </>
-        )}
+                  <Footer
+                    showSignature={isLast}
+                    signatureImage={data.signatureImage}
+                  />
+                </div>
+              </ScaledA4Page>
+            );
+          })}
+        </>
       </div>
     );
   },
