@@ -6,7 +6,12 @@ const getCurrentDate = () => {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-export const SYSTEM_LAST_UPDATED = '系統於 115 年 11 月 26 日更新';
+declare const __SYSTEM_LAST_UPDATED__: string | undefined;
+
+export const SYSTEM_LAST_UPDATED =
+    typeof __SYSTEM_LAST_UPDATED__ !== 'undefined'
+        ? __SYSTEM_LAST_UPDATED__
+        : `系統於 ${new Date().getFullYear() - 1911} 年 ${String(new Date().getMonth() + 1).padStart(2, '0')} 月 ${String(new Date().getDate()).padStart(2, '0')} 日更新`;
 
 export const INITIAL_STATE: SurveyData = {
     caseName: '', authNumber: '', storeName: '', agentName: '', address: '', 

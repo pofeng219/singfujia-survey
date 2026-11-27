@@ -6,7 +6,7 @@ import { SurveyData, SurveyType, MobileTab, ValidationError } from '../types';
 import { INITIAL_STATE } from '../constants';
 
 import { Toast, DraftFoundModal, AlertModal, ImagePreviewModal, ExportSuccessModal, ConfirmModal } from './SharedUI';
-import { CaseManagerModal, QuickDraftMeta } from './CaseManagerModal';
+import { CaseManagerModal, SaveCaseModal, QuickDraftMeta } from './CaseManagerModal';
 import { SurveyPreview } from './SurveyPreview';
 import { validateForm } from '../utils/validators';
 import { exportToJPG, exportToPDF } from '../utils/exporter';
@@ -102,6 +102,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const [showHomeConfirm, setShowHomeConfirm] = useState(false);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [caseModalOpen, setCaseModalOpen] = useState(false);
+    const [saveModalOpen, setSaveModalOpen] = useState(false);
     const [cases, setCases] = useState<CaseDraftRecord[]>([]);
     const [casesLoading, setCasesLoading] = useState(false);
     const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
@@ -506,6 +507,37 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         setToastMsg(`✅ 已載入案件「${record.caseName}」`);
     };
 
+    const handleRenameCase = async (record: CaseDraftRecord, newName: string) => {
+        const cleanName = newName.trim().slice(0, 120);
+        if (!cleanName || cleanName === record.caseName) return;
+
+        const savedNow = Date.now();
+        const updatedLocal: CaseDraftRecord = {
+            ...record,
+            caseName: cleanName,
+            updatedAt: savedNow,
+            source: record.source
+        };
+        upsertLocalCase(updatedLocal);
+
+        const currentUser = userRef.current;
+        if (currentUser) {
+            try {
+                const cloudRecord = await saveSurveyCase(currentUser.uid, type, record.data, {
+                    caseId: record.id,
+                    caseName: cleanName
+                });
+                upsertLocalCase(cloudRecord);
+                setToastMsg(`✅ 已將案件標題修改為「${cleanName}」`);
+            } catch {
+                setToastMsg(`✅ 已修改本機標題為「${cleanName}」（雲端同步失敗）`);
+            }
+        } else {
+            setToastMsg(`✅ 已將案件標題修改為「${cleanName}」`);
+        }
+        await refreshCases();
+    };
+
     const handleDeleteCase = async (record: CaseDraftRecord) => {
         const remaining = getLocalCases().filter(item => item.id !== record.id);
         saveLocalCases(remaining);
@@ -536,7 +568,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         setToastMsg("📄 已開啟全新空白表單（原有案件仍保留於案件庫）");
     };
 
-    const saveDraft = () => performSave(false);
+    const saveDraft = () => {
+        setSaveModalOpen(true);
+        refreshCases();
+    };
     
     // Auto-save logic
     useEffect(() => { 
@@ -893,18 +928,26 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 cases={cases}
                 loading={casesLoading}
                 activeCaseId={activeCaseId}
-                defaultCaseName={data.caseName || ''}
                 isSignedIn={!!user}
                 quickDraftMeta={quickDraftMeta}
                 onLoadQuickDraft={async () => {
                     await loadDraft();
                     setCaseModalOpen(false);
                 }}
-                onSaveAsNew={handleSaveAsNewCase}
-                onUpdateActive={handleUpdateActiveCase}
                 onLoadCase={handleLoadCase}
+                onRenameCase={handleRenameCase}
                 onDeleteCase={handleDeleteCase}
                 onNewBlankCase={handleNewBlankCase}
+            />
+            <SaveCaseModal
+                isOpen={saveModalOpen}
+                onClose={() => setSaveModalOpen(false)}
+                activeCaseId={activeCaseId}
+                activeCaseName={cases.find(c => c.id === activeCaseId)?.caseName}
+                defaultCaseName={data.caseName || ''}
+                isSignedIn={!!user}
+                onSaveAsNew={handleSaveAsNewCase}
+                onUpdateActive={handleUpdateActiveCase}
             />
             <AlertModal isOpen={alertModalOpen} errors={validationErrors} onClose={() => setAlertModalOpen(false)} onJumpTo={handleJumpToError} />
             <ImagePreviewModal isOpen={showImageModal} imageUrls={generatedImage} onClose={() => setShowImageModal(false)} />
@@ -1012,27 +1055,27 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
                 </div>
 
                 <div className="px-3 pt-2 pb-3 md:px-4 md:pt-2.5 md:pb-4 bg-white/90 backdrop-blur-md border-t border-slate-200/70 dark:bg-slate-900/90 dark:border-slate-800/70 flex flex-col gap-2 shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] shrink-0 relative z-40 mt-auto">
-                    <div className="flex items-center justify-end px-0.5 text-xs md:text-sm font-bold">
+                    <div className={`flex items-center justify-end px-0.5 ${isStandard ? 'text-xs md:text-sm' : 'text-base md:text-lg'} font-bold`}>
                         {lastSavedAt ? (
                             <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
-                                <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={3} />
+                                <Check className={`${isStandard ? 'w-3.5 h-3.5' : 'w-5 h-5'} shrink-0`} strokeWidth={3} />
                                 已存檔 {formatSavedTime(lastSavedAt)}
                             </span>
                         ) : (
-                            <span className="text-slate-400 dark:text-slate-500 font-medium">
+                            <span className="text-slate-500 dark:text-slate-400 font-medium">
                                 尚未存檔（系統每分鐘自動備份）
                             </span>
                         )}
                     </div>
                     <div className="flex justify-between gap-2.5 md:gap-3">
-                        <button onClick={openCaseManager} className="flex-[1.35] bg-sky-50 text-sky-700 border-2 border-sky-400 py-3 px-2 rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold text-sm sm:text-base md:text-lg whitespace-nowrap active:scale-95 hover:bg-sky-100 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700">
-                            <FolderOpen className="w-5 h-5 shrink-0" strokeWidth={2.5} /> 案件庫（含讀檔）
+                        <button onClick={openCaseManager} className={`flex-[1.35] bg-sky-50 text-sky-700 border-2 border-sky-400 ${isStandard ? 'py-3 px-2 text-sm sm:text-base md:text-lg' : 'py-3.5 px-2.5 text-base sm:text-xl md:text-2xl'} rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold whitespace-nowrap active:scale-95 hover:bg-sky-100 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700`}>
+                            <FolderOpen className={`${isStandard ? 'w-5 h-5' : 'w-6 h-6'} shrink-0`} strokeWidth={2.5} /> 案件庫（含讀檔）
                         </button>
-                        <button onClick={saveDraft} className="flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 py-3 px-2 rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold text-sm sm:text-base md:text-lg whitespace-nowrap active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700">
-                            <Save className="w-5 h-5 shrink-0" strokeWidth={2.5} /> 存檔
+                        <button onClick={saveDraft} className={`flex-1 bg-orange-50 text-orange-700 border-2 border-orange-400 ${isStandard ? 'py-3 px-2 text-sm sm:text-base md:text-lg' : 'py-3.5 px-2.5 text-base sm:text-xl md:text-2xl'} rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold whitespace-nowrap active:scale-95 hover:bg-orange-100 dark:bg-orange-900/40 dark:text-orange-400 dark:border-orange-700`}>
+                            <Save className={`${isStandard ? 'w-5 h-5' : 'w-6 h-6'} shrink-0`} strokeWidth={2.5} /> 存檔
                         </button>
-                        <button onClick={clearDraft} className="flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 py-3 px-2 rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold text-sm sm:text-base md:text-lg whitespace-nowrap active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700">
-                            <Trash2 className="w-5 h-5 shrink-0" strokeWidth={2.5} /> 清空
+                        <button onClick={clearDraft} className={`flex-1 bg-rose-50 text-rose-700 border-2 border-rose-400 ${isStandard ? 'py-3 px-2 text-sm sm:text-base md:text-lg' : 'py-3.5 px-2.5 text-base sm:text-xl md:text-2xl'} rounded-xl transition-all duration-150 flex justify-center items-center gap-1.5 font-extrabold whitespace-nowrap active:scale-95 hover:bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-700`}>
+                            <Trash2 className={`${isStandard ? 'w-5 h-5' : 'w-6 h-6'} shrink-0`} strokeWidth={2.5} /> 清空
                         </button>
                     </div>
                 </div>
