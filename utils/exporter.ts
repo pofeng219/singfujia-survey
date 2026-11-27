@@ -4,9 +4,10 @@ import { jsPDF } from 'jspdf';
 
 interface ExportOptions {
     fileName: string;
-    page1Ref: HTMLElement;
+    page1Ref?: HTMLElement | null;
     page2Ref?: HTMLElement | null;
     page3Ref?: HTMLElement | null;
+    pageRefs?: HTMLElement[];
     isMobile: boolean;
     onSuccess?: (msg: string) => void;
     onError?: (err: any) => void;
@@ -22,72 +23,60 @@ const HTML2CANVAS_OPTS = {
     ignoreElements: (el: Element) => el.classList.contains('no-print')
 };
 
+const PAGE_LABELS = ['第一頁', '第二頁', '第三頁', '第四頁', '第五頁', '第六頁', '第七頁', '第八頁'];
+
+const getPageLabel = (idx: number) => PAGE_LABELS[idx] || `第${idx + 1}頁`;
+
+const resolvePageElements = (opts: ExportOptions): HTMLElement[] => {
+    if (opts.pageRefs && opts.pageRefs.length > 0) {
+        return opts.pageRefs.filter((el): el is HTMLElement => !!el);
+    }
+    return [opts.page1Ref, opts.page2Ref, opts.page3Ref].filter((el): el is HTMLElement => !!el);
+};
+
 /**
  * Helper to generate canvases from refs
  */
-const getCanvases = async (page1Ref: HTMLElement, page2Ref?: HTMLElement | null, page3Ref?: HTMLElement | null) => {
-    const canvas1 = await html2canvas(page1Ref, HTML2CANVAS_OPTS);
-    let canvas2 = null;
-    let canvas3 = null;
-    
-    if (page2Ref) {
-        canvas2 = await html2canvas(page2Ref, HTML2CANVAS_OPTS);
+const getCanvases = async (pages: HTMLElement[]) => {
+    const canvases: HTMLCanvasElement[] = [];
+    for (const page of pages) {
+        canvases.push(await html2canvas(page, HTML2CANVAS_OPTS));
     }
-    
-    if (page3Ref) {
-        canvas3 = await html2canvas(page3Ref, HTML2CANVAS_OPTS);
-    }
-    
-    return { canvas1, canvas2, canvas3 };
+    return canvases;
 };
 
 /**
  * Handles JPG Export
  * Returns the dataURL if mobile (to show modal), or triggers download if desktop.
  */
-export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMobile, onSuccess, onError }: ExportOptions): Promise<string[] | null> => {
+export const exportToJPG = async (opts: ExportOptions): Promise<string[] | null> => {
+    const { fileName, isMobile, onSuccess, onError } = opts;
     try {
-        const { canvas1, canvas2, canvas3 } = await getCanvases(page1Ref, page2Ref, page3Ref);
-        const dataUrl1 = canvas1.toDataURL('image/jpeg', 0.9);
-        const dataUrls = [dataUrl1];
-        if (canvas2) dataUrls.push(canvas2.toDataURL('image/jpeg', 0.9));
-        if (canvas3) dataUrls.push(canvas3.toDataURL('image/jpeg', 0.9));
+        const pages = resolvePageElements(opts);
+        if (pages.length === 0) throw new Error('No pages to export');
+
+        const canvases = await getCanvases(pages);
+        const dataUrls = canvases.map((c) => c.toDataURL('image/jpeg', 0.9));
 
         if (isMobile) {
             if (onSuccess) onSuccess("✅ 圖片已產生，請長按圖片儲存");
             return dataUrls; // Return URLs for modal display
         } else {
-            // Desktop: Download Page 1
-            const link1 = document.createElement('a');
-            link1.download = `第一頁_${fileName}.jpg`;
-            link1.href = dataUrl1;
-            document.body.appendChild(link1);
-            link1.click();
-            document.body.removeChild(link1);
-
-            // Desktop: Download Page 2 (if exists)
-            if (canvas2) {
-                setTimeout(() => {
-                    const link2 = document.createElement('a');
-                    link2.download = `第二頁_${fileName}.jpg`;
-                    link2.href = canvas2.toDataURL('image/jpeg', 0.9);
-                    document.body.appendChild(link2);
-                    link2.click();
-                    document.body.removeChild(link2);
-                }, 500);
-            }
-
-            // Desktop: Download Page 3 (if exists)
-            if (canvas3) {
-                setTimeout(() => {
-                    const link3 = document.createElement('a');
-                    link3.download = `第三頁_${fileName}.jpg`;
-                    link3.href = canvas3.toDataURL('image/jpeg', 0.9);
-                    document.body.appendChild(link3);
-                    link3.click();
-                    document.body.removeChild(link3);
-                }, 1000); // adjust timing
-            }
+            dataUrls.forEach((url, idx) => {
+                const triggerDownload = () => {
+                    const link = document.createElement('a');
+                    link.download = `${getPageLabel(idx)}_${fileName}.jpg`;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                if (idx === 0) {
+                    triggerDownload();
+                } else {
+                    setTimeout(triggerDownload, idx * 450);
+                }
+            });
 
             if (onSuccess) onSuccess("✅ 圖片下載中...");
             return null;
@@ -101,9 +90,13 @@ export const exportToJPG = async ({ fileName, page1Ref, page2Ref, page3Ref, isMo
 /**
  * Handles PDF Export
  */
-export const exportToPDF = async ({ fileName, page1Ref, page2Ref, page3Ref, isMobile, onSuccess, onError }: ExportOptions) => {
+export const exportToPDF = async (opts: ExportOptions) => {
+    const { fileName, isMobile, onSuccess, onError } = opts;
     try {
-        const { canvas1, canvas2, canvas3 } = await getCanvases(page1Ref, page2Ref, page3Ref);
+        const pages = resolvePageElements(opts);
+        if (pages.length === 0) throw new Error('No pages to export');
+
+        const canvases = await getCanvases(pages);
         
         const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -127,17 +120,10 @@ export const exportToPDF = async ({ fileName, page1Ref, page2Ref, page3Ref, isMo
             pdf.addImage(imgData, 'JPEG', xOffset, 0, finalWidth, finalHeight, undefined, 'FAST');
         };
 
-        addScaledImage(canvas1);
-        
-        if (canvas2) {
-            pdf.addPage();
-            addScaledImage(canvas2);
-        }
-
-        if (canvas3) {
-            pdf.addPage();
-            addScaledImage(canvas3);
-        }
+        canvases.forEach((canvas, idx) => {
+            if (idx > 0) pdf.addPage();
+            addScaledImage(canvas);
+        });
 
         const fullFileName = `${fileName}.pdf`;
 

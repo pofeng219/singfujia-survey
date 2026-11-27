@@ -1,17 +1,25 @@
 import React from "react";
 import { Check } from "lucide-react";
 import { SurveyData } from "../../types";
+import { useInterface } from "../InterfaceContext";
 
 // --- SHARED HELPER COMPONENTS ---
+
+export interface PreviewBlock {
+  id: string;
+  node: React.ReactNode;
+}
 
 export const formatAccessLandAddress = (
   section?: string,
   subSection?: string,
   number?: string,
 ) => {
-  if (!section && !number) return "";
-  const sub = subSection ? ` ${subSection}小段` : "";
-  return `地號：${section || ""}段${sub} ${number || ""}號`;
+  if (!section && !subSection && !number) return "";
+  const sec = section ? `${section}段` : "";
+  const sub = subSection ? `${sec ? " " : ""}${subSection}小段` : "";
+  const num = number ? `${sec || sub ? " " : ""}${number}號` : "";
+  return `地號：${sec}${sub}${num}`;
 };
 
 // Local PreviewResult: High contrast, larger text, less vibrant
@@ -23,7 +31,7 @@ export const PreviewResult: React.FC<{
   isWarning?: boolean;
   forceSafe?: boolean;
 }> = ({ checked, label, suffix, isWarning, forceSafe }) => {
-  const isStandard = true;
+  const isStandard = useInterface() === "standard";
   if (!checked) return null;
   if (!label) return null;
 
@@ -86,30 +94,16 @@ export const PreviewResult: React.FC<{
     !hasSafeKeyword && warningKeywords.some((kw) => label.includes(kw));
 
   const isWarningOption =
-    !forceSafe &&
-    (isWarning ||
-      hasWarningKeyword ||
-      ((label.includes("有") || label.includes("是")) &&
-        !label.includes("有保存登記") &&
-        !label.includes("有車位編號") &&
-        !label.includes("有公共設施") &&
-        !label.includes("所有權人自用") &&
-        !label.includes("公有") &&
-        !label.includes("所有權") &&
-        !label.includes("合法") &&
-        !label.includes("正常") &&
-        !label.includes("有農作物") &&
-        !label.includes("有建築物") &&
-        !label.includes("有設置")));
+    !forceSafe && (Boolean(isWarning) || hasWarningKeyword);
 
   return (
     <div
-      className={`flex items-start ${isStandard ? "gap-1 mr-3 my-0.5" : "gap-2 mr-4 my-1.5"}`}
+      className={`flex items-start ${isStandard ? "gap-1 mr-3 my-0.5" : "gap-1.5 mr-3 my-0.5"}`}
     >
       <div
-        className={`w-4 h-4 mt-0.5 rounded-sm border flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? "border-rose-500 bg-rose-500" : "border-sky-600 bg-sky-600"}`}
+        className={`${isStandard ? "w-4 h-4 mt-0.5" : "w-5 h-5 mt-1"} rounded-sm border flex items-center justify-center shrink-0 shadow-sm ${isWarningOption ? "border-rose-500 bg-rose-500" : "border-sky-600 bg-sky-600"}`}
       >
-        <Check size={12} strokeWidth={4} className="text-white" />
+        <Check size={isStandard ? 12 : 14} strokeWidth={4} className="text-white" />
       </div>
       <span
         className={`${isStandard ? "text-[15px]" : "text-[18px]"} font-bold leading-snug tracking-wide ${isWarningOption ? "text-rose-600" : "text-slate-800"}`}
@@ -126,7 +120,7 @@ export const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }>
   checked,
   children,
 }) => {
-  const isStandard = true;
+  const isStandard = useInterface() === "standard";
   // If NOT checked, it means there's an abnormality (needs explanation)
   const isAbnormal = !checked;
 
@@ -135,25 +129,25 @@ export const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }>
       className={`flex border-b border-slate-200 last:border-0 transition-colors shrink-0 max-w-full ${isAbnormal ? "bg-rose-50/80 hover:bg-rose-100/80" : "bg-white hover:bg-slate-50"}`}
     >
       <div
-        className={`w-[85px] md:w-[100px] shrink-0 flex justify-center items-start pt-2 border-r ${isAbnormal ? "border-rose-200 bg-rose-100/50" : "border-slate-100 bg-slate-50/50"}`}
+        className={`w-[85px] md:w-[100px] shrink-0 flex justify-center items-start ${isStandard ? "pt-2" : "pt-2.5"} border-r ${isAbnormal ? "border-rose-200 bg-rose-100/50" : "border-slate-100 bg-slate-50/50"}`}
       >
         <div
-          className={`w-3.5 h-3.5 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${checked ? "border-sky-500 bg-sky-500 shadow-sm" : "border-slate-300 bg-white"}`}
+          className={`${isStandard ? "w-3.5 h-3.5" : "w-4 h-4"} shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${checked ? "border-sky-500 bg-sky-500 shadow-sm" : "border-slate-300 bg-white"}`}
         >
           {checked && (
-            <Check size={10} strokeWidth={3} className="text-white shrink-0" />
+            <Check size={isStandard ? 10 : 12} strokeWidth={3} className="text-white shrink-0" />
           )}
         </div>
       </div>
       <div
-        className={`flex-grow ${isStandard ? "py-1" : "py-1.5"} px-2 text-left ${isStandard ? "text-[15px]" : "text-[20px]"}`}
+        className={`flex-grow ${isStandard ? "py-1 text-[15px]" : "py-1.5 text-[18px]"} px-2 text-left`}
       >
         <div
           className={`flex flex-col md:flex-row md:flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"}`}
         >
-          {/* Apply small gray question style to the first span child if it's the question label */}
+          {/* Apply question label style to the first span child */}
           <div
-            className={`[&>span:first-child]:${isStandard ? "text-[14px]" : "text-[18px]"} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-800 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"} w-full leading-normal text-slate-800`}
+            className={`${isStandard ? "[&>span:first-child]:text-[14px]" : "[&>span:first-child]:text-[18px]"} [&>span:first-child]:font-bold [&>span:first-child]:text-slate-800 [&>span:first-child]:block [&>span:first-child]:mb-0 md:[&>span:first-child]:mb-0 md:[&>span:first-child]:inline-block flex flex-wrap items-start ${isStandard ? "gap-x-1 gap-y-1" : "gap-x-2 gap-y-1"} w-full leading-normal text-slate-800`}
           >
             {children}
           </div>
@@ -165,10 +159,10 @@ export const CheckRow: React.FC<{ checked: boolean; children: React.ReactNode }>
 
 // Professional Section Header: Card Header Style
 export const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
-  const isStandard = true;
+  const isStandard = useInterface() === "standard";
   return (
     <div
-      className={`shrink-0 mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? "" : "py-1"}`}
+      className={`shrink-0 mt-1 first:mt-0 bg-slate-100 border-b border-slate-200 rounded-t-xl overflow-hidden shadow-sm ${isStandard ? "" : "py-0.5"}`}
     >
       <div
         className={`px-2 ${isStandard ? "py-1 gap-1.5" : "py-1 gap-2"} flex items-start`}
@@ -177,7 +171,7 @@ export const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
           className={`bg-sky-500 rounded-full shrink-0 ${isStandard ? "w-1 h-3 mt-1.5" : "w-1.5 h-4 mt-1.5"}`}
         ></div>
         <span
-          className={`font-bold text-slate-800 ${isStandard ? "text-[16px]" : "text-[20px]"} tracking-widest leading-snug whitespace-normal break-words`}
+          className={`font-bold text-slate-800 ${isStandard ? "text-[16px]" : "text-[19px]"} tracking-widest leading-snug whitespace-normal break-words`}
         >
           {title}
         </span>
@@ -188,18 +182,18 @@ export const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
 
 // Clean Table Header
 export const TableHeaderRow: React.FC = () => {
-  const isStandard = true;
+  const isStandard = useInterface() === "standard";
   return (
     <div className="flex border-b-2 border-sky-300 bg-sky-50 rounded-t-xl overflow-hidden shadow-sm shrink-0">
       <div
-        className={`w-[85px] md:w-[100px] shrink-0 text-center font-bold text-sky-800 ${isStandard ? "py-1" : "py-1.5"} ${isStandard ? "text-[14px]" : "text-[16px]"} whitespace-nowrap tracking-wider border-r border-sky-200`}
+        className={`w-[85px] md:w-[100px] shrink-0 text-center font-bold text-sky-800 ${isStandard ? "py-1 text-[14px]" : "py-1.5 text-[16px]"} whitespace-nowrap tracking-wider border-r border-sky-200`}
       >
         確認無須
         <br />
         新增說明
       </div>
       <div
-        className={`flex-grow ${isStandard ? "py-1" : "py-1.5"} px-2 font-bold text-left text-sky-800 ${isStandard ? "text-[15px]" : "text-[18px]"} tracking-[0.2em] flex items-center`}
+        className={`flex-grow ${isStandard ? "py-1 text-[15px]" : "py-1.5 text-[18px]"} px-2 font-bold text-left text-sky-800 tracking-[0.2em] flex items-center`}
       >
         說明／檢查項目
       </div>
@@ -286,21 +280,37 @@ export const ParkingContent: React.FC<{
 
   const getParkingCarUsageLabel = () => {
     let labels = (data?.q10_carUsage || []).map((u) =>
-      u === "須固定抽籤" ? `須固定抽籤（每${data.q10_carLotteryMonth}個月）` : u,
+      u === "須固定抽籤"
+        ? `須固定抽籤${data.q10_carLotteryMonth ? `（每${data.q10_carLotteryMonth}個月）` : ""}`
+        : u,
     );
-    if (data?.q10_hasCarUsageOther && data.q10_carUsageOther)
-      labels.push(`其他：${data.q10_carUsageOther}`);
+    if (data?.q10_hasCarUsageOther)
+      labels.push(
+        data.q10_carUsageOther
+          ? `其他未列項目：${data.q10_carUsageOther}`
+          : "其他未列項目",
+      );
     return labels.join("、");
   };
   const getParkingMotoUsageLabel = () => {
     let labels = [...(data?.q10_motoUsage || [])];
-    if (data?.q10_hasMotoUsageOther && data.q10_motoUsageOther)
-      labels.push(`其他：${data.q10_motoUsageOther}`);
+    if (data?.q10_hasMotoUsageOther)
+      labels.push(
+        data.q10_motoUsageOther
+          ? `其他未列項目：${data.q10_motoUsageOther}`
+          : "其他未列項目",
+      );
     return labels.join("、");
   };
 
   return (
     <div className={`flex flex-col gap-y-1.5 ${textColor}`}>
+      {parkingSummary.isNoParking && (
+        <div>
+          <span className="font-bold mr-2">停車方式</span>
+          <PreviewResult checked={true} label="無車位" variant={prVariant} />
+        </div>
+      )}
       {parkingSummary.showMethod && (
         <div>
           <span className="font-bold mr-2">停車方式</span>
@@ -314,8 +324,8 @@ export const ParkingContent: React.FC<{
           ))}
           <PreviewResult
             checked={data?.q10_hasParkTypeOther}
-            label="其他"
-            suffix={"：" + (data?.q10_parkTypeOther || "")}
+            label="其他未列項目"
+            suffix={data?.q10_parkTypeOther ? "：" + data.q10_parkTypeOther : ""}
             variant={prVariant}
           />
         </div>
@@ -326,7 +336,9 @@ export const ParkingContent: React.FC<{
           <PreviewResult
             checked={data?.q10_parkingNumberType === "number"}
             label="有車位編號"
-            suffix={"：" + (data?.q10_parkingNumberVal || "")}
+            suffix={
+              data?.q10_parkingNumberVal ? "：" + data.q10_parkingNumberVal : ""
+            }
             variant={prVariant}
           />
           <PreviewResult
@@ -354,6 +366,9 @@ export const ParkingContent: React.FC<{
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           <span className="font-bold">汽車車位尺寸</span>
           {/* NEW TYPES */}
+          {data?.q10_measureType === "實際測量" && (
+            <span className="font-medium">[實際測量]</span>
+          )}
           {data?.q10_measureType === "依謄本登記" && (
             <span className="font-medium">[依謄本登記]</span>
           )}
@@ -365,7 +380,8 @@ export const ParkingContent: React.FC<{
             <span className="font-medium">[無法測量也無相關資訊]</span>
           )}
 
-          {data?.q10_measureType === "實際測量" &&
+          {(data?.q10_measureType === "實際測量" ||
+            data?.q10_measureType === "依車位資訊告示牌") &&
             parkingSummary.showCarSize && (
               <>
                 <span>長：{data?.q10_dimL || "_"}m</span>
@@ -386,7 +402,7 @@ export const ParkingContent: React.FC<{
           )}
         </div>
       )}
-      {(data?.q10_laneSection || data?.q10_laneNumber) && (
+      {(data?.q10_laneSection || data?.q10_laneSubSection || data?.q10_laneNumber) && (
         <div>
           <span className="font-bold mr-2">車道經過地號</span>
           <span className="font-medium">
@@ -394,7 +410,7 @@ export const ParkingContent: React.FC<{
               data.q10_laneSection,
               data.q10_laneSubSection,
               data.q10_laneNumber,
-            ).replace("地號: ", "")}
+            ).replace(/^地號[:：]\s*/, "")}
           </span>
         </div>
       )}
@@ -426,38 +442,30 @@ export const ParkingContent: React.FC<{
               data?.q10_charging === "其他" ||
               data?.q10_charging === "其他未列項目"
             }
-            label="其他"
-            suffix={": " + (data?.q10_chargingOther || "")}
+            label="其他未列項目"
+            suffix={data?.q10_chargingOther ? "：" + data.q10_chargingOther : ""}
             variant={prVariant}
           />
-        </div>
-      )}
-      {parkingSummary.isNoParking && (
-        <div>
-          <span className="font-bold mr-2">停車方式</span>
-          <PreviewResult checked={true} label="無車位" variant={prVariant} />
         </div>
       )}
     </div>
   );
 };
 
-export const LandDisputeExproPreview = ({
+export const LandDisputeBlock = ({
   data,
-  titles,
+  title,
 }: {
   data: SurveyData;
-  titles: { q3: string; q4: string };
+  title: string;
 }) => (
   <>
-    <SectionHeader title={titles.q3} />
+    <SectionHeader title={title} />
     <CheckRow
       checked={
         data?.land_q3_survey === "已鑑界 (標完好)" ||
         data?.land_q3_survey === "是" ||
-        data?.land_q3_survey === "界標完整" ||
-        data?.land_q3_survey === "從未鑑界" ||
-        data?.land_q3_survey === "否"
+        data?.land_q3_survey === "界標完整"
       }
     >
       <span className="font-bold mr-2">土地鑑界與界標現況</span>
@@ -469,6 +477,7 @@ export const LandDisputeExproPreview = ({
           data?.land_q3_survey === "界標完整"
         }
         label={`近期已鑑界 (附土地複丈成果圖)${data.land_q3_survey_detail ? "（" + data.land_q3_survey_detail + "）" : ""}${data.land_q3_survey_date ? `，最近一次鑑界時間 (年份)：${data.land_q3_survey_date}年` : ""}`}
+        forceSafe={true}
       />
 
       <PreviewResult
@@ -476,7 +485,8 @@ export const LandDisputeExproPreview = ({
           data?.land_q3_survey === "待查證" ||
           data?.land_q3_survey === "不確定／不知道"
         }
-        label={`待查證 ${data?.land_q3_survey_other ? "（" + data.land_q3_survey_other + "）" : ""}`}
+        label={`待查證 (標位不明／須重測)${data?.land_q3_survey_other ? " （" + data.land_q3_survey_other + "）" : ""}`}
+        isWarning={true}
       />
 
       <PreviewResult
@@ -486,6 +496,7 @@ export const LandDisputeExproPreview = ({
           data?.land_q3_survey === "是 (但界釘已不明顯／須重新鑑界)"
         }
         label="標位不明（需重測）"
+        isWarning={true}
       />
 
       <PreviewResult
@@ -501,21 +512,37 @@ export const LandDisputeExproPreview = ({
     >
       <span className="font-bold mr-2">產權與使用糾紛現況</span>
       <PreviewResult
+        checked={data?.land_q3_dispute === "否" || data?.land_q3_dispute === "無"}
+        label="無"
+      />
+      <PreviewResult
         checked={
           data?.land_q3_dispute === "是" || data?.land_q3_dispute === "有"
         }
-        label={`有（${data.land_q3_dispute_desc}）`}
+        label={data.land_q3_dispute_desc ? `有（${data.land_q3_dispute_desc}）` : "有"}
+        isWarning={true}
       />
       <PreviewResult
         checked={
           data?.land_q3_dispute === "待查證" ||
           data?.land_q3_dispute === "疑似／處理中"
         }
-        label={`待查證（${data.land_q3_dispute_other}）`}
+        label={data.land_q3_dispute_other ? `待查證（${data.land_q3_dispute_other}）` : "待查證"}
+        isWarning={true}
       />
     </CheckRow>
+  </>
+);
 
-    <SectionHeader title={titles.q4} />
+export const LandExproBlock = ({
+  data,
+  title,
+}: {
+  data: SurveyData;
+  title: string;
+}) => (
+  <>
+    <SectionHeader title={title} />
     <CheckRow
       checked={
         data?.land_q4_expro === "否" || data?.land_q4_expro === "非範圍內"
@@ -524,9 +551,16 @@ export const LandDisputeExproPreview = ({
       <span className="font-bold mr-2">位於政府徵收預定地</span>
       <PreviewResult
         checked={
+          data?.land_q4_expro === "否" || data?.land_q4_expro === "非範圍內"
+        }
+        label="非範圍內"
+      />
+      <PreviewResult
+        checked={
           data?.land_q4_expro === "是" || data?.land_q4_expro === "屬範圍內"
         }
         label={`屬範圍內${data?.land_q4_expro_other ? ` （${data.land_q4_expro_other}）` : ""}`}
+        isWarning={true}
       />
       <PreviewResult
         checked={
@@ -534,6 +568,7 @@ export const LandDisputeExproPreview = ({
           data?.land_q4_expro === "查詢中／不確定"
         }
         label={`待查證${data?.land_q4_expro_other ? ` （${data.land_q4_expro_other}）` : ""}`}
+        isWarning={true}
       />
     </CheckRow>
     <CheckRow
@@ -544,10 +579,17 @@ export const LandDisputeExproPreview = ({
       <span className="font-bold mr-2">位於重測區域範圍</span>
       <PreviewResult
         checked={
+          data?.land_q4_resurvey === "否" || data?.land_q4_resurvey === "非範圍內"
+        }
+        label="非範圍內"
+      />
+      <PreviewResult
+        checked={
           data?.land_q4_resurvey === "是" ||
           data?.land_q4_resurvey === "屬範圍內"
         }
         label={`屬範圍內${data?.land_q4_resurvey_other ? ` （${data.land_q4_resurvey_other}）` : ""}`}
+        isWarning={true}
       />
       <PreviewResult
         checked={
@@ -555,8 +597,22 @@ export const LandDisputeExproPreview = ({
           data?.land_q4_resurvey === "查詢中／不確定"
         }
         label={`待查證${data?.land_q4_resurvey_other ? ` （${data.land_q4_resurvey_other}）` : ""}`}
+        isWarning={true}
       />
     </CheckRow>
+  </>
+);
+
+export const LandDisputeExproPreview = ({
+  data,
+  titles,
+}: {
+  data: SurveyData;
+  titles: { q3: string; q4: string };
+}) => (
+  <>
+    <LandDisputeBlock data={data} title={titles.q3} />
+    <LandExproBlock data={data} title={titles.q4} />
   </>
 );
 
@@ -585,25 +641,43 @@ export const LandAccessPreviewBuildingStyle = ({
   const isNormal = access === "通行順暢" || access?.includes("順暢");
   const isAbnormal = access === "通行受限" || access?.includes("受限");
   const isLandlocked = access === "袋地" || access?.includes("袋地");
+  const isPrivateRoad = ownership === "私人" || ownership === "私有";
+  const hasRoadWarning =
+    ["未核定", "申請中", "須申請", "其他未列項目"].includes(buildingLine || "") ||
+    ditch === "無排水系統";
 
   return (
     <>
       <SectionHeader title={title} />
-      <CheckRow checked={isNormal && ownership !== "私人" && ownership !== "私有"}>
+      <CheckRow checked={isNormal && !isPrivateRoad}>
         <span className="font-bold mr-2">進出現況</span>
         <PreviewResult
           checked={isNormal}
-          label={`通行順暢 [${ownership || ""}${protection ? "／" + protection : ""}${protectionDesc ? ` （${protectionDesc}）` : ""}] ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}`}
-          isWarning={ownership === "私人" || ownership === "私有"}
+          label={`通行順暢${ownership || protection || protectionDesc ? ` [${ownership || ""}${protection ? "／" + protection : ""}${protectionDesc ? ` （${protectionDesc}）` : ""}]` : ""}${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number) ? ` ${formatAccessLandAddress(data.land_q2_access_section, data.land_q2_access_subSection, data.land_q2_access_number)}` : ""}`}
+          isWarning={isPrivateRoad}
+          forceSafe={!isPrivateRoad}
         />
         <PreviewResult
           checked={isAbnormal}
-          label={`通行受限 （${abnormalDesc}）`}
+          label={
+            abnormalDesc
+              ? `通行受限（如狹窄、有障礙物）：${abnormalDesc}`
+              : "通行受限（如狹窄、有障礙物）"
+          }
+          isWarning={true}
         />
-        <PreviewResult checked={isLandlocked} label="袋地" />
+        <PreviewResult
+          checked={isLandlocked}
+          label={
+            abnormalDesc
+              ? `袋地（無合法出入口）：${abnormalDesc}`
+              : "袋地（無合法出入口）"
+          }
+          isWarning={true}
+        />
       </CheckRow>
       {(isNormal || isAbnormal) && (roadMat || roadWidth || buildingLine || ditch) && (
-        <CheckRow checked={false}>
+        <CheckRow checked={!hasRoadWarning}>
           {(() => {
             const items = [];
             if (roadMat) {
@@ -613,34 +687,44 @@ export const LandAccessPreviewBuildingStyle = ({
                    label="路面材質"
                    suffix={
                      roadMat === "其他未列項目" || roadMat === "其他"
-                       ? `: ${roadMatOther}`
+                       ? `: ${roadMatOther ? `其他未列項目：${roadMatOther}` : "其他未列項目"}`
                        : `: ${roadMat}`
                    }
+                   forceSafe={true}
                  />
                );
             }
             if (roadWidth) items.push(<span className="font-bold border-l-0">路寬:{roadWidth}米</span>);
             if (buildingLine) {
-              const buildingLineLabel = buildingLine === '其他未列項目' ? (buildingLineOther || '') : buildingLine;
+              const buildingLineLabel =
+                buildingLine === "其他未列項目"
+                  ? buildingLineOther
+                    ? `其他未列項目：${buildingLineOther}`
+                    : "其他未列項目"
+                  : buildingLine;
+              const isBLWarning = ['未核定', '申請中', '須申請'].includes(buildingLine) || buildingLine === '其他未列項目';
               items.push(
                 <PreviewResult
                   checked={true}
                   label={`建築線:${buildingLineLabel}`}
-                  isWarning={['未核定', '申請中', '須申請'].includes(buildingLine) || buildingLine === '其他未列項目'}
+                  isWarning={isBLWarning}
+                  forceSafe={!isBLWarning}
                 />
               );
             }
             if (ditch) {
+               const isDitchWarning = ditch === "無排水系統";
                items.push(
                  <PreviewResult
                    checked={!!ditch}
                    label="排水溝"
                    suffix={
                      ditch === "其他未列項目" || ditch === "其他"
-                       ? `: ${ditchOther}`
+                       ? `: ${ditchOther ? `其他未列項目：${ditchOther}` : "其他未列項目"}`
                        : `: ${ditch}`
                    }
-                   isWarning={ditch === "無排水系統"}
+                   isWarning={isDitchWarning}
+                   forceSafe={!isDitchWarning}
                  />
                );
             }
@@ -666,6 +750,7 @@ export const Footer = ({
   hideBranding?: boolean;
   signatureImage?: string;
 }) => {
+  const isStandard = useInterface() === "standard";
   const timestamp = new Date().toLocaleString("zh-TW", {
     hour12: false,
     year: "numeric",
@@ -679,7 +764,7 @@ export const Footer = ({
     <div className="mt-auto pt-2 pb-1 border-t-4 border-[#009FE3] flex flex-row justify-between items-end text-slate-900 z-50 bg-white relative w-full shrink-0">
       {showSignature ? (
         <div className="flex flex-col items-start shrink-0">
-          <span className="text-slate-900 font-bold mb-1 text-[14px]">
+          <span className={`text-slate-900 font-bold mb-1 ${isStandard ? "text-[14px]" : "text-[16px]"}`}>
             調查業務人員簽章：
           </span>
           <div className="w-[240px] border-b-2 border-slate-800 flex items-end relative h-[4rem]">
@@ -704,7 +789,7 @@ export const Footer = ({
               subTextClassName="text-[0.6rem] mt-1"
             />
           </div>
-          <span className="text-[14px] font-bold text-red-600 tracking-wider block leading-tight">
+          <span className={`${isStandard ? "text-[14px]" : "text-[15px]"} font-bold text-red-600 tracking-wider block leading-tight`}>
             ※本資訊僅供評估參考，所有細節請以權責機關所核發之文件與現場所見實況為最終依據。
           </span>
           <span className="text-[10px] text-gray-500 font-mono tracking-tighter mt-1 leading-none">

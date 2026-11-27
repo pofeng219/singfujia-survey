@@ -262,11 +262,11 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         <div className="space-y-8">
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">本案遭</span>他人越界<span className="text-red-600">占用</span>現況</p>
-                                <AccordionRadio options={['無', '有']} value={data?.land_q5_encroached === '否' ? '無' : (data?.land_q5_encroached === '是' ? '有' : (data?.land_q5_encroached || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroached: val, land_q5_encroached_desc: val === '否' ? '' : prev.land_q5_encroached_desc })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroached_desc || ''} onChange={v => update('land_q5_encroached_desc', v)} placeholder="如：鄰居圍牆占用" /></SubItemHighlight> : null)}  />
+                                <AccordionRadio options={['無', '有']} value={data?.land_q5_encroached === '否' ? '無' : (data?.land_q5_encroached === '是' ? '有' : (data?.land_q5_encroached || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroached: val, land_q5_encroached_desc: val === '是' ? prev.land_q5_encroached_desc : '' })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroached_desc || ''} onChange={v => update('land_q5_encroached_desc', v)} placeholder="如：鄰居圍牆占用" /></SubItemHighlight> : null)}  />
                             </QuestionBlock>
                             <QuestionBlock>
                                 <p className="dynamic-text-h2 font-black mb-6 leading-normal"><span className="text-red-600">本案占用</span>鄰地現況</p>
-                                <AccordionRadio options={['無', '有']} value={data?.land_q5_encroaching === '否' ? '無' : (data?.land_q5_encroaching === '是' ? '有' : (data?.land_q5_encroaching || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroaching: val, land_q5_encroaching_desc: val === '否' ? '' : prev.land_q5_encroaching_desc })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroaching_desc || ''} onChange={v => update('land_q5_encroaching_desc', v)} placeholder="如：增建占用水利地" /></SubItemHighlight> : null)}  />
+                                <AccordionRadio options={['無', '有']} value={data?.land_q5_encroaching === '否' ? '無' : (data?.land_q5_encroaching === '是' ? '有' : (data?.land_q5_encroaching || ''))} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({...prev, land_q5_encroaching: val, land_q5_encroaching_desc: val === '是' ? prev.land_q5_encroaching_desc : '' })); }} renderDetail={opt => (opt === '有' ? <SubItemHighlight><DetailInput value={data.land_q5_encroaching_desc || ''} onChange={v => update('land_q5_encroaching_desc', v)} placeholder="如：增建占用水利地" /></SubItemHighlight> : null)}  />
                             </QuestionBlock>
                         </div>
                     </SurveySection>
@@ -303,8 +303,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 trigger="有"
                             >
                                 <div className="space-y-6 md:space-y-8 pt-4">
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">{EXT_LIST.map(i => (<div key={i} className="space-y-3"><CheckBox checked={data?.q1_items?.includes(i) || false} label={i} onClick={() => toggleArr('q1_items', i)} />{i === "地下室增建" && data?.q1_items?.includes("地下室增建") && (<SubItemHighlight className="mt-4"><CheckBox checked={data?.q1_basementPartition || false} label="內含隔間" onClick={() => update('q1_basementPartition', !data.q1_basementPartition)} /></SubItemHighlight>)}</div>))}</div>
-                                    <div className="space-y-3 text-left"><CheckBox checked={data?.q1_hasOther || false} label="其他未列項目" onClick={() => update('q1_hasOther', !data.q1_hasOther)} />{data?.q1_hasOther && <SubItemHighlight><DetailInput value={data.q1_other || ''} onChange={v => update('q1_other', v)} placeholder="如遮雨棚增建、平台外推" /></SubItemHighlight>}</div>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">{EXT_LIST.map(i => (<div key={i} className="space-y-3"><CheckBox checked={data?.q1_items?.includes(i) || false} label={i} onClick={() => { if (i === "地下室增建" && data?.q1_items?.includes(i)) update('q1_basementPartition', false); toggleArr('q1_items', i); }} />{i === "地下室增建" && data?.q1_items?.includes("地下室增建") && (<SubItemHighlight className="mt-4"><CheckBox checked={data?.q1_basementPartition || false} label="內含隔間" onClick={() => update('q1_basementPartition', !data.q1_basementPartition)} /></SubItemHighlight>)}</div>))}</div>
+                                    <div className="space-y-3 text-left"><CheckBox checked={data?.q1_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q1_hasOther: !prev.q1_hasOther, q1_other: prev.q1_hasOther ? '' : prev.q1_other }))} />{data?.q1_hasOther && <SubItemHighlight><DetailInput value={data.q1_other || ''} onChange={v => update('q1_other', v)} placeholder="如遮雨棚增建、平台外推" /></SubItemHighlight>}</div>
                                 </div>
                             </BooleanReveal>
 
@@ -316,7 +316,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 <AccordionRadio 
                                     options={['無', '有', '待查證']} 
                                     value={data?.q2_hasOccupancy === '否' ? '無' : (data?.q2_hasOccupancy === '是' ? '有' : (data?.q2_hasOccupancy === '待查證' || data?.q2_hasOccupancy === '疑似' ? '待查證' : (data?.q2_hasOccupancy || '')))} 
-                                    onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({ ...prev, q2_hasOccupancy: val, q2_desc: val === '否' ? '' : prev.q2_desc })); }} 
+                                    onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({ ...prev, q2_hasOccupancy: val, q2_desc: (val === '是' || val === '待查證') ? prev.q2_desc : '' })); }} 
                                     renderDetail={(opt) => (opt === '有' || opt === '待查證') ? <SubItemHighlight><DetailInput value={data.q2_desc || ''} onChange={v => update('q2_desc', v)} placeholder="如：占用鄰地約2坪" /></SubItemHighlight> : null}
                                 />
                             </QuestionBlock>
@@ -328,7 +328,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 <AccordionRadio 
                                     options={['無', '有', '待查證']} 
                                     value={data?.q2_other_occupancy === '否' ? '無' : (data?.q2_other_occupancy === '是' ? '有' : (data?.q2_other_occupancy === '待查證' || data?.q2_other_occupancy === '疑似' ? '待查證' : (data?.q2_other_occupancy || '')))} 
-                                    onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({ ...prev, q2_other_occupancy: val, q2_other_occupancy_desc: val === '否' ? '' : prev.q2_other_occupancy_desc })); }} 
+                                    onChange={(v) => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(prev => ({ ...prev, q2_other_occupancy: val, q2_other_occupancy_desc: (val === '是' || val === '待查證') ? prev.q2_other_occupancy_desc : '' })); }} 
                                       
                                     renderDetail={(opt) => (opt === '有' || opt === '待查證') ? <SubItemHighlight><DetailInput value={data.q2_other_occupancy_desc || ''} onChange={v => update('q2_other_occupancy_desc', v)} placeholder="如：隔壁冷氣室外機占用本戶外牆" /></SubItemHighlight> : null}
                                 />
@@ -352,7 +352,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             options={['實測相符', '實測不符', '無法測量']} 
                             value={data?.q6_hasIssue === '相符 (無明顯差異)' ? '實測相符' : (data?.q6_hasIssue === '不符 (有明顯差異)' ? '實測不符' : (data?.q6_hasIssue === '無法測量／其他' || data?.q6_hasIssue === '無法測量／現況說明' ? '無法測量' : (data?.q6_hasIssue || '')))} 
                             onChange={(v) => { 
-                                setData(prev => ({ ...prev, q6_hasIssue: v, q6_desc: (v === '實測相符') ? '' : prev.q6_desc })); 
+                                setData(prev => ({ ...prev, q6_hasIssue: v, q6_desc: (v === '實測不符' || v === '無法測量') ? prev.q6_desc : '' })); 
                             }} 
                             renderDetail={(opt) => {
                                 if (opt === '實測不符' || opt === '無法測量') return <SubItemHighlight><DetailInput value={data.q6_desc || ''} onChange={v => update('q6_desc', v)} placeholder="說明現況" /></SubItemHighlight>;
@@ -391,7 +391,20 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     setData(prev => ({ ...prev, q3_hasLeak: '是', q3_leakType: '全屋天花板包覆（無法檢查）', q3_ceilingWrapped: true, q3_locations: [], q3_hasOther: false, q3_other: '因裝潢包覆無法檢視內部，需特別留意', q3_suspected: false, q3_suspectedDesc: '' })); 
                                 } else {
                                     const val = v === '無（現況乾燥）' ? '否' : (v === '有（含壁癌／水漬／修繕痕跡）' ? '是' : v);
-                                    setData(prev => ({ ...prev, q3_hasLeak: val, q3_leakType: val === '是' ? prev.q3_leakType : '', q3_ceilingWrapped: false, q3_locations: val === '是' ? prev.q3_locations : [], q3_hasOther: val === '是' ? prev.q3_hasOther : false, q3_other: val === '是' ? prev.q3_other : '', q3_suspected: val === '是' ? prev.q3_suspected : false, q3_suspectedDesc: val === '是' ? prev.q3_suspectedDesc : '' })); 
+                                    setData(prev => {
+                                        const wasWrapped = prev.q3_ceilingWrapped || prev.q3_leakType === '全屋天花板包覆' || prev.q3_leakType === '全屋天花板包覆 (無法檢查)' || prev.q3_leakType === '全屋天花板包覆（無法檢查）';
+                                        return {
+                                            ...prev,
+                                            q3_hasLeak: val,
+                                            q3_leakType: (val === '是' && !wasWrapped) ? prev.q3_leakType : '',
+                                            q3_ceilingWrapped: false,
+                                            q3_locations: val === '是' ? prev.q3_locations : [],
+                                            q3_hasOther: val === '是' ? prev.q3_hasOther : false,
+                                            q3_other: (val === '是' && !wasWrapped) ? prev.q3_other : '',
+                                            q3_suspected: val === '是' ? prev.q3_suspected : false,
+                                            q3_suspectedDesc: val === '是' ? prev.q3_suspectedDesc : ''
+                                        };
+                                    }); 
                                 }
                             }} 
                             renderDetail={(opt) => {
@@ -402,7 +415,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                 <p className="dynamic-text-h2 font-black mb-4 leading-normal">狀況類別 <span className="text-xl font-normal text-slate-600 block md:inline md:ml-2 dark:text-slate-300">（請確認現場狀況）</span></p>
                                                 <AccordionRadio 
                                                     options={['滲漏水', '壁癌', '兩者皆有']} 
-                                                    value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' ? '' : (data.q3_leakType || '')} 
+                                                    value={data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆 (無法檢查)' || data.q3_leakType === '全屋天花板包覆（無法檢查）' ? '' : (data.q3_leakType || '')} 
                                                     onChange={v => setData(prev => ({ ...prev, q3_leakType: v }))} 
                                                     renderDetail={opt => {
                                                         if (!data.q3_leakType || data.q3_leakType === '全屋天花板包覆' || data.q3_leakType === '全屋天花板包覆（無法檢查）') return null;
@@ -413,8 +426,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                                     <p className="dynamic-text-h2 font-black mb-6 leading-normal text-left">發生位置：</p>
                                                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">{LEAK_LOCATIONS.map(i => <CheckBox key={i} checked={data?.q3_locations?.includes(i) || false} label={i} onClick={() => toggleArr('q3_locations', i)} />)}</div>
                                                                 </div>
-                                                                <div className="space-y-3 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => update('q3_hasOther', !data.q3_hasOther)} />{data?.q3_hasOther && <SubItemHighlight><DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" /></SubItemHighlight>}</div>
-                                                                <div className="space-y-3 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => update('q3_suspected', !data.q3_suspected)} />{data?.q3_suspected && <SubItemHighlight><DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" /></SubItemHighlight>}</div>
+                                                                <div className="space-y-3 text-left"><CheckBox checked={data?.q3_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q3_hasOther: !prev.q3_hasOther, q3_other: prev.q3_hasOther ? '' : prev.q3_other }))} />{data?.q3_hasOther && <SubItemHighlight><DetailInput value={data.q3_other || ''} onChange={v => update('q3_other', v)} placeholder="如窗框、增建處" /></SubItemHighlight>}</div>
+                                                                <div className="space-y-3 text-left"><CheckBox checked={data?.q3_suspected || false} label={data.q3_leakType === '滲漏水' ? "疑似有滲漏水，位置說明：" : (data.q3_leakType === '壁癌' ? "疑似有壁癌，位置說明：" : "疑似有滲漏水、壁癌，位置說明：")} onClick={() => setData(prev => ({ ...prev, q3_suspected: !prev.q3_suspected, q3_suspectedDesc: prev.q3_suspected ? '' : prev.q3_suspectedDesc }))} />{data?.q3_suspected && <SubItemHighlight><DetailInput value={data.q3_suspectedDesc || ''} onChange={v => update('q3_suspectedDesc', v)} placeholder="如：牆面變色、油漆剝落" /></SubItemHighlight>}</div>
                                                             </div>
                                                         );
                                                     }}
@@ -432,7 +445,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 <AccordionRadio 
                                     options={['無修繕紀錄', '有修繕紀錄']} 
                                     value={data.q3_repairHistory || ''} 
-                                    onChange={v => update('q3_repairHistory', v)} 
+                                    onChange={v => setData(prev => ({ ...prev, q3_repairHistory: v, q3_repairDesc: v === '有修繕紀錄' ? prev.q3_repairDesc : '' }))} 
                                     
                                     renderDetail={(opt) => opt === '有修繕紀錄' ? (
                                         <SubItemHighlight>
@@ -488,7 +501,16 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             setData(prev => ({ ...prev, q4_hasIssue: '是', q4_ceilingWrapped: true, q4_items: [], q4_hasOther: false, q4_otherDesc: '因裝潢包覆無法檢視內部，需特別留意', q4_suspected: false, q4_suspectedDesc: '' })); 
                                         } else {
                                             const val = v === '無' ? '否' : (v === '有' ? '是' : v);
-                                            setData(prev => ({ ...prev, q4_hasIssue: val, q4_ceilingWrapped: false, q4_items: val === '是' ? prev.q4_items : [], q4_hasOther: val === '是' ? prev.q4_hasOther : false, q4_otherDesc: val === '是' ? prev.q4_otherDesc : '', q4_suspected: val === '是' ? prev.q4_suspected : false, q4_suspectedDesc: val === '是' ? prev.q4_suspectedDesc : '' })); 
+                                            setData(prev => ({
+                                                ...prev,
+                                                q4_hasIssue: val,
+                                                q4_ceilingWrapped: false,
+                                                q4_items: val === '是' ? prev.q4_items : [],
+                                                q4_hasOther: val === '是' ? prev.q4_hasOther : false,
+                                                q4_otherDesc: (val === '是' && !prev.q4_ceilingWrapped) ? prev.q4_otherDesc : '',
+                                                q4_suspected: val === '是' ? prev.q4_suspected : false,
+                                                q4_suspectedDesc: val === '是' ? prev.q4_suspectedDesc : ''
+                                            })); 
                                         }
                                     }}
                                     renderDetail={(opt) => {
@@ -496,8 +518,8 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             <SubItemHighlight>
                                                     <div className="space-y-8 pt-4">
                                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{STRUCTURAL_ISSUES.map(i => <CheckBox key={i} checked={data?.q4_items?.includes(i) || false} label={i} onClick={() => toggleArr('q4_items', i)} />)}</div>
-                                                        <div className="space-y-3 text-left"><CheckBox checked={data?.q4_hasOther || false} label="其他未列項目" onClick={() => update('q4_hasOther', !data.q4_hasOther)} />{data?.q4_hasOther && <SubItemHighlight><DetailInput value={data.q4_otherDesc || ''} onChange={v => update('q4_otherDesc', v)} placeholder="說明現況與位置" /></SubItemHighlight>}</div>
-                                                        <div className="space-y-3 text-left"><CheckBox checked={data?.q4_suspected || false} label="現況需待查證" onClick={() => update('q4_suspected', !data.q4_suspected)} />{data?.q4_suspected && <SubItemHighlight><DetailInput value={data.q4_suspectedDesc || ''} onChange={v => update('q4_suspectedDesc', v)} placeholder="說明位置與現況" /></SubItemHighlight>}</div>
+                                                        <div className="space-y-3 text-left"><CheckBox checked={data?.q4_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q4_hasOther: !prev.q4_hasOther, q4_otherDesc: prev.q4_hasOther ? '' : prev.q4_otherDesc }))} />{data?.q4_hasOther && <SubItemHighlight><DetailInput value={data.q4_otherDesc || ''} onChange={v => update('q4_otherDesc', v)} placeholder="說明現況與位置" /></SubItemHighlight>}</div>
+                                                        <div className="space-y-3 text-left"><CheckBox checked={data?.q4_suspected || false} label="現況需待查證" onClick={() => setData(prev => ({ ...prev, q4_suspected: !prev.q4_suspected, q4_suspectedDesc: prev.q4_suspected ? '' : prev.q4_suspectedDesc }))} />{data?.q4_suspected && <SubItemHighlight><DetailInput value={data.q4_suspectedDesc || ''} onChange={v => update('q4_suspectedDesc', v)} placeholder="說明位置與現況" /></SubItemHighlight>}</div>
                                                     </div>
                                             </SubItemHighlight>
                                         );
@@ -570,7 +592,7 @@ export const Step2 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                     {UTILITY_ISSUES.map(i => <CheckBox key={i} checked={data?.q7_items?.includes(i) || false} label={i} onClick={() => toggleArr('q7_items', i)} />)}
                                                 </div>
                                                 <div className="space-y-3 text-left">
-                                                    <CheckBox checked={data?.q7_hasOther || false} label="其他未列項目" onClick={() => update('q7_hasOther', !data.q7_hasOther)} />
+                                                    <CheckBox checked={data?.q7_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q7_hasOther: !prev.q7_hasOther, q7_otherDesc: prev.q7_hasOther ? '' : prev.q7_otherDesc }))} />
                                                     {data?.q7_hasOther && <SubItemHighlight><DetailInput value={data.q7_otherDesc || ''} onChange={v => update('q7_otherDesc', v)} placeholder="說明現況" /></SubItemHighlight>}
                                                 </div>
                                              </div>

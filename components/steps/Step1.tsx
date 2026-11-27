@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
     ACCESS_SUB_OPTIONS, ACCESS_SUB_OPTIONS_LAND, ACCESS_SUB_OPTIONS_PARKING, ACCESS_SUB_OPTIONS_FACTORY, 
-    HOUSE_PROPERTY_TYPE_OPTIONS, LAND_PROPERTY_TYPE_OPTIONS, FACTORY_PROPERTY_TYPE_OPTIONS
+    HOUSE_PROPERTY_TYPE_OPTIONS, LAND_PROPERTY_TYPE_OPTIONS, FACTORY_PROPERTY_TYPE_OPTIONS, GROUP_A_TYPES
 } from '../../constants';
 import { 
     CheckBox, SurveySection, SubItemHighlight, DetailInput, InlineWarning, 
@@ -44,7 +44,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                     <>
                         <QuestionBlock id="section-propertyType" className={`flex flex-col gap-4 md:gap-6 mb-6 md:mb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                             <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                            <AccordionRadio options={FACTORY_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他特殊工業設施' ? prev.propertyTypeOther : '' })); }} renderDetail={opt => opt === '其他特殊工業設施' ? <SubItemHighlight><DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明物件型態" /></SubItemHighlight> : null} />
+                            <AccordionRadio options={FACTORY_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => { const nextIsGroupA = GROUP_A_TYPES.includes(v); return { ...prev, propertyType: v, propertyTypeOther: v === '其他特殊工業設施' ? prev.propertyTypeOther : '', house_solar_status: nextIsGroupA ? prev.house_solar_status : '', water_booster: nextIsGroupA ? prev.water_booster : '', water_booster_items: nextIsGroupA ? prev.water_booster_items : [], water_booster_desc: nextIsGroupA ? prev.water_booster_desc : '' }; }); }} renderDetail={opt => opt === '其他特殊工業設施' ? <SubItemHighlight><DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明物件型態" /></SubItemHighlight> : null} />
                         </QuestionBlock>
                         <div className="animate-in fade-in slide-in-from-top-2">
                             <BooleanReveal 
@@ -64,7 +64,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 {type === 'house' && (
                      <QuestionBlock id="section-propertyType" className={`flex flex-col gap-4 md:gap-6 mb-6 md:mb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <AccordionRadio options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '' })); }} renderDetail={opt => opt === '其他未列項目' ? (
+                        <AccordionRadio options={HOUSE_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => { const nextIsGroupA = GROUP_A_TYPES.includes(v); return { ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '', house_solar_status: nextIsGroupA ? prev.house_solar_status : '', water_booster: nextIsGroupA ? prev.water_booster : '', water_booster_items: nextIsGroupA ? prev.water_booster_items : [], water_booster_desc: nextIsGroupA ? prev.water_booster_desc : '' }; }); }} renderDetail={opt => opt === '其他未列項目' ? (
                              <SubItemHighlight>
                                  <DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="說明現況" />
                              </SubItemHighlight>
@@ -74,7 +74,7 @@ export const Step1 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                 {type === 'land' && (
                      <QuestionBlock id="section-propertyType" className={`flex flex-col gap-4 md:gap-6 mb-6 md:mb-8 animate-in fade-in slide-in-from-top-2 ${highlightedField === 'section-propertyType' ? 'error-highlight-anim transition-all duration-500' : 'transition-all duration-500'}`}>
                         <p className="dynamic-text-h2 font-black text-slate-700 text-left leading-normal">本物件型態</p>
-                        <AccordionRadio options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '' })); }} renderDetail={opt => opt === '其他未列項目' ? (
+                        <AccordionRadio options={LAND_PROPERTY_TYPE_OPTIONS} value={data?.propertyType || ''} onChange={(v) => { setData(prev => ({ ...prev, propertyType: v, propertyTypeOther: v === '其他未列項目' ? prev.propertyTypeOther : '', land_q7_fire_setback: v === '工業地' ? prev.land_q7_fire_setback : '', land_q7_road_opened: v === '其他未列項目' ? prev.land_q7_road_opened : '' })); }} renderDetail={opt => opt === '其他未列項目' ? (
                              <SubItemHighlight>
                                  <DetailInput value={data.propertyTypeOther || ''} onChange={v => update('propertyTypeOther', v)} placeholder="如：道路用地、公設地" />
                              </SubItemHighlight>

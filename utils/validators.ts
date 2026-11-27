@@ -441,14 +441,14 @@ export const validateForm = (d: SurveyData, type: SurveyType): ValidationError[]
         v.require(d.land_q1_elec, "section-factory-q6", "6. 電、水與其他設施現況未填寫 (電力)", s3);
         v.require(d.land_q1_water, "section-factory-q6", "6. 電、水與其他設施現況未填寫 (水源)", s3);
 
-        // Added Solar Validation for Factory
-        v.require(d.house_solar_status, "section-factory-q6", "6. 太陽能光電發電設備現況未填寫", s3);
-
-        // Added Water Booster Validation
-        v.require(d.water_booster, "section-factory-q6", "6. 用戶加壓受水設備現況未填寫", s3);
-        v.requireIf(d.water_booster === '其他未列項目', d.water_booster_desc, "section-factory-q6", "6. 請填寫加壓設備「其他」說明", s3);
-        if (d.water_booster === '有設置') {
-            v.check((d.water_booster_items?.length || 0) === 0, "section-factory-q6", "6. 請勾選加壓受水設備細項", s3);
+        // Added Solar & Water Booster Validation for Factory (Group A only)
+        if (isGroupA) {
+            v.require(d.house_solar_status, "section-factory-q6", "6. 太陽能光電發電設備現況未填寫", s3);
+            v.require(d.water_booster, "section-factory-q6", "6. 用戶加壓受水設備現況未填寫", s3);
+            v.requireIf(d.water_booster === '其他未列項目', d.water_booster_desc, "section-factory-q6", "6. 請填寫加壓設備「其他」說明", s3);
+            if (d.water_booster === '有設置') {
+                v.check((d.water_booster_items?.length || 0) === 0, "section-factory-q6", "6. 請勾選加壓受水設備細項", s3);
+            }
         }
 
         // Hardware

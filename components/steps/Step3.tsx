@@ -245,7 +245,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                      <BooleanReveal 
                         label="" 
                         value={data?.q8_stairIssue === '否' ? '無異常' : (data?.q8_stairIssue === '是' ? '有異常' : '')} 
-                        onChange={v => { const val = v === '無異常' ? '否' : (v === '有異常' ? '是' : v); setData(p => ({...p, q8_stairIssue: val, q8_stairItems: val === '否' ? [] : p.q8_stairItems, q8_stairOther: val === '否' ? '' : p.q8_stairOther })); }} 
+                        onChange={v => { const val = v === '無異常' ? '否' : (v === '有異常' ? '是' : v); setData(p => ({...p, q8_stairIssue: val, q8_stairItems: val === '是' ? p.q8_stairItems : [], q8_stairOther: val === '是' ? p.q8_stairOther : '' })); }} 
                         options={['無異常', '有異常']} 
                         trigger="有異常"
                      >
@@ -254,20 +254,20 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 {STAIR_ISSUES.map(i => <CheckBox key={i} checked={data?.q8_stairItems?.includes(i) || false} label={i} onClick={() => toggleArr('q8_stairItems', i)} />)}
                             </div>
                             <div className="space-y-3 text-left">
-                                <CheckBox checked={data?.q8_stairItems?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => toggleArr('q8_stairItems', '其他未列項目')} />
+                                <CheckBox checked={data?.q8_stairItems?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => { if (data?.q8_stairItems?.includes('其他未列項目')) update('q8_stairOther', ''); toggleArr('q8_stairItems', '其他未列項目'); }} />
                                 {data?.q8_stairItems?.includes('其他未列項目') && <SubItemHighlight><DetailInput value={data.q8_stairOther || ''} onChange={v => update('q8_stairOther', v)} placeholder="說明現況與位置" /></SubItemHighlight>}
                             </div>
                         </div>
                      </BooleanReveal>
                 </SurveySection>
                 <SurveySection id="section-q9" highlighted={highlightedField === 'section-q9'} title="8. 物件與社區內須注意的設施" status={getFacilityStatus()}>
-                     <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
+                     <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_solar_maintenance: val === '是' ? p.q9_solar_maintenance : '', q9_water_booster_maintenance: val === '是' ? p.q9_water_booster_maintenance : '', q9_water_booster_items: val === '是' ? p.q9_water_booster_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                 {(isGroupA ? FACILITIES_GROUP_A : FACILITY_OPTIONS).map(i => (
                                     <div key={i} className={`flex flex-col ${(i === '太陽能光電發電設備' || i === '加壓受水設備') && data?.q9_items?.includes(i) ? 'col-span-1 md:col-span-2' : ''}`}>
                                         <div className="h-full">
-                                            <CheckBox checked={data?.q9_items?.includes(i) || false} label={i} onClick={() => toggleArr('q9_items', i)} />
+                                            <CheckBox checked={data?.q9_items?.includes(i) || false} label={i} onClick={() => { if (i === '太陽能光電發電設備' && data?.q9_items?.includes(i)) update('q9_solar_maintenance', ''); if (i === '加壓受水設備' && data?.q9_items?.includes(i)) { update('q9_water_booster_items', []); update('q9_water_booster_maintenance', ''); } toggleArr('q9_items', i); }} />
                                         </div>
                                         {/* Original Logic for Solar/Water Booster maintenance (Group B/Apartments) */}
                                         {i === '太陽能光電發電設備' && data?.q9_items?.includes(i) && (
@@ -312,7 +312,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 ))}
                             </div>
                              <div className="space-y-3 text-left">
-                                <CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => update('q9_hasOther', !data.q9_hasOther)} />
+                                <CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q9_hasOther: !prev.q9_hasOther, q9_otherDesc: prev.q9_hasOther ? '' : prev.q9_otherDesc }))} />
                                 {data?.q9_hasOther && <SubItemHighlight><DetailInput value={data.q9_otherDesc || ''} onChange={v => update('q9_otherDesc', v)} placeholder={isGroupA ? "說明現況" : "如：發電機"} /></SubItemHighlight>}
                              </div>
                         </div>
@@ -400,7 +400,16 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <AccordionRadio 
                                 options={['無', '有農作物／植栽']} 
                                 value={data.land_q7_crops === '無' ? '無' : (data.land_q7_crops || '')} 
-                                onChange={v => setData(p => ({...p, land_q7_crops: v === '無' ? '無' : v}))} 
+                                onChange={v => setData(p => ({
+                                    ...p,
+                                    land_q7_crops: v === '無' ? '無' : v,
+                                    land_q7_crops_type: v === '有農作物／植栽' ? p.land_q7_crops_type : [],
+                                    land_q7_crops_econ_detail: v === '有農作物／植栽' ? p.land_q7_crops_econ_detail : '',
+                                    land_q7_crops_econ_detail_other: v === '有農作物／植栽' ? p.land_q7_crops_econ_detail_other : '',
+                                    land_q7_crops_land_detail: v === '有農作物／植栽' ? p.land_q7_crops_land_detail : '',
+                                    land_q7_crops_land_detail_other: v === '有農作物／植栽' ? p.land_q7_crops_land_detail_other : '',
+                                    land_q7_crops_other: v === '有農作物／植栽' ? p.land_q7_crops_other : ''
+                                }))} 
                                 renderDetail={(opt) => opt === '有農作物／植栽' ? (
                                     <SubItemHighlight>
                                         <div className="space-y-6">
@@ -417,7 +426,10 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                                     ...prev, 
                                                                     land_q7_crops_type: arr.filter(i => i !== opt2),
                                                                     land_q7_crops_econ_detail: opt2 === '經濟作物' ? '' : prev.land_q7_crops_econ_detail,
-                                                                    land_q7_crops_land_detail: opt2 === '景觀植栽' ? '' : prev.land_q7_crops_land_detail
+                                                                    land_q7_crops_econ_detail_other: opt2 === '經濟作物' ? '' : prev.land_q7_crops_econ_detail_other,
+                                                                    land_q7_crops_land_detail: opt2 === '景觀植栽' ? '' : prev.land_q7_crops_land_detail,
+                                                                    land_q7_crops_land_detail_other: opt2 === '景觀植栽' ? '' : prev.land_q7_crops_land_detail_other,
+                                                                    land_q7_crops_other: opt2 === '其他未列項目' ? '' : prev.land_q7_crops_other
                                                                 }));
                                                             } else {
                                                                 setData(prev => ({ ...prev, land_q7_crops_type: [...arr, opt2] }));
@@ -465,7 +477,16 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <AccordionRadio 
                                 options={['無', '有建築物／工作物']} 
                                 value={data.land_q7_build === '無' ? '無' : (data.land_q7_build || '')} 
-                                onChange={v => setData(p => ({...p, land_q7_build: v === '無' ? '無' : v}))} 
+                                onChange={v => setData(p => ({
+                                    ...p,
+                                    land_q7_build: v === '無' ? '無' : v,
+                                    land_q7_build_type: v === '有建築物／工作物' ? p.land_q7_build_type : [],
+                                    land_q7_build_reg_ownership: v === '有建築物／工作物' ? p.land_q7_build_reg_ownership : '',
+                                    land_q7_build_reg_detail: v === '有建築物／工作物' ? p.land_q7_build_reg_detail : '',
+                                    land_q7_build_unreg_ownership: v === '有建築物／工作物' ? p.land_q7_build_unreg_ownership : '',
+                                    land_q7_build_unreg_detail: v === '有建築物／工作物' ? p.land_q7_build_unreg_detail : '',
+                                    land_q7_build_other: v === '有建築物／工作物' ? p.land_q7_build_other : ''
+                                }))} 
                                 renderDetail={(opt) => opt === '有建築物／工作物' ? (
                                     <SubItemHighlight>
                                         <div className="space-y-4">
@@ -474,15 +495,30 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                                     <CheckBox 
                                                         checked={data.land_q7_build_type?.includes(bType) || false} 
                                                         label={bType} 
-                                                        onClick={() => toggleArr('land_q7_build_type', bType)} 
+                                                        onClick={() => {
+                                                            const arr = Array.isArray(data.land_q7_build_type) ? data.land_q7_build_type : [];
+                                                            if (arr.includes(bType)) {
+                                                                setData(prev => ({
+                                                                    ...prev,
+                                                                    land_q7_build_type: arr.filter(i => i !== bType),
+                                                                    land_q7_build_reg_ownership: bType === '有保存登記' ? '' : prev.land_q7_build_reg_ownership,
+                                                                    land_q7_build_reg_detail: bType === '有保存登記' ? '' : prev.land_q7_build_reg_detail,
+                                                                    land_q7_build_unreg_ownership: bType === '未保存登記' ? '' : prev.land_q7_build_unreg_ownership,
+                                                                    land_q7_build_unreg_detail: bType === '未保存登記' ? '' : prev.land_q7_build_unreg_detail,
+                                                                    land_q7_build_other: bType === '其他未列項目' ? '' : prev.land_q7_build_other
+                                                                }));
+                                                            } else {
+                                                                setData(prev => ({ ...prev, land_q7_build_type: [...arr, bType] }));
+                                                            }
+                                                        }} 
                                                     />
                                                     {data.land_q7_build_type?.includes(bType) && (
                                                         <div className="pl-6 md:pl-8 animate-in fade-in zoom-in-95 duration-200">
                                                             {bType === '有保存登記' && (
-                                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_reg_ownership || ''} onChange={v => update('land_q7_build_reg_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>
+                                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['所有權人擁有', '出租中', '其他未列項目']} value={data.land_q7_build_reg_ownership || ''} onChange={v => setData(prev => ({ ...prev, land_q7_build_reg_ownership: v, land_q7_build_reg_detail: v === '其他未列項目' ? prev.land_q7_build_reg_detail : '' }))} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_reg_detail || ''} onChange={v => update('land_q7_build_reg_detail', v)} placeholder="說明現況" /> : null} /></div>
                                                             )}
                                                             {bType === '未保存登記' && (
-                                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_unreg_ownership || ''} onChange={v => update('land_q7_build_unreg_ownership', v)} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>
+                                                                <div className="p-4 bg-white rounded-xl border-2 border-slate-200"><AccordionRadio options={['擁有稅籍(有稅籍證明)', '出租中', '其他未列項目']} value={data.land_q7_build_unreg_ownership || ''} onChange={v => setData(prev => ({ ...prev, land_q7_build_unreg_ownership: v, land_q7_build_unreg_detail: v === '其他未列項目' ? prev.land_q7_build_unreg_detail : '' }))} renderDetail={(opt3) => opt3 === '其他未列項目' ? <DetailInput value={data.land_q7_build_unreg_detail || ''} onChange={v => update('land_q7_build_unreg_detail', v)} placeholder="說明現況" /> : null} /></div>
                                                             )}
                                                             {bType === '其他未列項目' && (
                                                                 <DetailInput value={data.land_q7_build_other || ''} onChange={v => update('land_q7_build_other', v)} placeholder="說明現況" />
@@ -588,7 +624,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 ))}
                             </div>
                              <div className="space-y-3 text-left">
-                                <CheckBox checked={data?.land_q7_facilities_items?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => toggleArr('land_q7_facilities_items', '其他未列項目')} />
+                                <CheckBox checked={data?.land_q7_facilities_items?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => { if (data?.land_q7_facilities_items?.includes('其他未列項目')) update('land_q7_facilities_other', ''); toggleArr('land_q7_facilities_items', '其他未列項目'); }} />
                                 {data?.land_q7_facilities_items?.includes('其他未列項目') && <SubItemHighlight><DetailInput value={data.land_q7_facilities_other || ''} onChange={v => update('land_q7_facilities_other', v)} placeholder="說明現況" /></SubItemHighlight>}
                              </div>
                         </div>
@@ -768,7 +804,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                             <CheckBox 
                                                 checked={data.factory_floor_condition?.includes(opt) || false} 
                                                 label={opt} 
-                                                onClick={() => toggleArr('factory_floor_condition', opt)} 
+                                                onClick={() => { if (opt === '其他未列項目' && data.factory_floor_condition?.includes(opt)) update('factory_floor_condition_other', ''); toggleArr('factory_floor_condition', opt); }} 
                                             />
                                             {opt === '其他未列項目' && data.factory_floor_condition?.includes(opt) && (
                                                 <div className="pl-6 md:pl-8 animate-in fade-in zoom-in-95 duration-200">
@@ -796,7 +832,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                 {FACTORY_FIRE_OPTS.map(opt => <CheckBox key={opt} checked={data.factory_fire_safety?.includes(opt) || false} label={opt} onClick={() => toggleArr('factory_fire_safety', opt)} />)}
                             </div>
                             <div className="mt-4">
-                                 <CheckBox checked={data.factory_fire_safety?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => toggleArr('factory_fire_safety', '其他未列項目')} />
+                                 <CheckBox checked={data.factory_fire_safety?.includes('其他未列項目') || false} label="其他未列項目" onClick={() => { if (data.factory_fire_safety?.includes('其他未列項目')) update('factory_fire_safety_other', ''); toggleArr('factory_fire_safety', '其他未列項目'); }} />
                                  {data.factory_fire_safety?.includes('其他未列項目') && <SubItemHighlight><DetailInput value={data.factory_fire_safety_other || ''} onChange={v => update('factory_fire_safety_other', v)} placeholder="說明現況" /></SubItemHighlight>}
                             </div>
                         </QuestionBlock>
@@ -814,7 +850,17 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <AccordionRadio 
                                 options={['無', '純貨梯', '客貨兩用梯', '客貨梯分離']} 
                                 value={data.factory_elevator || ''} 
-                                onChange={v => setData(p => ({...p, factory_elevator: v}))} 
+                                onChange={v => {
+                                    const hasElevator = v === '純貨梯' || v === '客貨兩用梯' || v === '客貨梯分離';
+                                    setData(p => ({
+                                        ...p,
+                                        factory_elevator: v,
+                                        factory_elevator_status: hasElevator ? p.factory_elevator_status : '',
+                                        factory_elevator_capacity: hasElevator ? p.factory_elevator_capacity : '',
+                                        factory_elevator_dim: hasElevator ? p.factory_elevator_dim : '',
+                                        factory_elevator_door_dim: hasElevator ? p.factory_elevator_door_dim : ''
+                                    }));
+                                }} 
                                 renderDetail={(opt) => (opt === '純貨梯' || opt === '客貨兩用梯' || opt === '客貨梯分離') ? (
                                     <SubItemHighlight>
                                         <div className="space-y-6">
@@ -844,7 +890,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <AccordionRadio 
                                 options={['無', '有']} 
                                 value={data.factory_crane || ''} 
-                                onChange={v => setData(p => ({...p, factory_crane: v}))} 
+                                onChange={v => setData(p => ({ ...p, factory_crane: v, factory_crane_desc: v === '有' ? p.factory_crane_desc : '' }))} 
                                 renderDetail={(opt) => {
                                     if (opt === '有') return (
                                         <SubItemHighlight>
@@ -861,7 +907,12 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <AccordionRadio 
                                 options={FACTORY_WASTE_OPTS} 
                                 value={data.factory_waste || ''} 
-                                onChange={v => update('factory_waste', v)} 
+                                onChange={v => setData(p => ({
+                                    ...p,
+                                    factory_waste: v,
+                                    factory_waste_has_detail: v === '有' ? p.factory_waste_has_detail : '',
+                                    factory_waste_desc: v === '其他未列項目' ? p.factory_waste_desc : ''
+                                }))} 
                                 renderDetail={(opt) => {
                                     if (opt === '有') {
                                         return (
@@ -920,13 +971,13 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
 
                 {/* 10. Facilities (Similar to House Q9) */}
                 <SurveySection id="section-factory-q10" highlighted={highlightedField === 'section-factory-q10'} title="10. 本案或周圍須注意設施" status={getFacilityStatus()}>
-                     <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
+                     <BooleanReveal label="" value={data?.q9_hasIssue === '否' ? '無' : (data?.q9_hasIssue === '是' ? '有' : '')} onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData(p => ({...p, q9_hasIssue: val, q9_items: val === '是' ? p.q9_items : [], q9_solar_maintenance: val === '是' ? p.q9_solar_maintenance : '', q9_water_booster_maintenance: val === '是' ? p.q9_water_booster_maintenance : '', q9_water_booster_items: val === '是' ? p.q9_water_booster_items : [], q9_hasOther: val === '是' ? p.q9_hasOther : false, q9_otherDesc: val === '是' ? p.q9_otherDesc : '' })); }} options={['無', '有']} trigger="有">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">
                                 {(isGroupA ? FACILITIES_GROUP_A : FACILITY_OPTIONS).map(i => (
                                     <div key={i} className={`flex flex-col ${(i === '太陽能光電發電設備' || i === '加壓受水設備') && data?.q9_items?.includes(i) ? 'col-span-1 md:col-span-2' : ''}`}>
                                         <div className="h-full">
-                                            <CheckBox checked={data?.q9_items?.includes(i) || false} label={i} onClick={() => toggleArr('q9_items', i)} />
+                                            <CheckBox checked={data?.q9_items?.includes(i) || false} label={i} onClick={() => { if (i === '太陽能光電發電設備' && data?.q9_items?.includes(i)) update('q9_solar_maintenance', ''); if (i === '加壓受水設備' && data?.q9_items?.includes(i)) { update('q9_water_booster_items', []); update('q9_water_booster_maintenance', ''); } toggleArr('q9_items', i); }} />
                                         </div>
                                         {i === '太陽能光電發電設備' && data?.q9_items?.includes(i) && (
                                             <div className="mt-4 animate-in fade-in slide-in-from-top-2">
@@ -971,7 +1022,7 @@ export const Step3 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                                     </div>
                                 ))}
                             </div>
-                             <div className="space-y-3 text-left"><CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => update('q9_hasOther', !data.q9_hasOther)} />{data?.q9_hasOther && <SubItemHighlight><DetailInput value={data.q9_otherDesc || ''} onChange={v => update('q9_otherDesc', v)} placeholder={isGroupA ? "說明現況" : "如：發電機"} /></SubItemHighlight>}</div>
+                             <div className="space-y-3 text-left"><CheckBox checked={data?.q9_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q9_hasOther: !prev.q9_hasOther, q9_otherDesc: prev.q9_hasOther ? '' : prev.q9_otherDesc }))} />{data?.q9_hasOther && <SubItemHighlight><DetailInput value={data.q9_otherDesc || ''} onChange={v => update('q9_otherDesc', v)} placeholder={isGroupA ? "說明現況" : "如：發電機"} /></SubItemHighlight>}</div>
                         </div>
                      </BooleanReveal>
                 </SurveySection>

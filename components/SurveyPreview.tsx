@@ -1,6 +1,7 @@
 import { SurveyData, SurveyType } from "../types";
 import { formatDateROC } from "./ROCDatePicker";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useInterface } from "./InterfaceContext";
 import {
   PreviewResult,
   CheckRow,
@@ -9,21 +10,25 @@ import {
   Watermark,
   ParkingContent,
   Footer,
+  PreviewBlock,
 } from "./preview/PreviewShared";
 import {
   HousePrintPage1,
   HousePrintPage2,
   HousePrintPage3,
+  getHousePreviewBlocks,
 } from "./preview/HousePreviewPages";
 import {
   LandPrintPage1,
   LandPrintPage2,
   LandPrintPage3,
+  getLandPreviewBlocks,
 } from "./preview/LandPreviewPages";
 import {
   FactoryPrintPage1,
   FactoryPrintPage2,
   FactoryPrintPage3,
+  getFactoryPreviewBlocks,
 } from "./preview/FactoryPreviewPages";
 
 interface SurveyPreviewProps {
@@ -36,8 +41,263 @@ interface SurveyPreviewProps {
   page1Ref: React.RefObject<HTMLDivElement | null>;
   page2Ref: React.RefObject<HTMLDivElement | null>;
   page3Ref?: React.RefObject<HTMLDivElement | null>;
+  dynamicPageRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
   isMobile?: boolean;
 }
+
+const CHINESE_PAGE_LABELS = [
+  "第一頁",
+  "第二頁",
+  "第三頁",
+  "第四頁",
+  "第五頁",
+  "第六頁",
+  "第七頁",
+  "第八頁",
+];
+
+const getPageLabel = (pageNum: number) =>
+  CHINESE_PAGE_LABELS[pageNum - 1] || `第${pageNum}頁`;
+
+const getParkingPreviewBlocks = (
+  data: SurveyData,
+  parkingSummary: any,
+  activeMode: "a4" | "mobile",
+): PreviewBlock[] => [
+  {
+    id: "parking-q1",
+    node: (
+      <>
+        <SectionHeader title="1. 車位資訊" />
+        <CheckRow
+          checked={
+            !!data?.q10_noParking ||
+            (data?.q10_parkTypes && data.q10_parkTypes.length > 0) ||
+            !!data?.q10_hasParkTypeOther
+          }
+        >
+          <span className="font-bold mr-2">車位資訊</span>
+          <ParkingContent
+            data={data}
+            parkingSummary={parkingSummary}
+            activeMode={activeMode}
+          />
+        </CheckRow>
+        <CheckRow
+          checked={
+            !!data?.q10_noParking ||
+            data?.q11_hasIssue === "否" ||
+            data?.q11_hasIssue === "無異常"
+          }
+        >
+          <span className="font-bold mr-2">車位使用現況</span>
+          <PreviewResult
+            checked={
+              data?.q11_hasIssue === "否" || data?.q11_hasIssue === "無異常"
+            }
+            label="無異常"
+          />
+          <PreviewResult
+            checked={
+              data?.q11_hasIssue === "是" || data?.q11_hasIssue === "有異常"
+            }
+            label={
+              [
+                ...(data?.q11_items || []),
+                data?.q11_hasOther
+                  ? data.q11_other
+                    ? `其他未列項目：${data.q11_other}`
+                    : "其他未列項目"
+                  : "",
+              ]
+                .filter(Boolean)
+                .join("、") || "有異常"
+            }
+            isWarning={true}
+          />
+        </CheckRow>
+        <CheckRow checked={!!data?.q10_noParking || data?.q12_hasNote === "否"}>
+          <span className="font-bold mr-2">車位與車道其他備註</span>
+          <PreviewResult checked={data?.q12_hasNote === "否"} label="無" />
+          <PreviewResult
+            checked={data?.q12_hasNote === "是"}
+            label={data?.q12_note || "有"}
+            isWarning={true}
+          />
+        </CheckRow>
+      </>
+    ),
+  },
+  {
+    id: "parking-q2",
+    node: (
+      <>
+        <SectionHeader title="2. 重要環境設施與常見環境抗性設施" />
+        <CheckRow checked={!!data?.q16_noFacilities}>
+          <span className="font-bold mr-2 shrink-0">重要環境設施</span>
+          {data?.q16_noFacilities && (
+            <span className="font-medium">無重要環境設施</span>
+          )}
+          {!data?.q16_noFacilities &&
+            data?.q16_items &&
+            data.q16_items.length > 0 && (
+              <span className="font-medium mr-2">
+                {data.q16_items.join("、")}
+              </span>
+            )}
+          {data?.q16_hasOther && (
+            <PreviewResult
+              checked={!!data?.q16_hasOther}
+              label={
+                data.q16_other
+                  ? `其他未列項目：${data.q16_other}`
+                  : "其他未列項目"
+              }
+              isWarning={true}
+            />
+          )}
+        </CheckRow>
+        <CheckRow checked={!!data?.q16_2_noFacilities}>
+          <span className="font-bold mr-2 shrink-0">常見環境抗性設施</span>
+          {data?.q16_2_noFacilities && (
+            <span className="font-medium">無常見環境抗性設施</span>
+          )}
+          {!data?.q16_2_noFacilities &&
+            data?.q16_2_items &&
+            data.q16_2_items.length > 0 && (
+              <span className="font-medium inline-block mr-2">
+                {data.q16_2_items.join("、")}
+              </span>
+            )}
+          {data?.q16_2_hasOther && (
+            <PreviewResult
+              checked={!!data?.q16_2_hasOther}
+              label={
+                data.q16_2_other
+                  ? `其他未列項目：${data.q16_2_other}`
+                  : "其他未列項目"
+              }
+              isWarning={true}
+            />
+          )}
+        </CheckRow>
+      </>
+    ),
+  },
+  {
+    id: "parking-q3",
+    node: (
+      <>
+        <SectionHeader title="3. 本案或本社區須注意的事項" />
+        <CheckRow checked={data?.q17_issue === "否"}>
+          <span className="font-bold mr-2">其他應注意事項</span>
+          <PreviewResult checked={data?.q17_issue === "否"} label="無" />
+          <PreviewResult
+            checked={data?.q17_issue === "是"}
+            label={data?.q17_desc || "有"}
+            isWarning={true}
+          />
+          <PreviewResult
+            checked={data?.q17_issue === "待查證"}
+            label={data?.q17_desc ? `待查證：${data.q17_desc}` : "待查證"}
+            isWarning={true}
+          />
+        </CheckRow>
+      </>
+    ),
+  },
+];
+
+interface ScaledA4PageProps {
+  children?: React.ReactNode;
+  pageNum: number;
+  previewPage: number;
+  previewScale: number;
+  exporting: boolean;
+  setPageRef: (el: HTMLDivElement | null) => void;
+}
+
+const ScaledA4Page: React.FC<ScaledA4PageProps> = ({
+  children,
+  pageNum,
+  previewPage,
+  previewScale,
+  exporting,
+  setPageRef,
+}) => {
+  const localRef = useRef<HTMLDivElement | null>(null);
+  const [actualHeight, setActualHeight] = useState<number | null>(null);
+
+  const attachRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      localRef.current = el;
+      setPageRef(el);
+    },
+    [setPageRef],
+  );
+
+  useEffect(() => {
+    const el = localRef.current;
+    if (!el || exporting) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target instanceof HTMLElement && entry.target.offsetHeight > 0) {
+          setActualHeight(entry.target.offsetHeight);
+        }
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [exporting]);
+
+  const computedHeight =
+    actualHeight !== null && !exporting
+      ? `${actualHeight * previewScale}px`
+      : exporting
+        ? "auto"
+        : `${297 * previewScale}mm`;
+
+  return (
+    <div
+      style={{
+        width: exporting ? "210mm" : `${210 * previewScale}mm`,
+        height: computedHeight,
+        flexShrink: 0,
+        boxShadow: exporting
+          ? "none"
+          : "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        backgroundColor: "white",
+        marginBottom: exporting ? 0 : "2rem",
+        overflow: exporting ? "visible" : "hidden",
+        display: previewPage === pageNum || exporting ? "block" : "none",
+        pageBreakAfter: exporting ? "always" : "auto",
+      }}
+      className={
+        exporting
+          ? "print-page transition-none"
+          : "transition-all duration-300 transform-gpu"
+      }
+    >
+      <div
+        ref={attachRef}
+        className="a4-page relative"
+        style={{
+          transform: `scale(${exporting ? 1 : previewScale})`,
+          transformOrigin: "top left",
+          width: "210mm",
+          minHeight: "297mm",
+          margin: 0,
+          padding: "10mm 10mm", // Use 10mm padding consistently to match export
+        }}
+      >
+        <Watermark />
+        <div className="relative z-10 flex-grow flex flex-col">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- MAIN PREVIEW COMPONENT ---
 
@@ -52,13 +312,13 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
     page1Ref,
     page2Ref,
     page3Ref,
+    dynamicPageRefs,
     isMobile = false,
   }) => {
-    const isStandard = true;
-    // Removed viewMode state as we are defaulting to A4 view for consistency
+    const isStandard = useInterface() === "standard";
     const activeMode = "a4";
 
-    // Detect if we need page 3 (All factory types now use 3 pages)
+    // Detect if we need page 3 in Standard Mode
     const hasPage3 = type === "factory" || type === "house" || type === "land";
 
     const parkingSummary = useMemo(() => {
@@ -104,165 +364,440 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
       };
     }, [data]);
 
-    const PageSwitcher = () =>
-      type !== "parking" ? (
-        <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2 border border-slate-200 no-print w-full dark:bg-slate-800 dark:border-slate-700 overflow-x-auto">
-          <button
-            onClick={() => setPreviewPage(1)}
-            className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 1 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
-          >
-            第一頁
-          </button>
-          <button
-            onClick={() => setPreviewPage(2)}
-            className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 2 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
-          >
-            第二頁
-          </button>
-          {hasPage3 && (
-            <button
-              onClick={() => setPreviewPage(3)}
-              className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 3 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+    // Friendly Mode atomic blocks
+    const friendlyBlocks = useMemo<PreviewBlock[]>(() => {
+      if (isStandard) return [];
+      if (type === "house") return getHousePreviewBlocks(data, parkingSummary, activeMode);
+      if (type === "factory") return getFactoryPreviewBlocks(data, parkingSummary, activeMode);
+      if (type === "land") return getLandPreviewBlocks(data);
+      return getParkingPreviewBlocks(data, parkingSummary, activeMode);
+    }, [isStandard, type, data, parkingSummary]);
+
+    // Measurement refs for Friendly Mode Smart Auto-Pagination
+    const budgetRulerRef = useRef<HTMLDivElement | null>(null);
+    const p1ChromeRef = useRef<HTMLDivElement | null>(null);
+    const pOtherChromeRef = useRef<HTMLDivElement | null>(null);
+    const footerNormalRef = useRef<HTMLDivElement | null>(null);
+    const footerSigRef = useRef<HTMLDivElement | null>(null);
+    const measureBlockRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    const [pageGroups, setPageGroups] = useState<number[][]>(() =>
+      friendlyBlocks.length > 0 ? [friendlyBlocks.map((_, i) => i)] : [[0]],
+    );
+
+    // Clear dynamicPageRefs when in Standard Mode
+    useEffect(() => {
+      if (isStandard && dynamicPageRefs) {
+        dynamicPageRefs.current = [];
+      }
+    }, [isStandard, dynamicPageRefs]);
+
+    const recalculatePages = useCallback(() => {
+      if (isStandard || friendlyBlocks.length === 0) return;
+      const rulerEl = budgetRulerRef.current;
+      const p1El = p1ChromeRef.current;
+      const pOtherEl = pOtherChromeRef.current;
+      const fNormalEl = footerNormalRef.current;
+      const fSigEl = footerSigRef.current;
+      if (!rulerEl || !p1El || !pOtherEl || !fNormalEl || !fSigEl) return;
+
+      const pageBudget = rulerEl.getBoundingClientRect().height;
+      // If ancestor is hidden (e.g. mobile form tab), defer until visible
+      if (pageBudget <= 50) return;
+
+      const p1ChromeH = p1El.getBoundingClientRect().height;
+      const pOtherChromeH = pOtherEl.getBoundingClientRect().height;
+      const footerNormalH = fNormalEl.getBoundingClientRect().height;
+      const footerSigH = fSigEl.getBoundingClientRect().height;
+
+      // Safety margins account for table border (4px) + bottom margin (16px/8px) + minor subpixel rounding
+      const availPage1 = Math.max(120, pageBudget - p1ChromeH - footerNormalH - 28);
+      const availOther = Math.max(120, pageBudget - pOtherChromeH - footerNormalH - 20);
+
+      const blockHeights = friendlyBlocks.map((_, idx) => {
+        const el = measureBlockRefs.current[idx];
+        // Add +4px to account for SectionHeader's mt-1 inside the real table container
+        return el ? el.getBoundingClientRect().height + 4 : 0;
+      });
+
+      const groups: number[][] = [];
+      let currentGroup: number[] = [];
+      let currentHeight = 0;
+
+      for (let i = 0; i < friendlyBlocks.length; i++) {
+        const h = blockHeights[i];
+        const pageIdx = groups.length;
+        const avail = pageIdx === 0 ? availPage1 : availOther;
+        if (currentGroup.length > 0 && currentHeight + h > avail) {
+          groups.push(currentGroup);
+          currentGroup = [i];
+          currentHeight = h;
+        } else {
+          currentGroup.push(i);
+          currentHeight += h;
+        }
+      }
+      if (currentGroup.length > 0) {
+        groups.push(currentGroup);
+      }
+
+      // Ensure the last page (which renders the taller Signature Footer) does not overflow A4 height
+      while (groups.length > 0) {
+        const lastIdx = groups.length - 1;
+        const lastAvail = Math.max(
+          120,
+          (lastIdx === 0
+            ? pageBudget - p1ChromeH - 28
+            : pageBudget - pOtherChromeH - 20) - footerSigH,
+        );
+        const lastGroup = groups[lastIdx];
+        let lastSum = lastGroup.reduce((acc, idx) => acc + blockHeights[idx], 0);
+        if (lastGroup.length <= 1 || lastSum <= lastAvail) break;
+
+        const overflow: number[] = [];
+        while (lastGroup.length > 1 && lastSum > lastAvail) {
+          const popped = lastGroup.pop()!;
+          overflow.unshift(popped);
+          lastSum -= blockHeights[popped];
+        }
+        if (overflow.length > 0) {
+          groups.push(overflow);
+        } else {
+          break;
+        }
+      }
+
+      setPageGroups((prev) => {
+        if (
+          prev.length === groups.length &&
+          prev.every(
+            (g, idx) =>
+              g.length === groups[idx].length &&
+              g.every((val, j) => val === groups[idx][j]),
+          )
+        ) {
+          return prev;
+        }
+        return groups;
+      });
+    }, [isStandard, friendlyBlocks]);
+
+    useLayoutEffect(() => {
+      if (isStandard) return;
+      measureBlockRefs.current.length = friendlyBlocks.length;
+      recalculatePages();
+      let rafId = 0;
+      if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+        rafId = window.requestAnimationFrame(() => {
+          recalculatePages();
+        });
+      }
+      return () => {
+        if (rafId && typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function") {
+          window.cancelAnimationFrame(rafId);
+        }
+      };
+    }, [isStandard, friendlyBlocks, data, type, recalculatePages]);
+
+    // Re-measure when web fonts finish loading, window resizes, or preview container becomes visible
+    useEffect(() => {
+      if (isStandard) return;
+      let cancelled = false;
+      if (typeof document !== "undefined" && (document as any).fonts?.ready) {
+        (document as any).fonts.ready.then(() => {
+          if (!cancelled) recalculatePages();
+        });
+      }
+      const handleResize = () => recalculatePages();
+      window.addEventListener("resize", handleResize);
+
+      let ro: ResizeObserver | null = null;
+      if (budgetRulerRef.current && typeof ResizeObserver !== "undefined") {
+        ro = new ResizeObserver(() => {
+          recalculatePages();
+        });
+        ro.observe(budgetRulerRef.current);
+      }
+
+      return () => {
+        cancelled = true;
+        window.removeEventListener("resize", handleResize);
+        if (ro) ro.disconnect();
+      };
+    }, [isStandard, recalculatePages]);
+
+    const effectivePageGroups = useMemo(() => {
+      if (isStandard || friendlyBlocks.length === 0) return pageGroups;
+      const covered = new Set<number>();
+      let totalCount = 0;
+      let valid = pageGroups.length > 0;
+      for (const group of pageGroups) {
+        if (group.length === 0) {
+          valid = false;
+          break;
+        }
+        for (const idx of group) {
+          if (idx < 0 || idx >= friendlyBlocks.length || covered.has(idx)) {
+            valid = false;
+            break;
+          }
+          covered.add(idx);
+          totalCount++;
+        }
+        if (!valid) break;
+      }
+      if (valid && totalCount === friendlyBlocks.length && covered.size === friendlyBlocks.length) {
+        return pageGroups;
+      }
+      return [friendlyBlocks.map((_, i) => i)];
+    }, [isStandard, friendlyBlocks, pageGroups]);
+
+    // Trim dynamicPageRefs array length to match current Friendly Mode page count
+    useEffect(() => {
+      if (!isStandard && dynamicPageRefs) {
+        dynamicPageRefs.current.length = effectivePageGroups.length;
+      }
+    }, [isStandard, effectivePageGroups.length, dynamicPageRefs]);
+
+    // Clamp previewPage if page count decreases
+    const totalPages = isStandard
+      ? type === "parking"
+        ? 1
+        : hasPage3
+          ? 3
+          : 2
+      : Math.max(1, effectivePageGroups.length);
+
+    useEffect(() => {
+      if (previewPage > totalPages) {
+        setPreviewPage(totalPages);
+      }
+    }, [previewPage, totalPages, setPreviewPage]);
+
+    // Keep ref setters stable for Standard Mode
+    const setPage1Ref = useCallback(
+      (el: HTMLDivElement | null) => {
+        (page1Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      },
+      [page1Ref],
+    );
+    const setPage2Ref = useCallback(
+      (el: HTMLDivElement | null) => {
+        (page2Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      },
+      [page2Ref],
+    );
+    const setPage3Ref = useCallback(
+      (el: HTMLDivElement | null) => {
+        if (page3Ref) {
+          (page3Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        }
+      },
+      [page3Ref],
+    );
+
+    const renderPageHeader = (pageNum: number, showVersion: boolean) => (
+      <div
+        className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? "mb-4 mt-4" : "mb-3 mt-3"} relative w-full shrink-0`}
+      >
+        <h1
+          className={`font-bold tracking-widest text-black ${isStandard ? "leading-tight mb-3 text-[36px]" : "leading-tight mb-2 text-[36px]"}`}
+        >
+          <>
+            幸福家不動產
+            <br />
+            －業務版現況調查表
+          </>
+        </h1>
+        <div
+          className={`${isStandard ? "text-[16px] py-1.5" : "text-[18px] py-1.5"} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}
+        >
+          【{getPageLabel(pageNum)}】{showVersion ? data?.version : ""}
+        </div>
+      </div>
+    );
+
+    const renderMetadataTable = () => (
+      <table
+        className={`excel-table ${isStandard ? "mb-2" : "mb-2"} w-full text-black border-collapse border-2 border-[#009FE3] shrink-0`}
+      >
+        <tbody>
+          <tr className="border-b border-[#7dd3fc]">
+            <td
+              className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
             >
-              第三頁
-            </button>
+              案名
+            </td>
+            <td
+              className={`w-[30%] font-bold text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              {data?.caseName}
+            </td>
+            <td
+              className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-bold py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              {type === "land"
+                ? "坐落"
+                : type === "parking"
+                  ? "位置"
+                  : "地址"}
+            </td>
+            <td
+              colSpan={3}
+              className={`w-[48%] font-bold text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              {data?.address}
+            </td>
+          </tr>
+          <tr className="border-b border-[#7dd3fc]">
+            <td
+              className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              店名
+            </td>
+            <td
+              className={`w-[30%] text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              {data?.storeName}
+            </td>
+            <td
+              className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-bold py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              業務
+            </td>
+            <td
+              className={`w-[18%] font-bold text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              {data?.agentName}
+            </td>
+            <td
+              className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              日期
+            </td>
+            <td
+              className={`w-[20%] text-left font-mono whitespace-nowrap text-black py-1.5 px-2 ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+            >
+              {formatDateROC(data?.fillDate || "")}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+
+    const renderBasicInfoTable = () => (
+      <div
+        className={`${isStandard ? "mb-1" : "mb-1.5"} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden shrink-0`}
+      >
+        <div
+          className={`px-2 ${isStandard ? "py-1 gap-x-2 gap-y-0.5 text-[15px]" : "py-1.5 gap-x-2 gap-y-1 text-[18px]"} flex flex-wrap items-center leading-snug text-black`}
+        >
+          <span
+            className={`font-bold text-black ${isStandard ? "text-[16px]" : "text-[19px]"}`}
+          >
+            {type === "factory" || type === "house" || type === "land"
+              ? "本物件型態與現況："
+              : "本物件現況："}
+          </span>
+          {(type === "factory" || type === "house" || type === "land") && (
+            <PreviewResult
+              checked={!!data?.propertyType}
+              label={data?.propertyType}
+              forceSafe={true}
+              suffix={
+                (data?.propertyType === "其他特殊工業設施" ||
+                  data?.propertyType === "其他" ||
+                  data?.propertyType === "其他未列項目") &&
+                data?.propertyTypeOther
+                  ? `：${data.propertyTypeOther}`
+                  : ""
+              }
+            />
+          )}
+          <PreviewResult checked={data?.access === "可進入"} label="可進入" />
+          {data?.access === "不可進入" && (
+            <>
+              <PreviewResult
+                checked={true}
+                label={
+                  (data?.accessType || []).length > 0 ? "不可進入：" : "不可進入"
+                }
+                isWarning={true}
+              />
+              {(data?.accessType || []).map((opt) => (
+                <PreviewResult
+                  key={opt}
+                  checked={true}
+                  isWarning={true}
+                  label={
+                    opt +
+                    ((opt === "其他" || opt === "其他未列項目") &&
+                    data?.accessOther
+                      ? "："
+                      : "")
+                  }
+                  suffix={
+                    opt === "其他" || opt === "其他未列項目"
+                      ? data.accessOther
+                      : ""
+                  }
+                />
+              ))}
+            </>
           )}
         </div>
-      ) : null;
+      </div>
+    );
 
-    const ScaledA4Wrapper = ({
-      children,
-      pageNum,
-    }: {
-      children?: React.ReactNode;
-      pageNum: number;
-    }) => {
-      const pageRef = (
-        pageNum === 1 ? page1Ref : pageNum === 2 ? page2Ref : page3Ref
-      ) as React.RefObject<HTMLDivElement>;
-      const [actualHeight, setActualHeight] = useState<number | null>(null);
-
-      useEffect(() => {
-        if (!pageRef.current || exporting) return;
-        const ro = new ResizeObserver((entries) => {
-          for (let entry of entries) {
-            if (entry.target instanceof HTMLElement) {
-              setActualHeight(entry.target.offsetHeight);
-            }
-          }
-        });
-        ro.observe(pageRef.current);
-        return () => ro.disconnect();
-      }, [pageRef, exporting]);
-
-      const computedHeight =
-        actualHeight !== null && !exporting
-          ? `${actualHeight * previewScale}px`
-          : exporting
-            ? "auto"
-            : `${297 * previewScale}mm`;
-
-      return (
-        <div
-          style={{
-            width: exporting ? "210mm" : `${210 * previewScale}mm`,
-            height: computedHeight,
-            flexShrink: 0,
-            boxShadow: exporting
-              ? "none"
-              : "0 25px 50px -12px rgb(0 0 0 / 0.25)",
-            backgroundColor: "white",
-            marginBottom: exporting ? 0 : "2rem",
-            overflow: exporting ? "visible" : "hidden",
-            display: previewPage === pageNum || exporting ? "block" : "none",
-            pageBreakAfter: exporting ? "always" : "auto",
-          }}
-          className={
-            exporting
-              ? "print-page transition-none"
-              : "transition-all duration-300 transform-gpu"
-          }
-        >
-          <div
-            ref={pageRef}
-            className="a4-page relative"
-            style={{
-              transform: `scale(${exporting ? 1 : previewScale})`,
-              transformOrigin: "top left",
-              width: "210mm",
-              minHeight: "297mm",
-              margin: 0,
-              padding: "10mm 10mm", // Use 10mm padding consistently to match export
-            }}
-          >
-            <Watermark />
-            <div className="relative z-10 flex-grow flex flex-col">
-              {children}
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    const BasicInfoTable = () => {
-      const isStandard = true;
-      return (
-        <div
-          className={`${isStandard ? "mb-1" : "mb-2"} w-full bg-white border-2 border-gray-300 rounded-lg overflow-hidden shrink-0`}
-        >
-          <div
-            className={`px-2 ${isStandard ? "py-1 gap-x-2 gap-y-0.5" : "py-1.5 gap-x-2 gap-y-1"} flex flex-wrap items-center ${isStandard ? "text-[15px]" : "text-[17px]"} leading-snug text-black`}
-          >
-            <span
-              className={`font-bold text-black ${isStandard ? "text-[16px]" : "text-[18px]"}`}
+    const renderPageSwitcher = () => {
+      if (isStandard) {
+        if (type === "parking") return null;
+        return (
+          <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2 border border-slate-200 no-print w-full dark:bg-slate-800 dark:border-slate-700 overflow-x-auto">
+            <button
+              onClick={() => setPreviewPage(1)}
+              className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 1 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
             >
-              {type === "factory" || type === "house" || type === "land"
-                ? "本物件型態與現況："
-                : "本物件現況："}
-            </span>
-            {(type === "factory" || type === "house" || type === "land") && (
-              <PreviewResult
-                checked={!!data?.propertyType}
-                label={data?.propertyType}
-                forceSafe={true}
-                suffix={
-                  data?.propertyType === "其他特殊工業設施" ||
-                  data?.propertyType === "其他" ||
-                  data?.propertyType === "其他未列項目"
-                    ? `：${data.propertyTypeOther}`
-                    : ""
-                }
-              />
-            )}
-            <PreviewResult checked={data?.access === "可進入"} label="可進入" />
-            {data?.access === "不可進入" && (
-              <>
-                <PreviewResult checked={true} label="不可進入：" isWarning={true} />
-                {(data?.accessType || []).map((opt) => (
-                  <PreviewResult
-                    key={opt}
-                    checked={true}
-                    isWarning={true}
-                    label={
-                      opt +
-                      (opt === "其他" || opt === "其他未列項目" ? "：" : "")
-                    }
-                    suffix={
-                      opt === "其他" || opt === "其他未列項目"
-                        ? data.accessOther
-                        : ""
-                    }
-                  />
-                ))}
-              </>
+              第一頁
+            </button>
+            <button
+              onClick={() => setPreviewPage(2)}
+              className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 2 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+            >
+              第二頁
+            </button>
+            {hasPage3 && (
+              <button
+                onClick={() => setPreviewPage(3)}
+                className={`flex-1 min-w-[80px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] ${previewPage === 3 ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+              >
+                第三頁
+              </button>
             )}
           </div>
+        );
+      }
+
+      if (effectivePageGroups.length <= 1) return null;
+      return (
+        <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2 border border-slate-200 no-print w-full dark:bg-slate-800 dark:border-slate-700 overflow-x-auto">
+          {effectivePageGroups.map((_, idx) => {
+            const pNum = idx + 1;
+            return (
+              <button
+                key={pNum}
+                onClick={() => setPreviewPage(pNum)}
+                className={`flex-1 min-w-[88px] py-4 rounded-xl font-bold text-xl transition-all duration-150 border-b-[5px] active:border-b-0 active:translate-y-[5px] whitespace-nowrap ${previewPage === pNum ? "bg-slate-800 text-white border-slate-950 dark:bg-slate-700 dark:border-slate-900" : "text-slate-500 hover:bg-slate-100 border-transparent bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+              >
+                {getPageLabel(pNum)}
+              </button>
+            );
+          })}
         </div>
       );
     };
 
     // --- RENDER ---
-    // (Mobile view skipped for brevity as logic mostly impacts A4 layout rendering of Water Booster)
 
     return (
       <div className="flex flex-col items-center w-full">
@@ -273,344 +808,240 @@ export const SurveyPreview = React.memo<SurveyPreviewProps>(
                 💡 手機版：可左右拖曳，亦可雙指放大縮小檢視
               </p>
             </div>
-            <PageSwitcher />
+            {renderPageSwitcher()}
           </div>
         ) : (
           <div className="w-full max-w-[210mm] mb-8 no-print">
-            <PageSwitcher />
+            {renderPageSwitcher()}
           </div>
         )}
 
-        <ScaledA4Wrapper pageNum={1}>
-          <div className="flex-grow flex flex-col h-full text-black pb-0">
-            <div
-              className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? "mb-4 mt-4" : "mb-3 mt-3"} relative w-full shrink-0`}
+        {isStandard ? (
+          <>
+            <ScaledA4Page
+              pageNum={1}
+              previewPage={previewPage}
+              previewScale={previewScale}
+              exporting={exporting}
+              setPageRef={setPage1Ref}
             >
-              <h1
-                className={`font-bold tracking-widest text-black ${isStandard ? "leading-tight mb-3 text-[36px]" : "leading-tight mb-2 text-[36px]"}`}
-              >
-                <>
-                  幸福家不動產
-                  <br />
-                  －業務版現況調查表
-                </>
-              </h1>
-              <div
-                className={`${isStandard ? "text-[16px] py-1.5" : "text-[16px] py-1.5"} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}
-              >
-                【第一頁】{data?.version}
+              <div className="flex-grow flex flex-col h-full text-black pb-0">
+                {renderPageHeader(1, true)}
+                {renderMetadataTable()}
+                <div className="bg-[#009FE3] text-white px-4 py-1 text-[16px] mb-1 font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0">
+                  【調查現況】
+                </div>
+
+                {renderBasicInfoTable()}
+
+                <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0">
+                  {type === "house" && <HousePrintPage1 data={data} />}
+                  {type === "land" && <LandPrintPage1 data={data} />}
+                  {type === "factory" && <FactoryPrintPage1 data={data} />}
+                  {type === "parking" && (
+                    <>
+                      <TableHeaderRow />
+                      {getParkingPreviewBlocks(data, parkingSummary, activeMode).map(
+                        (b) => (
+                          <React.Fragment key={b.id}>{b.node}</React.Fragment>
+                        ),
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <Footer
+                  showSignature={type === "parking"}
+                  signatureImage={data.signatureImage}
+                />
               </div>
-            </div>
-            <table
-              className={`excel-table ${isStandard ? "mb-2" : "mb-2"} w-full text-black border-collapse border-2 border-[#009FE3] shrink-0`}
-            >
-              <tbody>
-                <tr className="border-b border-[#7dd3fc]">
-                  <td
-                    className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    案名
-                  </td>
-                  <td
-                    className={`w-[30%] font-bold text-black ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    {data?.caseName}
-                  </td>
-                  <td
-                    className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-bold ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    {type === "land"
-                      ? "坐落"
-                      : type === "parking"
-                        ? "位置"
-                        : "地址"}
-                  </td>
-                  <td
-                    colSpan={3}
-                    className={`w-[48%] font-bold text-black ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    {data?.address}
-                  </td>
-                </tr>
-                <tr className="border-b border-[#7dd3fc]">
-                  <td
-                    className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    店名
-                  </td>
-                  <td
-                    className={`w-[30%] text-black ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    {data?.storeName}
-                  </td>
-                  <td
-                    className={`bg-[#f0f9ff] text-[#0369a1] w-[12%] whitespace-nowrap font-bold ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    業務
-                  </td>
-                  <td
-                    className={`w-[18%] font-bold text-black ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    {data?.agentName}
-                  </td>
-                  <td
-                    className={`bg-[#f0f9ff] text-[#0369a1] w-[10%] whitespace-nowrap font-bold ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    日期
-                  </td>
-                  <td
-                    className={`w-[20%] text-left font-mono whitespace-nowrap text-black ${isStandard ? "py-1.5" : "py-1.5"} px-2 ${isStandard ? "text-[16px]" : "text-[17px]"}`}
-                  >
-                    {formatDateROC(data?.fillDate || "")}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div
-              className={`bg-[#009FE3] text-white px-4 ${isStandard ? "py-1 px-4" : "py-1.5 px-4"} ${isStandard ? "text-[16px]" : "text-[18px]"} font-bold ${isStandard ? "mb-1" : "mb-2"} self-start rounded-r-full shadow-md tracking-wide shrink-0`}
-            >
-              【調查現況】
-            </div>
+            </ScaledA4Page>
 
-            <BasicInfoTable />
-
-            <div
-              className={`${isStandard ? "mb-2" : "mb-4"} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}
-            >
-              {type === "house" && <HousePrintPage1 data={data} />}
-              {type === "land" && <LandPrintPage1 data={data} />}
-              {type === "factory" && <FactoryPrintPage1 data={data} />}
-              {type === "parking" && (
-                <>
-                  <TableHeaderRow />
-                  <SectionHeader title="1. 車位資訊" />
-                  <CheckRow checked={!!data?.q10_noParking}>
-                    <span className="font-bold mr-2">車位資訊</span>
-                    {!data?.q10_noParking && (
-                      <ParkingContent
+            {(type !== "parking" || previewPage === 2) && (
+              <ScaledA4Page
+                pageNum={2}
+                previewPage={previewPage}
+                previewScale={previewScale}
+                exporting={exporting}
+                setPageRef={setPage2Ref}
+              >
+                <div className="flex-grow flex flex-col h-full text-black pb-0">
+                  {renderPageHeader(2, false)}
+                  <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0">
+                    <TableHeaderRow />
+                    {type === "house" && (
+                      <HousePrintPage2
                         data={data}
                         parkingSummary={parkingSummary}
                         activeMode={activeMode}
                       />
                     )}
-                  </CheckRow>
-                  <CheckRow
-                    checked={
-                      !data?.q10_noParking &&
-                      (data?.q11_hasIssue === "否" ||
-                        data?.q11_hasIssue === "無異常")
-                    }
-                  >
-                    <span className="font-bold mr-2">車位使用現況</span>
-                    <PreviewResult
-                      checked={
-                        data?.q11_hasIssue === "是" ||
-                        data?.q11_hasIssue === "有異常"
-                      }
-                      label={
-                        [
-                          ...(data?.q11_items || []),
-                          data?.q11_hasOther ? `其他：${data.q11_other}` : "",
-                        ]
-                          .filter(Boolean)
-                          .join("、")
-                      }
-                      isWarning={true}
-                    />
-                  </CheckRow>
-                  <CheckRow
-                    checked={!data?.q10_noParking && data?.q12_hasNote === "否"}
-                  >
-                    <span className="font-bold mr-2">車位與車道其他備註</span>
-                    <PreviewResult
-                      checked={data?.q12_hasNote === "是"}
-                      label={data?.q12_note || ""}
-                      isWarning={true}
-                    />
-                  </CheckRow>
-                  <SectionHeader title="2. 重要環境設施與常見環境抗性設施" />
-                  <CheckRow checked={!!data?.q16_noFacilities}>
-                    <span className="font-bold mr-2 shrink-0">
-                      重要環境設施
-                    </span>
-                    {data?.q16_noFacilities && (
-                      <span className="font-medium">無重要環境設施</span>
-                    )}
-                    {!data?.q16_noFacilities &&
-                      data?.q16_items &&
-                      data.q16_items.length > 0 && (
-                        <span className="font-medium mr-2">
-                          {data.q16_items.join("、")}
-                        </span>
-                      )}
-                    {data?.q16_hasOther && (
-                      <PreviewResult
-                        checked={!!(data?.q16_hasOther && data?.q16_other)}
-                        label={data.q16_other || ""}
-                        isWarning={true}
+                    {type === "land" && <LandPrintPage2 data={data} />}
+                    {type === "factory" && (
+                      <FactoryPrintPage2
+                        data={data}
+                        parkingSummary={parkingSummary}
+                        activeMode={activeMode}
                       />
                     )}
-                  </CheckRow>
-                  <CheckRow checked={!!data?.q16_2_noFacilities}>
-                    <span className="font-bold mr-2 shrink-0">
-                      常見環境抗性設施
-                    </span>
-                    {data?.q16_2_noFacilities && (
-                      <span className="font-medium">無常見環境抗性設施</span>
-                    )}
-                    {!data?.q16_2_noFacilities &&
-                      data?.q16_2_items &&
-                      data.q16_2_items.length > 0 && (
-                        <span className="font-medium inline-block mr-2">
-                          {data.q16_2_items.join("、")}
-                        </span>
-                      )}
-                    {data?.q16_2_hasOther && (
-                      <PreviewResult
-                        checked={!!(data?.q16_2_hasOther && data?.q16_2_other)}
-                        label={data.q16_2_other || ""}
-                        isWarning={true}
+                  </div>
+                  <Footer
+                    showSignature={false}
+                    signatureImage={data.signatureImage}
+                  />
+                </div>
+              </ScaledA4Page>
+            )}
+
+            {hasPage3 && (previewPage === 3 || exporting) && (
+              <ScaledA4Page
+                pageNum={3}
+                previewPage={previewPage}
+                previewScale={previewScale}
+                exporting={exporting}
+                setPageRef={setPage3Ref}
+              >
+                <div className="flex-grow flex flex-col h-full text-black pb-0">
+                  {renderPageHeader(3, false)}
+                  <div className="mb-2 w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0">
+                    <TableHeaderRow />
+                    {type === "factory" && (
+                      <FactoryPrintPage3
+                        data={data}
+                        parkingSummary={parkingSummary}
+                        activeMode={activeMode}
                       />
                     )}
-                  </CheckRow>
-                  <SectionHeader title="3. 本案或本社區須注意的事項" />
-                  <CheckRow
-                    checked={
-                      data?.q17_homicide === "否" || data?.q17_homicide === "無"
-                    }
+                    {type === "house" && <HousePrintPage3 data={data} />}
+                    {type === "land" && <LandPrintPage3 data={data} />}
+                  </div>
+                  <Footer
+                    showSignature={true}
+                    signatureImage={data.signatureImage}
+                  />
+                </div>
+              </ScaledA4Page>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Hidden Off-Screen Measurement Stage for Friendly Mode Smart Auto-Pagination */}
+            <div
+              aria-hidden="true"
+              className="no-print"
+              style={{
+                position: "fixed",
+                left: "-99999px",
+                top: 0,
+                width: "210mm",
+                padding: "10mm 10mm",
+                boxSizing: "border-box",
+                visibility: "hidden",
+                pointerEvents: "none",
+                zIndex: -1,
+              }}
+            >
+              <div
+                ref={budgetRulerRef}
+                style={{
+                  height: "277mm",
+                  width: "1px",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
+              />
+              <div ref={p1ChromeRef} className="w-full flex flex-col text-black">
+                {renderPageHeader(1, true)}
+                {renderMetadataTable()}
+                <div className="bg-[#009FE3] text-white px-4 py-1.5 text-[19px] mb-1.5 font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0">
+                  【調查現況】
+                </div>
+                {renderBasicInfoTable()}
+                <div className="w-full flex flex-col rounded-t-xl border-x-2 border-t-2 border-slate-200 bg-white">
+                  <TableHeaderRow />
+                </div>
+              </div>
+              <div ref={pOtherChromeRef} className="w-full flex flex-col text-black">
+                {renderPageHeader(2, false)}
+                <div className="w-full flex flex-col rounded-t-xl border-x-2 border-t-2 border-slate-200 bg-white">
+                  <TableHeaderRow />
+                </div>
+              </div>
+              <div ref={footerNormalRef} className="w-full">
+                <Footer showSignature={false} signatureImage={data.signatureImage} />
+              </div>
+              <div ref={footerSigRef} className="w-full">
+                <Footer showSignature={true} signatureImage={data.signatureImage} />
+              </div>
+              <div className="w-full flex flex-col">
+                {friendlyBlocks.map((block, idx) => (
+                  <div
+                    key={block.id}
+                    ref={(el) => {
+                      measureBlockRefs.current[idx] = el;
+                    }}
+                    className="w-full flex flex-col border-x-2 border-slate-200 bg-white text-black"
                   >
-                    <span className="font-bold mr-2">
-                      是否曾發生非自然死亡情事
-                    </span>
-                    <PreviewResult
-                      checked={
-                        data?.q17_homicide === "否" ||
-                        data?.q17_homicide === "無"
-                      }
-                      label="無"
-                    />
-                    <PreviewResult
-                      checked={
-                        data?.q17_homicide === "是" ||
-                        data?.q17_homicide === "有"
-                      }
-                      label={`有：${data?.q17_homicide_desc || ""}`}
-                      isWarning={true}
-                    />
-                    <PreviewResult
-                      checked={data?.q17_homicide === "待查證"}
-                      label={`待查證：${data?.q17_homicide_desc || ""}`}
-                      isWarning={true}
-                    />
-                  </CheckRow>
-                  <CheckRow checked={data?.q17_issue === "否"}>
-                    <span className="font-bold mr-2">其他應注意事項</span>
-                    <PreviewResult
-                      checked={data?.q17_issue === "是"}
-                      label={data?.q17_desc || ""}
-                      isWarning={true}
-                    />
-                    <PreviewResult
-                      checked={data?.q17_issue === "待查證"}
-                      label={`待查證：${data?.q17_desc || ""}`}
-                      isWarning={true}
-                    />
-                  </CheckRow>
-                </>
-              )}
+                    {block.node}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <Footer
-              showSignature={type === "parking"}
-              signatureImage={data.signatureImage}
-            />
-          </div>
-        </ScaledA4Wrapper>
+            {/* Dynamically Paginated Friendly Mode A4 Pages */}
+            {effectivePageGroups.map((blockIndices, pageIdx) => {
+              const pNum = pageIdx + 1;
+              const isFirst = pageIdx === 0;
+              const isLast = pageIdx === effectivePageGroups.length - 1;
+              const validBlocks = blockIndices
+                .map((bIdx) => friendlyBlocks[bIdx])
+                .filter((b): b is PreviewBlock => !!b);
 
-        {(type !== "parking" || previewPage === 2) && (
-          <ScaledA4Wrapper pageNum={2}>
-            <div className="flex-grow flex flex-col h-full text-black pb-0">
-              <div
-                className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? "mb-4 mt-4" : "mb-3 mt-3"} relative w-full shrink-0`}
-              >
-                <h1
-                  className={`font-bold tracking-widest text-black ${isStandard ? "leading-tight mb-3 text-[36px]" : "leading-tight mb-2 text-[36px]"}`}
+              return (
+                <ScaledA4Page
+                  key={`friendly-page-${pNum}`}
+                  pageNum={pNum}
+                  previewPage={previewPage}
+                  previewScale={previewScale}
+                  exporting={exporting}
+                  setPageRef={(el) => {
+                    if (dynamicPageRefs) {
+                      dynamicPageRefs.current[pageIdx] = el;
+                    }
+                    if (isFirst) {
+                      (page1Ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+                    }
+                  }}
                 >
-                  <>
-                    幸福家不動產
-                    <br />
-                    －業務版現況調查表
-                  </>
-                </h1>
-                <div
-                  className={`${isStandard ? "text-[16px] py-1.5" : "text-[16px] py-1.5"} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}
-                >
-                  【第二頁】
-                </div>
-              </div>
-              <div
-                className={`${isStandard ? "mb-2" : "mb-2"} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}
-              >
-                <TableHeaderRow />
-                {type === "house" && (
-                  <HousePrintPage2
-                    data={data}
-                    parkingSummary={parkingSummary}
-                    activeMode={activeMode}
-                  />
-                )}
-                {type === "land" && <LandPrintPage2 data={data} />}
-                {type === "factory" && (
-                  <FactoryPrintPage2
-                    data={data}
-                    parkingSummary={parkingSummary}
-                    activeMode={activeMode}
-                  />
-                )}
-              </div>
-              <Footer
-                showSignature={false}
-                signatureImage={data.signatureImage}
-              />
-            </div>
-          </ScaledA4Wrapper>
-        )}
-
-        {hasPage3 && (previewPage === 3 || exporting) && (
-          <ScaledA4Wrapper pageNum={3}>
-            <div className="flex-grow flex flex-col h-full text-black pb-0">
-              <div
-                className={`flex justify-between items-end border-b-[5px] border-[#009FE3] pb-0 ${isStandard ? "mb-4 mt-4" : "mb-3 mt-3"} relative w-full shrink-0`}
-              >
-                <h1
-                  className={`font-bold tracking-widest text-black ${isStandard ? "leading-tight mb-3 text-[36px]" : "leading-tight mb-2 text-[36px]"}`}
-                >
-                  <>
-                    幸福家不動產
-                    <br />
-                    －業務版現況調查表
-                  </>
-                </h1>
-                <div
-                  className={`${isStandard ? "text-[16px] py-1.5" : "text-[16px] py-1.5"} font-bold text-white bg-[#009FE3] px-4 rounded-t-lg translate-y-[5px]`}
-                >
-                  【第三頁】
-                </div>
-              </div>
-              <div
-                className={`${isStandard ? "mb-2" : "mb-2"} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}
-              >
-                <TableHeaderRow />
-                {type === "factory" && <FactoryPrintPage3 data={data} />}
-                {type === "house" && <HousePrintPage3 data={data} />}
-                {type === "land" && <LandPrintPage3 data={data} />}
-              </div>
-              <Footer
-                showSignature={true}
-                signatureImage={data.signatureImage}
-              />
-            </div>
-          </ScaledA4Wrapper>
+                  <div className="flex-grow flex flex-col h-full text-black pb-0">
+                    {renderPageHeader(pNum, isFirst)}
+                    {isFirst && (
+                      <>
+                        {renderMetadataTable()}
+                        <div className="bg-[#009FE3] text-white px-4 py-1.5 text-[19px] mb-1.5 font-bold self-start rounded-r-full shadow-md tracking-wide shrink-0">
+                          【調查現況】
+                        </div>
+                        {renderBasicInfoTable()}
+                      </>
+                    )}
+                    <div
+                      className={`${isFirst ? "mb-4" : "mb-2"} w-full text-black flex flex-col rounded-xl border-2 border-slate-200 shadow-sm bg-white overflow-hidden shrink-0`}
+                    >
+                      <TableHeaderRow />
+                      {validBlocks.map((block) => (
+                        <React.Fragment key={block.id}>{block.node}</React.Fragment>
+                      ))}
+                    </div>
+                    <Footer
+                      showSignature={isLast}
+                      signatureImage={data.signatureImage}
+                    />
+                  </div>
+                </ScaledA4Page>
+              );
+            })}
+          </>
         )}
       </div>
     );

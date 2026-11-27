@@ -84,7 +84,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const { user } = useAuth();
     const mode = useInterface();
     const isStandard = mode === 'standard';
-    const [data, setData] = useState<SurveyData>(INITIAL_STATE);
+    const [data, setData] = useState<SurveyData>(() => JSON.parse(JSON.stringify(INITIAL_STATE)));
     const [activeStep, setActiveStep] = useState(1);
     const [exporting, setExporting] = useState(false);
     const [mobileTab, setMobileTab] = useState<MobileTab>('edit');
@@ -120,11 +120,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     const page1Ref = useRef<HTMLDivElement>(null);
     const page2Ref = useRef<HTMLDivElement>(null);
     const page3Ref = useRef<HTMLDivElement>(null); // Added Page 3 Ref
+    const dynamicPageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const formScrollRef = useRef<HTMLDivElement>(null);
     const previewWrapperRef = useRef<HTMLDivElement>(null);
     const exportActionsRef = useRef<HTMLDivElement>(null);
     const exportHighlightTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dataRef = useRef(data);
+    const lastSavedSnapshotRef = useRef<SurveyData>(JSON.parse(JSON.stringify(INITIAL_STATE)));
     const userRef = useRef(user);
     const activeCaseIdRef = useRef<string | null>(activeCaseId);
     const isJumpingToError = useRef(false);
@@ -233,22 +235,42 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         };
         if (parkingLogic.isNoParking) {
             if (shouldUpdate('q10_parkTypes', [])) updates.q10_parkTypes = [];
+            if (shouldUpdate('q10_hasParkTypeOther', false)) updates.q10_hasParkTypeOther = false;
+            if (shouldUpdate('q10_parkTypeOther', '')) updates.q10_parkTypeOther = '';
+            if (shouldUpdate('q10_rampMechLoc', '')) updates.q10_rampMechLoc = '';
+            if (shouldUpdate('q10_liftMechLoc', '')) updates.q10_liftMechLoc = '';
             if (shouldUpdate('q10_parkingNumberType', '')) updates.q10_parkingNumberType = '';
             if (shouldUpdate('q10_parkingNumberVal', '')) updates.q10_parkingNumberVal = '';
             if (shouldUpdate('q10_carUsage', [])) updates.q10_carUsage = [];
+            if (shouldUpdate('q10_carLotteryMonth', '')) updates.q10_carLotteryMonth = '';
+            if (shouldUpdate('q10_hasCarUsageOther', false)) updates.q10_hasCarUsageOther = false;
+            if (shouldUpdate('q10_carUsageOther', '')) updates.q10_carUsageOther = '';
+            if (shouldUpdate('q10_measureType', '')) updates.q10_measureType = '';
             if (shouldUpdate('q10_dimL', '')) updates.q10_dimL = ''; 
             if (shouldUpdate('q10_dimW', '')) updates.q10_dimW = ''; 
             if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
             if (shouldUpdate('q10_mechWeight', '')) updates.q10_mechWeight = '';
             if (shouldUpdate('q10_entryHeight', '')) updates.q10_entryHeight = '';
             if (shouldUpdate('q10_entryHeight_desc', '')) updates.q10_entryHeight_desc = '';
+            if (shouldUpdate('q10_laneSection', '')) updates.q10_laneSection = '';
+            if (shouldUpdate('q10_laneSubSection', '')) updates.q10_laneSubSection = '';
+            if (shouldUpdate('q10_laneNumber', '')) updates.q10_laneNumber = '';
             if (shouldUpdate('q10_charging', '')) updates.q10_charging = '';
-            if (shouldUpdate('q11_hasIssue', '否')) updates.q11_hasIssue = '否';
-            if (shouldUpdate('q12_hasNote', '否')) updates.q12_hasNote = '否';
+            if (shouldUpdate('q10_chargingOther', '')) updates.q10_chargingOther = '';
+            if (shouldUpdate('q11_hasIssue', '')) updates.q11_hasIssue = '';
+            if (shouldUpdate('q11_items', [])) updates.q11_items = [];
+            if (shouldUpdate('q11_hasOther', false)) updates.q11_hasOther = false;
+            if (shouldUpdate('q11_other', '')) updates.q11_other = '';
+            if (shouldUpdate('q12_hasNote', '')) updates.q12_hasNote = '';
+            if (shouldUpdate('q12_note', '')) updates.q12_note = '';
         } else if (parkingLogic.isOtherPt) {
             if (shouldUpdate('q10_parkingNumberType', '')) updates.q10_parkingNumberType = '';
             if (shouldUpdate('q10_parkingNumberVal', '')) updates.q10_parkingNumberVal = '';
             if (shouldUpdate('q10_carUsage', [])) updates.q10_carUsage = [];
+            if (shouldUpdate('q10_carLotteryMonth', '')) updates.q10_carLotteryMonth = '';
+            if (shouldUpdate('q10_hasCarUsageOther', false)) updates.q10_hasCarUsageOther = false;
+            if (shouldUpdate('q10_carUsageOther', '')) updates.q10_carUsageOther = '';
+            if (shouldUpdate('q10_measureType', '')) updates.q10_measureType = '';
             if (shouldUpdate('q10_dimL', '')) updates.q10_dimL = ''; 
             if (shouldUpdate('q10_dimW', '')) updates.q10_dimW = ''; 
             if (shouldUpdate('q10_dimH', '')) updates.q10_dimH = '';
@@ -286,6 +308,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             localStorage.setItem(DRAFT_KEY, JSON.stringify(dataRef.current));
             localStorage.setItem(DRAFT_TIME_KEY, String(savedNow));
             localSaved = true;
+            lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(dataRef.current));
             setLastSavedAt(savedNow);
         } catch (e) { 
             if (!silent) setToastMsg("儲存失敗：請檢查瀏覽器設定");
@@ -441,6 +464,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             source: 'local'
         };
         upsertLocalCase(localRecord);
+        lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(localRecord.data));
         setActiveCaseId(newId);
         setLastSavedAt(savedNow);
 
@@ -478,6 +502,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
             source: 'local'
         };
         upsertLocalCase(localRecord);
+        lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(localRecord.data));
         setLastSavedAt(savedNow);
 
         if (currentUser) {
@@ -499,7 +524,9 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     };
 
     const handleLoadCase = (record: CaseDraftRecord) => {
-        setData({ ...INITIAL_STATE, ...record.data });
+        const mergedData: SurveyData = { ...JSON.parse(JSON.stringify(INITIAL_STATE)), ...record.data };
+        setData(mergedData);
+        lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(mergedData));
         setActiveCaseId(record.id);
         setLastSavedAt(record.updatedAt || Date.now());
         setActiveStep(1);
@@ -560,7 +587,9 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     };
 
     const handleNewBlankCase = () => {
-        setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
+        const fresh = JSON.parse(JSON.stringify(INITIAL_STATE));
+        setData(fresh);
+        lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(fresh));
         setActiveCaseId(null);
         setLastSavedAt(null);
         setActiveStep(1);
@@ -576,7 +605,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     // Auto-save logic
     useEffect(() => { 
         const timer = setInterval(() => { 
-            if (isDataDirty(dataRef.current, INITIAL_STATE)) {
+            if (isDataDirty(dataRef.current, INITIAL_STATE) && isDataDirty(dataRef.current, lastSavedSnapshotRef.current)) {
                 performSave(true); 
             }
         }, 60000); 
@@ -616,20 +645,28 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             if (localResult.data && cloudResult.data) {
                 if (localResult.updatedAt > cloudResult.updatedAt) {
-                    setData(localResult.data);
+                    const merged: SurveyData = { ...JSON.parse(JSON.stringify(INITIAL_STATE)), ...localResult.data };
+                    setData(merged);
+                    lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(merged));
                     setLastSavedAt(localResult.updatedAt || Date.now());
                     setToastMsg("✅ 已讀取較新的本機暫存檔");
                 } else {
-                    setData(cloudResult.data);
+                    const merged: SurveyData = { ...JSON.parse(JSON.stringify(INITIAL_STATE)), ...cloudResult.data };
+                    setData(merged);
+                    lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(merged));
                     setLastSavedAt(cloudResult.updatedAt || Date.now());
                     setToastMsg("✅ 已讀取雲端暫存檔");
                 }
             } else if (cloudResult.data) {
-                setData(cloudResult.data);
+                const merged: SurveyData = { ...JSON.parse(JSON.stringify(INITIAL_STATE)), ...cloudResult.data };
+                setData(merged);
+                lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(merged));
                 setLastSavedAt(cloudResult.updatedAt || Date.now());
                 setToastMsg("✅ 已讀取雲端暫存檔");
             } else if (localResult.data) {
-                setData(localResult.data);
+                const merged: SurveyData = { ...JSON.parse(JSON.stringify(INITIAL_STATE)), ...localResult.data };
+                setData(merged);
+                lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(merged));
                 setLastSavedAt(localResult.updatedAt || Date.now());
                 setToastMsg("✅ 已讀取本機暫存檔");
             } else {
@@ -646,7 +683,9 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         try {
             localStorage.removeItem(DRAFT_KEY);
             localStorage.removeItem(DRAFT_TIME_KEY);
-            setData(JSON.parse(JSON.stringify(INITIAL_STATE)));
+            const fresh = JSON.parse(JSON.stringify(INITIAL_STATE));
+            setData(fresh);
+            lastSavedSnapshotRef.current = JSON.parse(JSON.stringify(fresh));
             setActiveCaseId(null);
             setLastSavedAt(null);
             setActiveStep(1);
@@ -720,11 +759,11 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
     useEffect(() => {
         let inactivityTimer: ReturnType<typeof setTimeout>;
-        const resetInactivityTimer = () => { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { if (isDataDirty(dataRef.current, INITIAL_STATE)) performSave(true); }, 5 * 60 * 1000); };
+        const resetInactivityTimer = () => { clearTimeout(inactivityTimer); inactivityTimer = setTimeout(() => { if (isDataDirty(dataRef.current, INITIAL_STATE) && isDataDirty(dataRef.current, lastSavedSnapshotRef.current)) performSave(true); }, 5 * 60 * 1000); };
         let lastActivity = 0;
         const handleActivity = () => { const now = Date.now(); if (now - lastActivity > 1000) { resetInactivityTimer(); lastActivity = now; } };
         const handleBeforeUnload = (e: BeforeUnloadEvent) => { 
-            if (isDataDirty(dataRef.current, INITIAL_STATE)) { 
+            if (isDataDirty(dataRef.current, lastSavedSnapshotRef.current)) { 
                 e.preventDefault(); e.returnValue = '確定尚未存檔就離開分頁嗎？'; return '確定尚未存檔就離開分頁嗎？'; 
             } 
         };
@@ -816,7 +855,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
     };
 
     const handleBackHome = () => {
-        if (isDataDirty(data, INITIAL_STATE)) {
+        if (isDataDirty(data, lastSavedSnapshotRef.current)) {
             setShowHomeConfirm(true);
         } else {
             onBack();
@@ -832,7 +871,12 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         if (typeof window !== 'undefined') { if (window.innerWidth < 1024) setMobileTab('preview'); window.scrollTo(0, 0); }
         await new Promise(resolve => setTimeout(resolve, 800)); // Wait for render
 
-        if (!page1Ref.current) {
+        const collectedDynamicPages = !isStandard
+            ? dynamicPageRefs.current.filter((el): el is HTMLDivElement => el !== null)
+            : [];
+
+        const primaryPage = collectedDynamicPages[0] || page1Ref.current;
+        if (!primaryPage) {
             console.error("Preview elements not found");
             setExporting(false);
             return;
@@ -844,9 +888,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
         let exportFailed = false;
         const exportOpts = {
             fileName,
-            page1Ref: page1Ref.current,
+            page1Ref: primaryPage,
             page2Ref: (type !== 'parking' && page2Ref.current) ? page2Ref.current : null,
             page3Ref: page3Ref.current || null,
+            pageRefs: collectedDynamicPages.length > 0 ? collectedDynamicPages : undefined,
             isMobile,
             onSuccess: (msg: string) => setToastMsg(msg),
             onError: (e: any) => { exportFailed = true; console.error("Export Error:", e); setToastMsg("❌ 匯出失敗，請重試或縮短案名。"); }
@@ -1083,7 +1128,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({ type, onBack, isDarkMode
 
             <div ref={previewWrapperRef} className={`flex-grow bg-slate-200 lg:p-10 p-4 pt-4 lg:pt-10 overflow-auto flex flex-col items-start lg:items-center absolute lg:relative inset-0 z-30 transition-all duration-300 ${mobileTab === 'preview' ? 'translate-x-0 opacity-100 pointer-events-auto' : 'translate-x-full lg:translate-x-0 lg:opacity-100 opacity-0 pointer-events-none lg:pointer-events-auto'} pb-32 lg:pb-10 dark:bg-slate-900`}>
                 <div className="w-full flex lg:justify-center justify-start pb-8">
-                    <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} isMobile={isMobile} />
+                    <SurveyPreview data={deferredData} type={type} exporting={exporting} previewScale={previewScale} previewPage={previewPage} setPreviewPage={setPreviewPage} page1Ref={page1Ref} page2Ref={page2Ref} page3Ref={page3Ref} dynamicPageRefs={dynamicPageRefs} isMobile={isMobile} />
                 </div>
 
                 <div

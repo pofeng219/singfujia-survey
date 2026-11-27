@@ -159,7 +159,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                         <AccordionRadio 
                             options={['無', '有', '待查證']} 
                             value={data.soil_q1_status || ''} 
-                            onChange={v => update('soil_q1_status', v)} 
+                            onChange={v => setData(prev => ({ ...prev, soil_q1_status: v, soil_q1_desc: (v === '有' || v === '待查證') ? prev.soil_q1_desc : '' }))} 
                             renderDetail={(opt) => (opt === '有' || opt === '待查證') ? <SubItemHighlight><DetailInput value={data.soil_q1_desc || ''} onChange={v => update('soil_q1_desc', v)} placeholder="說明現況" /></SubItemHighlight> : null}
                         />
                     </QuestionBlock>
@@ -213,7 +213,7 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             <AccordionRadio 
                                 options={['無', '有', '待查證']} 
                                 value={data.q17_homicide || ''} 
-                                onChange={v => update('q17_homicide', v)} 
+                                onChange={v => setData(prev => ({ ...prev, q17_homicide: v, q17_homicide_desc: (v === '有' || v === '待查證') ? prev.q17_homicide_desc : '' }))} 
                                 renderDetail={(opt) => (opt === '有' || opt === '待查證') ? (
                                     <SubItemHighlight>
                                         <DetailInput 
@@ -246,9 +246,9 @@ export const Step4 = React.memo<StepProps>(({ data, setData, update, toggleArr, 
                             onChange={v => {
                                 const val = v === '無' ? '否' : (v === '有' ? '是' : (v === '待查證' ? '待查證' : ''));
                                 if (type === 'land') {
-                                    setData(prev => ({ ...prev, land_q8_special: val, land_q8_special_desc: val === '否' ? '' : prev.land_q8_special_desc }));
+                                    setData(prev => ({ ...prev, land_q8_special: val, land_q8_special_desc: (val === '是' || val === '待查證') ? prev.land_q8_special_desc : '' }));
                                 } else {
-                                    setData(prev => ({ ...prev, q17_issue: val, q17_desc: val === '否' ? '' : prev.q17_desc }));
+                                    setData(prev => ({ ...prev, q17_issue: val, q17_desc: (val === '是' || val === '待查證') ? prev.q17_desc : '' }));
                                 }
                             }} 
                             renderDetail={(opt) => (opt === '有' || opt === '待查證') ? (

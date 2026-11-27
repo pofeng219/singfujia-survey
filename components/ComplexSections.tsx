@@ -290,11 +290,11 @@ export const UtilitiesSection = ({
                             options={['無設置', '有設置']} 
                             value={data.water_booster === '無設置' || data.water_booster === '無' ? '無設置' : (data.water_booster === '有設置' || data.water_booster === '有' ? '有設置' : '')} 
                             onChange={v => {
-                                const val = v === '無設置' ? '無設置' : '有設置';
+                                const val = v === '無設置' ? '無設置' : (v === '有設置' ? '有設置' : '');
                                 setData(prev => ({ 
                                     ...prev, 
                                     water_booster: val, 
-                                    water_booster_items: val === '無設置' ? [] : prev.water_booster_items 
+                                    water_booster_items: val === '有設置' ? prev.water_booster_items : [] 
                                 }));
                             }} 
                             renderDetail={(opt) => opt === '有設置' ? (
@@ -366,9 +366,17 @@ export const ParkingSection = ({
     const handleCarUsageToggle = (val: string) => {
         setData(prev => {
             let arr: string[] = prev.q10_carUsage || [];
-            if (val === "固定位置使用") { if (!arr.includes(val)) arr = arr.filter(x => x !== "每日先到先停" && x !== "須固定抽籤"); } 
-            else if (val === "每日先到先停" || val === "須固定抽籤") { if (!arr.includes(val)) arr = arr.filter(x => x !== "固定位置使用"); }
-            return { ...prev, q10_carUsage: arr.includes(val) ? arr.filter(i => i !== val) : [...arr, val] };
+            const isRemoving = arr.includes(val);
+            if (!isRemoving) {
+                if (val === "固定位置使用") { arr = arr.filter(x => x !== "每日先到先停" && x !== "須固定抽籤"); } 
+                else if (val === "每日先到先停" || val === "須固定抽籤") { arr = arr.filter(x => x !== "固定位置使用"); }
+            }
+            const nextArr = isRemoving ? arr.filter(i => i !== val) : [...arr, val];
+            return {
+                ...prev,
+                q10_carUsage: nextArr,
+                q10_carLotteryMonth: nextArr.includes("須固定抽籤") ? prev.q10_carLotteryMonth : ''
+            };
         });
     };
 
@@ -389,12 +397,12 @@ export const ParkingSection = ({
                         value={data?.q10_parkTypes?.[0] || ''} 
                         onChange={(v) => {
                             setData(prev => {
-                                const isSelected = prev.q10_parkTypes?.[0] === v;
+                                const isCleared = !v || prev.q10_parkTypes?.[0] === v;
                                 return {
                                     ...prev,
-                                    q10_parkTypes: isSelected ? [] : [v],
-                                    q10_rampMechLoc: (isSelected || v !== '坡道機械') ? '' : prev.q10_rampMechLoc,
-                                    q10_liftMechLoc: (isSelected || v !== '升降機械') ? '' : prev.q10_liftMechLoc
+                                    q10_parkTypes: isCleared ? [] : [v],
+                                    q10_rampMechLoc: (isCleared || v !== '坡道機械') ? '' : prev.q10_rampMechLoc,
+                                    q10_liftMechLoc: (isCleared || v !== '升降機械') ? '' : prev.q10_liftMechLoc
                                 };
                             });
                         }}
@@ -419,7 +427,7 @@ export const ParkingSection = ({
                         
                         disabled={parkingLogic.disableMethod}
                     />
-                    <div className={`space-y-3 col-span-1 lg:col-span-2 mt-6`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => update('q10_hasParkTypeOther', !data.q10_hasParkTypeOther)} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="騎樓停車" /></SubItemHighlight>)}</div>
+                    <div className={`space-y-3 col-span-1 lg:col-span-2 mt-6`}><CheckBox checked={data?.q10_hasParkTypeOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q10_hasParkTypeOther: !prev.q10_hasParkTypeOther, q10_parkTypeOther: prev.q10_hasParkTypeOther ? '' : prev.q10_parkTypeOther }))} disabled={parkingLogic.disableMethod} />{data?.q10_hasParkTypeOther && (<SubItemHighlight disabled={parkingLogic.disableMethod}><DetailInput value={data.q10_parkTypeOther || ''} onChange={v => update('q10_parkTypeOther', v)} placeholder="騎樓停車" /></SubItemHighlight>)}</div>
                 </QuestionBlock>
                 
                 {hasCarMethod && (
@@ -451,7 +459,7 @@ export const ParkingSection = ({
                                     {data?.q10_carUsage?.includes("須固定抽籤") && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><div className="ml-0 md:ml-4 flex items-center justify-center gap-4 mt-2 font-black text-xl md:text-2xl text-slate-700 dark:text-slate-200">每幾 <input type="number" inputMode="numeric" disabled={parkingLogic.disableCarStatus} className="w-20 md:w-28 border-3 rounded-2xl p-2 md:p-4 text-center bg-white shadow-inner dark:bg-slate-900 dark:border-slate-600" value={data.q10_carLotteryMonth || ''} onChange={e => update('q10_carLotteryMonth', e.target.value)} /> 個月抽籤一次</div></SubItemHighlight>)}
                                 </div>
                                 <div className="col-span-1 lg:col-span-2 text-center space-y-3">
-                                    <CheckBox checked={data?.q10_hasCarUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasCarUsageOther', !data.q10_hasCarUsageOther)} disabled={parkingLogic.disableCarStatus} />
+                                    <CheckBox checked={data?.q10_hasCarUsageOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q10_hasCarUsageOther: !prev.q10_hasCarUsageOther, q10_carUsageOther: prev.q10_hasCarUsageOther ? '' : prev.q10_carUsageOther }))} disabled={parkingLogic.disableCarStatus} />
                                     {data?.q10_hasCarUsageOther && (<SubItemHighlight disabled={parkingLogic.disableCarStatus}><DetailInput value={data.q10_carUsageOther || ''} onChange={v => update('q10_carUsageOther', v)} placeholder="說明現況" /></SubItemHighlight>)}
                                 </div>
                             </div>
@@ -464,7 +472,7 @@ export const ParkingSection = ({
                                 <AccordionRadio 
                                     options={['實際測量', '依車位資訊告示牌', '無法測量也無相關資訊']} 
                                     value={data?.q10_measureType || ''} 
-                                    onChange={v => update('q10_measureType', v)} 
+                                    onChange={v => setData(prev => ({ ...prev, q10_measureType: v, q10_dimL: (v === '實際測量' || v === '依車位資訊告示牌') ? prev.q10_dimL : '', q10_dimW: (v === '實際測量' || v === '依車位資訊告示牌') ? prev.q10_dimW : '', q10_dimH: (v === '實際測量' || v === '依車位資訊告示牌') ? prev.q10_dimH : '' }))} 
                                     disabled={parkingLogic.disableCarSize} 
                                     spanFullOption="無法測量也無相關資訊"
                                     renderDetail={(opt) => {
@@ -510,7 +518,7 @@ export const ParkingSection = ({
                                 <AccordionRadio  
                                     options={['有資訊告示牌', '無資訊告示牌']} 
                                     value={data?.q10_entryHeight || ''} 
-                                    onChange={v => update('q10_entryHeight', v)} 
+                                    onChange={v => setData(prev => ({ ...prev, q10_entryHeight: v, q10_entryHeight_desc: v === '無資訊告示牌' ? prev.q10_entryHeight_desc : '' }))} 
                                     disabled={parkingLogic.disableHeight}
                                     renderDetail={(opt) => 
                                         opt === '無資訊告示牌' ? (
@@ -559,7 +567,7 @@ export const ParkingSection = ({
                             });
                         }} />
                         <div className="col-span-1 lg:col-span-2 text-left space-y-3">
-                            <CheckBox checked={data?.q10_hasMotoUsageOther || false} label="其他未列項目" onClick={() => update('q10_hasMotoUsageOther', !data.q10_hasMotoUsageOther)} />
+                            <CheckBox checked={data?.q10_hasMotoUsageOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q10_hasMotoUsageOther: !prev.q10_hasMotoUsageOther, q10_motoUsageOther: prev.q10_hasMotoUsageOther ? '' : prev.q10_motoUsageOther }))} />
                             {data?.q10_hasMotoUsageOther && (<SubItemHighlight><DetailInput value={data.q10_motoUsageOther || ''} onChange={v => update('q10_motoUsageOther', v)} placeholder="如：隨到隨停、一年一抽" /></SubItemHighlight>)}
                         </div>
                     </div>
@@ -608,7 +616,7 @@ export const ParkingSection = ({
                                 <div className="space-y-6 pt-2">
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6">{Q11_OPTS.map(i => <CheckBox key={i} checked={data?.q11_items?.includes(i) || false} label={i} onClick={() => toggleArr('q11_items', i)} disabled={parkingLogic.disableAbnormal} />)}</div>
                                     <div className="space-y-3">
-                                        <CheckBox checked={data?.q11_hasOther || false} label="其他未列項目" onClick={() => update('q11_hasOther', !data.q11_hasOther)} disabled={parkingLogic.disableAbnormal} />
+                                        <CheckBox checked={data?.q11_hasOther || false} label="其他未列項目" onClick={() => setData(prev => ({ ...prev, q11_hasOther: !prev.q11_hasOther, q11_other: prev.q11_hasOther ? '' : prev.q11_other }))} disabled={parkingLogic.disableAbnormal} />
                                         {data?.q11_hasOther && <SubItemHighlight disabled={parkingLogic.disableAbnormal}><DetailInput value={data.q11_other || ''} onChange={v => update('q11_other', v)} disabled={parkingLogic.disableAbnormal} placeholder="如：機械故障、高度受限" /></SubItemHighlight>}
                                     </div>
                                 </div>
@@ -693,7 +701,7 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                     <CheckBox 
                         checked={data?.q16_hasOther || false} 
                         label="其他未列項目" 
-                        onClick={() => update('q16_hasOther', !data.q16_hasOther)} 
+                        onClick={() => { if (data.q16_hasOther) update('q16_other', ''); update('q16_hasOther', !data.q16_hasOther); }} 
                         disabled={data?.q16_noFacilities} 
                     />
                     {data?.q16_hasOther && (
@@ -743,7 +751,7 @@ export const EnvironmentSection = ({ data, update, toggleArr, id, title, highlig
                         <CheckBox 
                             checked={data?.q16_2_hasOther || false} 
                             label="其他未列項目" 
-                            onClick={() => update('q16_2_hasOther', !data.q16_2_hasOther)} 
+                            onClick={() => { if (data.q16_2_hasOther) update('q16_2_other', ''); update('q16_2_hasOther', !data.q16_2_hasOther); }} 
                             disabled={data?.q16_2_noFacilities} 
                         />
                         {data?.q16_2_hasOther && (
@@ -867,7 +875,13 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                             } 
                             onChange={v => { 
                                 const val = v === '否 (或年代久遠)' ? '否' : (v === '近期已鑑界 (附土地複丈成果圖)' ? '是' : (v === '待查證 (標位不明／須重測)' ? '待查證' : v)); 
-                                setData((prev: any) => ({...prev, land_q3_survey: val})); 
+                                setData((prev: any) => ({
+                                    ...prev,
+                                    land_q3_survey: val,
+                                    land_q3_survey_detail: val === '是' ? prev.land_q3_survey_detail : '',
+                                    land_q3_survey_date: val === '是' ? prev.land_q3_survey_date : '',
+                                    land_q3_survey_other: val === '待查證' ? prev.land_q3_survey_other : ''
+                                })); 
                             }} 
                             renderDetail={(opt) => {
                                 if (opt === '近期已鑑界 (附土地複丈成果圖)') return (
@@ -898,7 +912,15 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                         <AccordionRadio 
                             options={['無', '有', '待查證']} 
                             value={data?.land_q3_dispute === '否' ? '無' : (data?.land_q3_dispute === '是' ? '有' : (data?.land_q3_dispute || ''))} 
-                            onChange={v => { const val = v === '無' ? '否' : (v === '有' ? '是' : v); setData((prev: any) => ({...prev, land_q3_dispute: val})); }} 
+                            onChange={v => {
+                                const val = v === '無' ? '否' : (v === '有' ? '是' : v);
+                                setData((prev: any) => ({
+                                    ...prev,
+                                    land_q3_dispute: val,
+                                    land_q3_dispute_desc: val === '是' ? prev.land_q3_dispute_desc : '',
+                                    land_q3_dispute_other: val === '待查證' ? prev.land_q3_dispute_other : ''
+                                }));
+                            }} 
                             renderDetail={(opt) => {
                                 if (opt === '有') return <SubItemHighlight><DetailInput value={data.land_q3_dispute_desc || ''} onChange={v => update('land_q3_dispute_desc', v)} placeholder="說明現況" /></SubItemHighlight>;
                                 if (opt === '待查證') return <SubItemHighlight><DetailInput value={data.land_q3_dispute_other || ''} onChange={v => update('land_q3_dispute_other', v)} placeholder="說明現況" /></SubItemHighlight>;
@@ -916,7 +938,14 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                         <AccordionRadio 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_expro === '否' ? '非範圍內' : (data?.land_q4_expro === '是' ? '屬範圍內' : (data?.land_q4_expro || ''))} 
-                            onChange={v => { const val = v === '非範圍內' ? '否' : (v === '屬範圍內' ? '是' : v); setData((prev: any) => ({...prev, land_q4_expro: val})); }} 
+                            onChange={v => {
+                                const val = v === '非範圍內' ? '否' : (v === '屬範圍內' ? '是' : v);
+                                setData((prev: any) => ({
+                                    ...prev,
+                                    land_q4_expro: val,
+                                    land_q4_expro_other: (val === '是' || val === '待查證') ? prev.land_q4_expro_other : ''
+                                }));
+                            }} 
                             renderDetail={(opt) => {
                                 if (opt === '屬範圍內' || opt === '待查證') return <SubItemHighlight><DetailInput value={data.land_q4_expro_other || ''} onChange={v => update('land_q4_expro_other', v)} placeholder="說明現況" /></SubItemHighlight>;
                                 return null;
@@ -929,7 +958,14 @@ export const LandQuestionsGroup = ({ data, setData, update, titles, ids, highlig
                         <AccordionRadio 
                             options={['非範圍內', '屬範圍內', '待查證']} 
                             value={data?.land_q4_resurvey === '否' ? '非範圍內' : (data?.land_q4_resurvey === '是' ? '屬範圍內' : (data?.land_q4_resurvey || ''))} 
-                            onChange={v => { const val = v === '非範圍內' ? '否' : (v === '屬範圍內' ? '是' : v); setData((prev: any) => ({...prev, land_q4_resurvey: val})); }} 
+                            onChange={v => {
+                                const val = v === '非範圍內' ? '否' : (v === '屬範圍內' ? '是' : v);
+                                setData((prev: any) => ({
+                                    ...prev,
+                                    land_q4_resurvey: val,
+                                    land_q4_resurvey_other: (val === '是' || val === '待查證') ? prev.land_q4_resurvey_other : ''
+                                }));
+                            }} 
                             renderDetail={(opt) => {
                                 if (opt === '屬範圍內' || opt === '待查證') return <SubItemHighlight><DetailInput value={data.land_q4_resurvey_other || ''} onChange={v => update('land_q4_resurvey_other', v)} placeholder="說明現況" /></SubItemHighlight>;
                                 return null;
@@ -982,8 +1018,26 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                         value={data[accessKey]?.includes('順暢') ? '通行順暢' : (data[accessKey]?.includes('受限') ? '通行受限（如狹窄、有障礙物）' : (data[accessKey]?.includes('袋地') ? '袋地（無合法出入口）' : (data[accessKey] === '其他未列項目' ? '其他未列項目' : '')))} 
                         onChange={v => {
                             const val = v.includes('順暢') ? '通行順暢' : (v.includes('受限') ? '通行受限' : (v.includes('袋地') ? '袋地' : v));
-                            setData((prev: any) => ({...prev, [accessKey]: val}));
-                            if (v !== '其他未列項目' && v !== '通行受限（如狹窄、有障礙物）') update(abnormalDescKey, '');
+                            const isSmooth = val === '通行順暢';
+                            const needsAbnormalDesc = val === '通行受限' || val === '袋地' || val === '其他未列項目';
+                            setData((prev: any) => ({
+                                ...prev,
+                                [accessKey]: val,
+                                [abnormalDescKey]: needsAbnormalDesc ? prev[abnormalDescKey] : '',
+                                [ownerKey]: isSmooth ? prev[ownerKey] : '',
+                                [protectionKey]: isSmooth ? prev[protectionKey] : '',
+                                [protectionDescKey]: isSmooth ? prev[protectionDescKey] : '',
+                                [sectionKey]: isSmooth ? prev[sectionKey] : '',
+                                [subSectionKey]: isSmooth ? prev[subSectionKey] : '',
+                                [numberKey]: isSmooth ? prev[numberKey] : '',
+                                [materialKey]: isSmooth ? prev[materialKey] : '',
+                                [materialOtherKey]: isSmooth ? prev[materialOtherKey] : '',
+                                [roadWidthKey]: isSmooth ? prev[roadWidthKey] : '',
+                                [buildingLineKey]: isSmooth ? prev[buildingLineKey] : '',
+                                [buildingLineOtherKey]: isSmooth ? prev[buildingLineOtherKey] : '',
+                                [ditchKey]: isSmooth ? prev[ditchKey] : '',
+                                [ditchOtherKey]: isSmooth ? prev[ditchOtherKey] : ''
+                            }));
                         }} 
                         renderDetail={(opt) => {
                             if (opt === '其他未列項目') {
@@ -1003,7 +1057,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                                     options={['公有', '私人']} 
                                                     value={data[ownerKey] || ''} 
                                                     onChange={v => {
-                                                        setData((prev: any) => ({...prev, [ownerKey]: v, [protectionKey]: ''}));
+                                                        setData((prev: any) => ({...prev, [ownerKey]: v, [protectionKey]: '', [protectionDescKey]: ''}));
                                                     }} 
                                                     renderDetail={(opt2) => {
                                                         if (opt2 === '公有') return <div className="mt-4"><AccordionRadio options={PROTECTION_OPTS_PUBLIC} value={data[protectionKey] || ''} onChange={v => update(protectionKey, v)} /></div>;
@@ -1021,7 +1075,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                             {type === 'land' && (
                                                 <div className="pt-6 border-t-2 border-slate-200">
                                                     <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">路面材質</p>
-                                                    <AccordionRadio options={['柏油', '水泥', '泥土／石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => update(materialKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /> : null} />
+                                                    <AccordionRadio options={['柏油', '水泥', '泥土／石子', '其他未列項目']} value={data[materialKey] || ''} onChange={v => setData((prev: any) => ({ ...prev, [materialKey]: v, [materialOtherKey]: v === '其他未列項目' ? prev[materialOtherKey] : '' }))} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[materialOtherKey] || ''} onChange={v => update(materialOtherKey, v)} placeholder="說明現況" /> : null} />
                                                 </div>
                                             )}
 
@@ -1033,7 +1087,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                                 {type === 'land' && !hideBuildingLine && (
                                                     <div className="bg-white p-4 rounded-xl border-2 border-slate-200">
                                                          <p className="font-bold text-lg mb-2 text-slate-600">建築線指定狀況</p>
-                                                         <AccordionRadio options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => update(buildingLineKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[buildingLineOtherKey] || ''} onChange={v => update(buildingLineOtherKey, v)} placeholder="如：申請中、未核定" /> : null} />
+                                                         <AccordionRadio options={BUILDING_LINE_OPTIONS} value={data[buildingLineKey] || ''} onChange={v => setData((prev: any) => ({ ...prev, [buildingLineKey]: v, [buildingLineOtherKey]: v === '其他未列項目' ? prev[buildingLineOtherKey] : '' }))} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[buildingLineOtherKey] || ''} onChange={v => update(buildingLineOtherKey, v)} placeholder="如：申請中、未核定" /> : null} />
                                                     </div>
                                                 )}
                                             </div>
@@ -1041,7 +1095,7 @@ export const BuildingLandAccessSection = ({ data, setData, update, title, id, hi
                                             {type === 'land' && !hideDitch && (
                                                 <div className="pt-6 border-t-2 border-slate-200">
                                                     <p className="dynamic-text-h2 font-black text-slate-700 mb-4 dark:text-slate-200 leading-normal">臨路排水溝現況</p>
-                                                    <AccordionRadio options={DRAINAGE_OPTIONS} value={data[ditchKey] || ''} onChange={v => update(ditchKey, v)} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[ditchOtherKey] || ''} onChange={v => update(ditchOtherKey, v)} placeholder="說明現況" /> : null} />
+                                                    <AccordionRadio options={DRAINAGE_OPTIONS} value={data[ditchKey] || ''} onChange={v => setData((prev: any) => ({ ...prev, [ditchKey]: v, [ditchOtherKey]: v === '其他未列項目' ? prev[ditchOtherKey] : '' }))} renderDetail={(opt2) => opt2 === '其他未列項目' ? <DetailInput value={data[ditchOtherKey] || ''} onChange={v => update(ditchOtherKey, v)} placeholder="說明現況" /> : null} />
                                                 </div>
                                             )}
                                         </div>
