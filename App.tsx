@@ -1,12 +1,18 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LandingPage } from './components/LandingPage';
 import { SurveyForm } from './components/SurveyForm';
 import { SurveyType } from './types';
 import { ModeSelectionPage } from './components/ModeSelectionPage';
 import { InterfaceContext, InterfaceMode } from './components/InterfaceContext';
 import { AuthProvider, useAuth } from './components/AuthContext';
-import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { LogIn, LogOut, RefreshCw, User as UserIcon } from 'lucide-react';
+import {
+    applyVersionReload,
+    checkServerBuildVersion,
+    cleanupVersionQueryParam,
+    clearStaleBrowserCaches,
+} from './utils/versionCheck';
 
 const TopAuthBar = () => {
     const { user, loading, login, logout } = useAuth();
@@ -42,6 +48,52 @@ const AppContent = () => {
     const [interfaceMode, setInterfaceMode] = useState<InterfaceMode | null>(null);
     const [systemType, setSystemType] = useState<SurveyType | null>(null);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [pendingBuildId, setPendingBuildId] = useState<string | null>(null);
+    const systemTypeRef = useRef<SurveyType | null>(null);
+
+    useEffect(() => {
+        systemTypeRef.current = systemType;
+    }, [systemType]);
+
+    // Clean legacy caches & automatically check for newly deployed builds
+    useEffect(() => {
+        cleanupVersionQueryParam();
+        void clearStaleBrowserCaches();
+
+        let active = true;
+        const verifyLatestVersion = async () => {
+            const remoteBuildId = await checkServerBuildVersion();
+            if (!active || !remoteBuildId) return;
+            // If user is not currently editing a form, auto-reload immediately to apply the new version
+            if (!systemTypeRef.current) {
+                const reloaded = await applyVersionReload(remoteBuildId, false);
+                if (!reloaded && active) {
+                    setPendingBuildId(remoteBuildId);
+                }
+            } else {
+                setPendingBuildId(remoteBuildId);
+            }
+        };
+
+        void verifyLatestVersion();
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                void verifyLatestVersion();
+            }
+        };
+        const handleFocus = () => {
+            void verifyLatestVersion();
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', handleFocus);
+        return () => {
+            active = false;
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, []);
 
     // Initialize Dark Mode based on system preference or local storage
     useEffect(() => {
@@ -79,10 +131,25 @@ const AppContent = () => {
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
+    const updateBanner = pendingBuildId ? (
+        <div className="bg-amber-500 text-slate-950 px-4 py-2 flex items-center justify-between gap-3 text-sm lg:text-base font-bold shadow-md z-50 relative no-print">
+            <span>偵測到系統已更新至最新版本，請先存檔後點擊立即更新以載入最新內容。</span>
+            <button
+                type="button"
+                onClick={() => void applyVersionReload(pendingBuildId, true)}
+                className="flex items-center gap-1.5 bg-slate-900 text-white hover:bg-slate-800 px-3 py-1.5 rounded-lg transition-colors shrink-0"
+            >
+                <RefreshCw className="w-4 h-4" />
+                <span>立即更新</span>
+            </button>
+        </div>
+    ) : null;
+
     if (!interfaceMode) {
         return (
             <div className="flex flex-col h-[100dvh]">
                 <TopAuthBar />
+                {updateBanner}
                 <div className="flex-1 overflow-hidden">
                     <ModeSelectionPage onSelect={setInterfaceMode} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
                 </div>
@@ -94,6 +161,7 @@ const AppContent = () => {
         return (
             <div className="flex flex-col h-[100dvh]">
                 <TopAuthBar />
+                {updateBanner}
                 <div className="flex-1 overflow-hidden">
                     <InterfaceContext.Provider value={interfaceMode}>
                         <LandingPage onSelect={setSystemType} isDarkMode={isDarkMode} toggleTheme={toggleTheme} onBack={() => setInterfaceMode(null)} />
@@ -106,6 +174,7 @@ const AppContent = () => {
     return (
         <div className="flex flex-col h-[100dvh]">
             <TopAuthBar />
+            {updateBanner}
             <div className="flex-1 overflow-hidden relative">
                 <InterfaceContext.Provider value={interfaceMode}>
                     <SurveyForm 
